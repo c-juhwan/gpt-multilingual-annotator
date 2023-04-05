@@ -105,7 +105,7 @@ def preprocessing(args: argparse.Namespace) -> None:
 
         # Resize the images
         for image_name in tqdm(data_dict[split]['image_names'], desc=f'Resizing {split} images...'):
-            image = Image.open(os.path.join(original_image_path, image_name))
+            image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
             image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
             image.save(os.path.join(resized_image_path, image_name), image.format)
 

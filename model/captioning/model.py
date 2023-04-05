@@ -222,9 +222,9 @@ class Decoder(nn.Module):
             decoder_input = torch.cat([decoder_input, next_token], dim=1) # (batch_size, cur_seq_len + 1)
 
         # Remove <bos> token from the output
-        decoder_input = decoder_input[:, 1:]
+        best_seq = decoder_input[:, 1:]
 
-        return decoder_input
+        return best_seq
 
     def beam_generate(self, features: torch.Tensor) -> torch.Tensor:
         """
@@ -244,7 +244,6 @@ class Decoder(nn.Module):
 
         # Initialize beam search variables
         current_beam_scores = torch.zeros(beam_size, device=features.device) # (beam_size)
-        current_beam_tokens = torch.tensor([self.args.bos_token_id] * beam_size, device=features.device).unsqueeze(1) # (beam_size, 1)
         final_beam_scores = torch.zeros(beam_size, device=features.device) # (beam_size)
         final_beam_seqs = torch.zeros(beam_size, self.args.max_seq_len, device=features.device).long() # (beam_size, max_seq_len-1)
         beam_complete = torch.zeros(beam_size, device=features.device).bool() # (beam_size)
@@ -287,7 +286,7 @@ class Decoder(nn.Module):
                 decoder_score[:, self.args.eos_token_id] = -float('inf')
 
                 # As we are using the same decoder input for all beams, we need to make sure that the first token of each beam is different
-                # Get the top-k tokens for each beam
+                # Get the top-k tokens for first beam
                 topk_score, topk_token = decoder_score[0, :].topk(beam_size, dim=0, largest=True, sorted=True) # (beam_size)
                 topk_beam_idx = torch.arange(beam_size, device=features.device) # (beam_size)
                 topk_token_idx = topk_token # (beam_size)
@@ -341,151 +340,6 @@ class Decoder(nn.Module):
         best_seq = final_beam_seqs[best_seq_idx, 1:] # Remove the <bos> token
 
         return best_seq.unsqueeze(0) # (1, max_seq_len - 1) - remove the <bos> token
-
-    def beam_generate_deprecated(self, features: torch.Tensor) -> torch.Tensor:
-        """
-        Beam search decoding
-        """
-        batch_size = features.size(0)
-        beam_size = self.args.beam_size
-        feature_embed = features.unsqueeze(1) # (batch_size, 1, embed_size)
-
-        # Initialize the decoder input with <bos> token
-        decoder_input = torch.tensor([self.args.bos_token_id], device=features.device) # (1)
-        decoder_input = decoder_input.repeat(batch_size * beam_size, 1).contiguous() # (batch_size * beam_size, 1)
-        transformer_decoder_memory = features.repeat(beam_size, 1).unsqueeze(0) # (1, batch_size * beam_size, embed_size) - no batch_first for TransformerDecoder
-
-        # Initialize beam search variables
-        current_beam_scores = torch.zeros(batch_size, beam_size, device=features.device) # (batch_size, beam_size) - log probabilities of the each beam sequence
-        final_beam_scores = torch.zeros(batch_size * beam_size, 1, device=features.device) # (batch_size() beam_size) - log probabilities of the each beam sequence
-        complete_seqs = defaultdict(list)
-        complete_seqs_indices = set()
-
-        for step in range(self.args.max_seq_len - 1): # -1 for the <bos> token
-            if self.decoder_type == 'lstm':
-                word_embed = self.word_embed(decoder_input)
-                decoder_input_embed = word_embed + feature_embed.repeat(1, decoder_input.size(1), 1) # (batch_size * beam_size, cur_seq_len, embed_size)
-
-                # Initialize the hidden state as the feature vector
-                h_init = features.unsqueeze(0).repeat(self.args.decoder_lstm_nlayers, 1, 1) # (nlayers, batch_size * beam_size, hidden_size)
-                c_init = torch.zeros_like(h_init) # (nlayers, batch_size * beam_size, hidden_size)
-
-                # Pass the input through the LSTM
-                decoder_output, _ = self.decoder(decoder_input_embed, (h_init, c_init)) # (batch_size * beam_size, cur_seq_len, hidden_size)
-            elif self.decoder_type == 'transformer':
-                word_embed = self.word_embed(decoder_input)
-                pos_embed = self.pos_embed(torch.arange(decoder_input.size(1)).to(decoder_input.device)) # (cur_seq_len, embed_size)
-                pos_embed = pos_embed.unsqueeze(0).repeat(decoder_input.size(0), 1, 1) # (batch_size * beam_size, cur_seq_len, embed_size)
-
-                decoder_input_embed = word_embed + feature_embed.repeat(beam_size, decoder_input.size(1), 1) + pos_embed # (batch_size * beam_size, cur_seq_len, embed_size)
-
-                tgt_mask = self.generate_square_subsequent_mask(decoder_input.size(1), device=decoder_input.device) # (cur_seq_len, cur_seq_len)
-                tgt_key_padding_mask = (decoder_input == self.args.pad_token_id) # (batch_size * beam_size, cur_seq_len)
-
-                # Pass the input through the Transformer
-                decoder_input_embed = decoder_input_embed.permute(1, 0, 2) # (cur_seq_len, batch_size * beam_size, embed_size) - no batch_first for TransformerDecoder
-                decoder_output = self.decoder(decoder_input_embed, transformer_decoder_memory,
-                                              tgt_mask=tgt_mask, tgt_key_padding_mask=tgt_key_padding_mask) # (cur_seq_len, batch_size * beam_size, embed_size) - no batch_first
-                decoder_output = decoder_output.permute(1, 0, 2) # (batch_size * beam_size, cur_seq_len, embed_size)
-
-            # Pass the output through the output layer
-            decoder_logits = self.out(decoder_output) # (batch_size * beam_size, cur_seq_len, vocab_size)
-            next_token_logits = decoder_logits[:, -1, :] # (batch_size * beam_size, vocab_size)
-            next_token_score = F.log_softmax(next_token_logits, dim=1) # (batch_size * beam_size, vocab_size)
-
-            # Avoid generating <s> and <pad> tokens
-            next_token_score[:, self.args.bos_token_id] = -float('inf')
-            next_token_score[:, self.args.pad_token_id] = -float('inf')
-            if step == 0:
-                next_token_score[:, self.args.eos_token_id] = -float('inf') # Avoid generating <eos> token at the first step
-
-            # Calculate the scores for each beam
-            # current tracked beam score + log probabilities of the next token
-            # select top beam_size sequences for each batch
-            next_token_score = next_token_score.view(batch_size, beam_size, -1) # (batch_size, beam_size, vocab_size)
-            next_token_score = next_token_score + current_beam_scores.unsqueeze(2) # (batch_size, beam_size, vocab_size) - broadcast beam_scores to vocab_size dimension - log probabilities of the each beam sequence + log probabilities of the next token
-            next_token_score = next_token_score.view(batch_size, -1) # (batch_size, beam_size * vocab_size) - we want to keep the top beam_size sequences for each batch
-
-            # Select the top beam_size sequences for each batch
-            # Get the top beam_size sequences for each batch
-            topk_score, topk_idx = torch.topk(next_token_score, beam_size, dim=1) # (batch_size, beam_size) - log probabilities of the top beam_size sequences for each batch
-            top_beam_idx = topk_idx // self.args.vocab_size # (batch_size, beam_size) - indices of the top beam_size sequences for each batch - which beam the top beam_size sequences are
-            top_word_idx = topk_idx % self.args.vocab_size # (batch_size, beam_size) - indices of the top beam_size sequences for each batch
-
-            # Update the beam scores
-            current_beam_scores = topk_score # (batch_size, beam_size) - log probabilities of the top beam_size sequences for each batch
-
-            # Update the beam sequences - attach the new word to the end of the current beam sequence
-            # load the top beam_size sequences for each batch
-            # and attach the new word to the end of the current beam sequence
-            cur_beam_seq = decoder_input.view(batch_size, beam_size, -1) # (batch_size, beam_size, cur_seq_len)
-            new_beam_seq = cur_beam_seq[torch.arange(batch_size).unsqueeze(1), top_beam_idx] # (batch_size, beam_size, cur_seq_len) - choose the top beam_size sequences for each batch
-            new_beam_seq = torch.cat([new_beam_seq, top_word_idx.unsqueeze(2)], dim=2) # (batch_size, beam_size, cur_seq_len + 1) - attach the new word to the end of the current beam sequence
-            decoder_input = new_beam_seq.view(batch_size * beam_size, -1) # (batch_size * beam_size, cur_seq_len + 1)
-
-            from transformers import AutoTokenizer
-            tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base')
-            for i in range(beam_size):
-                print(f"Step {step} / Beam {i}: {tokenizer.decode(decoder_input[i].tolist())}")
-
-            # If the <eos> token is generated, save the sequence
-            if self.args.eos_token_id in top_word_idx:
-                # Find the <eos> token
-                eos_idx = torch.where(top_word_idx.view(-1) == self.args.eos_token_id)[0].tolist()
-                complete_idx_add = set(eos_idx) - complete_seqs_indices
-                complete_idx_add = list(complete_idx_add)
-                complete_seqs_indices.update(eos_idx)
-                cur_seq = decoder_input.to('cpu') # (batch_size * beam_size, cur_seq_len + 1)
-                if len(complete_idx_add) > 0: # If there are new complete sequences
-                    final_beam_scores[complete_idx_add] = current_beam_scores.view(-1, 1)[complete_idx_add] # Save the final beam scores
-                    for i in complete_idx_add:
-                        complete_seqs[i] = cur_seq[i].tolist()
-
-            # If all the sequences have reached the <eos> token, stop the decoding
-            if len(complete_seqs_indices) == batch_size * beam_size:
-                break
-
-        # If there are no complete sequences, save the current sequences
-        if len(complete_seqs_indices) == 0:
-            final_beam_scores = current_beam_scores.view(-1, 1)
-            complete_seqs = cur_seq.tolist()
-
-        # Beam Length Normalization
-        length_penalty = torch.tensor([len(complete_seqs[i]) for i in range(batch_size * beam_size)], dtype=torch.float, device=self.args.device)
-        length_penalty = (((length_penalty + beam_size) ** self.args.beam_alpha) / ((beam_size + 1) ** self.args.beam_alpha)).unsqueeze(1)
-        final_beam_scores = final_beam_scores / length_penalty
-
-        # Find the best sequence for each batch
-        final_beam_scores = final_beam_scores.view(batch_size, beam_size) # (batch_size, beam_size)
-        best_beam_idx = torch.argmax(final_beam_scores, dim=1) # (batch_size) - indices of the best beam for each batch
-        best_beam_idx = best_beam_idx + torch.arange(batch_size, device=best_beam_idx.device) * beam_size # (batch_size) - indices of the best beam for each batch
-        print("best_beam_idx: ", best_beam_idx)
-
-        from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base')
-
-        # sort complete sequences by idx
-        list_complete_seqs = sorted(complete_seqs.items(), key=lambda x: x[0])
-        sorted_complete_seqs = dict(list_complete_seqs)
-
-        print("sorted_complete_seqs: ")
-        for i, seq in enumerate(sorted_complete_seqs):
-            print(i, ": ", tokenizer.decode(sorted_complete_seqs[seq]))
-
-        # Get the best sequence for each batch
-        best_beam_seq = [sorted_complete_seqs[i][1:] for i in best_beam_idx.tolist()] # (batch_size, cur_seq_len) - best beam sequences for each batch, remove the <bos> token
-
-        print("best_beam_seq: ")
-        for i, seq in enumerate(best_beam_seq):
-            print(i, ": ", tokenizer.decode(seq))
-
-        # Pad the sequences to the same length
-        result_seq = torch.zeros(batch_size, (self.args.max_seq_len-1), dtype=torch.long, device=self.args.device) # -1 to remove the <bos> token
-        for i, seq in enumerate(best_beam_seq):
-            result_seq[i, :len(seq)] = torch.tensor(seq, dtype=torch.long, device=self.args.device) # (batch_size, max_seq_len)
-
-        print(result_seq)
-        return result_seq
 
     @staticmethod
     def generate_square_subsequent_mask(sz, device):

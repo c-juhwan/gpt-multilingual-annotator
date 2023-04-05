@@ -6,6 +6,7 @@ import argparse
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 # 3rd-party Modules
+from PIL import Image
 import pandas as pd
 from tqdm.auto import tqdm
 from nlgeval import NLGEval
@@ -50,6 +51,7 @@ def testing(args: argparse.Namespace) -> None:
     args.bos_token_id = tokenizer.bos_token_id
     args.pad_token_id = tokenizer.pad_token_id
     args.eos_token_id = tokenizer.eos_token_id
+    image_transform = dataset_test.transform
 
     write_log(logger, "Loaded data successfully")
     write_log(logger, f"Test dataset size / iterations: {len(dataset_test)} / {len(dataloader_test)}")
@@ -58,14 +60,10 @@ def testing(args: argparse.Namespace) -> None:
     write_log(logger, "Building model")
     model = CaptioningModel(args).to(device)
 
-    # Define loss function
-    seq_loss = nn.CrossEntropyLoss(ignore_index=args.pad_token_id,
-                                   label_smoothing=args.label_smoothing_eps)
-
     # Load model weights
     write_log(logger, "Loading model weights")
     load_model_name = os.path.join(args.model_path, args.task, args.task_dataset,
-                                   f'{args.encoder_type}_{args.decoder_type}_final_model.pt')
+                                   f'{args.encoder_type}_{args.decoder_type}_final_model_{args.annotation_mode}.pt')
     model = model.to('cpu')
     checkpoint = torch.load(load_model_name, map_location='cpu')
     model.load_state_dict(checkpoint['model'])
@@ -84,11 +82,15 @@ def testing(args: argparse.Namespace) -> None:
 
     for test_iter_idx, data_dicts in enumerate(tqdm(dataloader_test, total=len(dataloader_test), desc=f'Testing')):
         # Test - Get input data from batch
-        image = data_dicts['image'].to(device) # [test_batch_size, 3, 224, 224]
+        image_path = data_dicts['image_path']
+        input_ids = data_dicts['input_ids'].to(device) # [batch_size, max_seq_len]
+        target_ids = input_ids[:, 1:] # [batch_size, max_seq_len - 1] # Remove <bos> token
         caption = data_dicts['caption'] # list of str: for saving result
-        #all_caption = data_dicts['all_caption'] # list of list of str: for calculating bleu score, used as reference
-        input_ids = data_dicts['input_ids'].to(device) # [test_batch_size, max_seq_len]
-        target_ids = input_ids[:, 1:] # [test_batch_size, max_seq_len - 1] # Remove <bos> token
+
+        # Load image from image_path and make batch
+        PIL_images = [Image.open(image_path).convert('RGB') for image_path in image_path]
+        image = [image_transform(image) for image in PIL_images]
+        image = torch.stack(image, dim=0).to(device) # [batch_size, 3, 224, 224]
 
         # Test - Forward pass
         with torch.no_grad():
@@ -114,8 +116,6 @@ def testing(args: argparse.Namespace) -> None:
 
             ref_list.append([each_reference])
             hyp_list.append(each_pred_sentence)
-
-        #raise Exception # For debugging
 
         # Test - Logging
         test_acc_seq += batch_acc_seq

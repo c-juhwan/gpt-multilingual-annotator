@@ -5,12 +5,12 @@ import shutil
 import logging
 import argparse
 # 3rd-party Modules
+from PIL import Image
 from tqdm.auto import tqdm
 # Pytorch Modules
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torch.nn.utils import clip_grad_norm_
 from torch.utils.tensorboard import SummaryWriter
 # Huggingface Modules
 from transformers import AutoTokenizer
@@ -62,6 +62,7 @@ def training(args: argparse.Namespace) -> None:
     args.vocab_size = tokenizer.vocab_size
     args.pad_token_id = tokenizer.pad_token_id
     args.eos_token_id = tokenizer.eos_token_id
+    image_transform = dataset_dict['train'].transform
 
     write_log(logger, "Loaded data successfully")
     write_log(logger, f"Train dataset size / iterations: {len(dataset_dict['train'])} / {len(dataloader_dict['train'])}")
@@ -89,7 +90,7 @@ def training(args: argparse.Namespace) -> None:
     if args.job == 'resume_training':
         write_log(logger, "Resuming training model")
         load_checkpoint_name = os.path.join(args.checkpoint_path, args.task, args.task_dataset,
-                                            f'{args.encoder_type}_{args.decoder_type}_checkpoint.pt')
+                                            f'{args.encoder_type}_{args.decoder_type}_checkpoint_{args.annotation_mode}.pt')
         model = model.to('cpu')
         checkpoint = torch.load(load_checkpoint_name, map_location='cpu')
         start_epoch = checkpoint['epoch']
@@ -121,9 +122,14 @@ def training(args: argparse.Namespace) -> None:
         # Train - Iterate one epoch over batches
         for iter_idx, data_dicts in enumerate(tqdm(dataloader_dict['train'], total=len(dataloader_dict['train']), desc=f'Training - Epoch [{epoch_idx}/{args.num_epochs}]')):
             # Train - Get input data from batch
-            image = data_dicts['image'].to(device) # [batch_size, 3, 224, 224]
+            image_path = data_dicts['image_path']
             input_ids = data_dicts['input_ids'].to(device) # [batch_size, max_seq_len]
             target_ids = input_ids[:, 1:] # [batch_size, max_seq_len - 1] # Remove <bos> token
+
+            # Load image from image_path and make batch
+            PIL_images = [Image.open(image_path).convert('RGB') for image_path in image_path]
+            image = [image_transform(image) for image in PIL_images]
+            image = torch.stack(image, dim=0).to(device) # [batch_size, 3, 224, 224]
 
             # Train - Forward pass
             seq_logits = model(image, input_ids[:, :-1]) # [batch_size, max_seq_len - 1, vocab_size] # Remove <eos> token
@@ -165,10 +171,14 @@ def training(args: argparse.Namespace) -> None:
         # Valid - Iterate one epoch over batches
         for iter_idx, data_dicts in enumerate(tqdm(dataloader_dict['valid'], total=len(dataloader_dict['valid']), desc=f'Validating - Epoch [{epoch_idx}/{args.num_epochs}]')):
             # Valid - Get input data from batch
-            image = data_dicts['image'].to(device) # [batch_size, 3, 224, 224]
-            #all_caption = data_dicts['all_caption'] # list of list of str: for calculating bleu score, used as reference
+            image_path = data_dicts['image_path']
             input_ids = data_dicts['input_ids'].to(device) # [batch_size, max_seq_len]
             target_ids = input_ids[:, 1:] # [batch_size, max_seq_len - 1] # Remove <bos> token
+
+            # Load image from image_path and make batch
+            PIL_images = [Image.open(image_path).convert('RGB') for image_path in image_path]
+            image = [image_transform(image) for image in PIL_images]
+            image = torch.stack(image, dim=0).to(device) # [batch_size, 3, 224, 224]
 
             # Valid - Forward pass
             with torch.no_grad():
@@ -219,7 +229,7 @@ def training(args: argparse.Namespace) -> None:
                 'model': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
                 'scheduler': scheduler.state_dict() if scheduler is not None else None
-            }, os.path.join(checkpoint_save_path, f'{args.encoder_type}_{args.decoder_type}_checkpoint.pt'))
+            }, os.path.join(checkpoint_save_path, f'{args.encoder_type}_{args.decoder_type}_checkpoint_{args.annotation_mode}.pt'))
             write_log(logger, f"VALID - Best valid at epoch {best_epoch_idx} - {args.optimize_objective}: {abs(best_valid_objective_value):.4f}")
             write_log(logger, f"VALID - Saved checkpoint to {checkpoint_save_path}")
         else:
@@ -244,7 +254,7 @@ def training(args: argparse.Namespace) -> None:
     # Final - Save best checkpoint as result model
     final_model_save_path = os.path.join(args.model_path, args.task, args.task_dataset)
     check_path(final_model_save_path)
-    shutil.copyfile(os.path.join(checkpoint_save_path, f'{args.encoder_type}_{args.decoder_type}_checkpoint.pt'),
-                    os.path.join(final_model_save_path, f'{args.encoder_type}_{args.decoder_type}_final_model.pt')) # Copy best checkpoint as final model
+    shutil.copyfile(os.path.join(checkpoint_save_path, f'{args.encoder_type}_{args.decoder_type}_checkpoint_{args.annotation_mode}.pt'),
+                    os.path.join(final_model_save_path, f'{args.encoder_type}_{args.decoder_type}_final_model_{args.annotation_mode}.pt')) # Copy best checkpoint as final model
     write_log(logger, f"FINAL - Saved final model to {final_model_save_path}")
     writer.close()

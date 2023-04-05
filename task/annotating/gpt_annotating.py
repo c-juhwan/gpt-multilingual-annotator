@@ -82,7 +82,7 @@ def gpt_annotating(args: argparse.Namespace) -> None:
     train_df = train_df.groupby('image_name').first().reset_index()
     print(train_df)
 
-    for idx in tqdm(range(len(train_df[:500])), desc='Annotating with GPT...'):
+    for idx in tqdm(range(len(train_df)), desc='Annotating with GPT...'):
         # Get image_name, caption
         image_name = caption_df['image_name'][idx]
         gold_caption = caption_df['caption_text'][idx]

@@ -42,18 +42,14 @@ class CaptioningDataset(Dataset):
             # Load image and convert to tensor
             image_name = data_['image_names'][idx]
             image_path = os.path.join(resized_image_path, image_name)
-            image = Image.open(image_path)
-            image = self.transform(image)
 
             # Load original caption and encoded input_ids
             caption = data_['captions'][idx] # single string
             input_ids = data_['input_ids'][idx]
-            #all_caption = data_['all_captions'][idx]
 
             self.data_list.append({
-                'image': image,
+                'image_path': image_path,
                 'caption': caption,
-                #'all_caption': all_caption,
                 'input_ids': input_ids,
                 'index': idx
             })
@@ -67,16 +63,14 @@ class CaptioningDataset(Dataset):
         return len(self.data_list)
 
 def collate_fn(data):
-    images = torch.stack([d['image'] for d in data], dim=0) # (batch_size, 3, 224, 224)
+    image_path = [d['image_path'] for d in data] # list of strings (batch_size)
     captions = [d['caption'] for d in data] # list of strings (batch_size)
-    #all_captions = [d['all_caption'] for d in data] # list of list of strings (batch_size) - each list contains 5 captions
     input_ids = torch.stack([d['input_ids'] for d in data], dim=0) # (batch_size, max_seq_len)
     indices = [d['index'] for d in data] # list of integers
 
     datas_dict = {
-        'image': images,
+        'image_path': image_path,
         'caption': captions,
-        #'all_caption': all_captions,
         'input_ids': input_ids,
         'index': indices
     }
