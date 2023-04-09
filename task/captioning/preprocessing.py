@@ -28,7 +28,8 @@ def preprocessing(args: argparse.Namespace) -> None:
     caption_df = load_caption_data(args)
 
     # Define tokenizer
-    tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base') # Use BART tokenizer for captioning
+    en_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base') # Use BART tokenizer for captioning
+    ko_tokenizer = AutoTokenizer.from_pretrained('cosmoquester/bart-ko-base')
 
     # Define data_dict
     data_dict = {
@@ -38,6 +39,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
+            'tokenizer': en_tokenizer,
         },
         'valid': {
             'image_names': [],
@@ -45,6 +47,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
+            'tokenizer': en_tokenizer,
         },
         'test': {
             'image_names': [],
@@ -52,6 +55,33 @@ def preprocessing(args: argparse.Namespace) -> None:
             'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
+            'tokenizer': en_tokenizer,
+        },
+    }
+    data_dict_ko = {
+        'train': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': ko_tokenizer,
+        },
+        'valid': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': ko_tokenizer,
+        },
+        'test': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': ko_tokenizer,
         },
     }
 
@@ -70,20 +100,47 @@ def preprocessing(args: argparse.Namespace) -> None:
         split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
 
         # Tokenize the caption
-        tokenized_caption = tokenizer(caption, padding='max_length', truncation=True,
-                                      max_length=args.max_seq_len, return_tensors='pt')
+        tokenized_caption = en_tokenizer(caption, padding='max_length', truncation=True,
+                                         max_length=args.max_seq_len, return_tensors='pt')
 
         # Append the data to the data_dict
         data_dict[split]['image_names'].append(image_name)
+        data_dict[split]['caption_numbers'].append(caption_number)
         data_dict[split]['captions'].append(caption)
         data_dict[split]['all_captions'].append(all_caption) # list of string
-        data_dict[split]['caption_numbers'].append(caption_number)
         data_dict[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
 
     # Save the data_dict for each split as pickle file
     for split in data_dict.keys():
-        with open(os.path.join(preprocessed_path, f'{split}_processed.pkl'), 'wb') as f:
+        with open(os.path.join(preprocessed_path, f'{split}_ORIGINAL_EN.pkl'), 'wb') as f:
             pickle.dump(data_dict[split], f)
+
+    if args.task_dataset == 'coco2014': # Process the Korean captions for the COCO2014 dataset
+        for idx in tqdm(range(len(caption_df)), desc='Preprocessing Korean captions...'):
+            # Get the data from the dataframe
+            image_name = caption_df['image_name'][idx]
+            caption = caption_df['caption_text_ko'][idx]
+            image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
+            all_caption = image_all_caption_df['caption_text_ko'].tolist()
+            caption_number = caption_df['caption_number'][idx]
+            split_ = caption_df['split'][idx]
+            split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
+
+            # Tokenize the caption
+            tokenized_caption = ko_tokenizer(caption, padding='max_length', truncation=True,
+                                             max_length=args.max_seq_len, return_tensors='pt')
+
+            # Append the data to the data_dict
+            data_dict_ko[split]['image_names'].append(image_name)
+            data_dict_ko[split]['caption_numbers'].append(caption_number)
+            data_dict_ko[split]['captions'].append(caption)
+            data_dict_ko[split]['all_captions'].append(all_caption) # list of string
+            data_dict_ko[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
+
+        # Save the data_dict for each split as pickle file
+        for split in data_dict_ko.keys():
+            with open(os.path.join(preprocessed_path, f'{split}_AIHUB_KO.pkl'), 'wb') as f:
+                pickle.dump(data_dict_ko[split], f)
 
     # Resize the images
     for split in data_dict.keys():
@@ -95,6 +152,13 @@ def preprocessing(args: argparse.Namespace) -> None:
             original_image_path = os.path.join(args.data_path, 'flickr8k', 'Images')
         elif args.task_dataset == 'flickr30k':
             original_image_path = os.path.join(args.data_path, 'flickr30k', 'flickr30k_images')
+        elif args.task_dataset == 'coco2014':
+            if split == 'train':
+                original_image_path = os.path.join(args.data_path, 'coco_2014', 'train2014')
+            elif split == 'valid':
+                original_image_path = os.path.join(args.data_path, 'coco_2014', 'val2014')
+            elif split == 'test':
+                original_image_path = os.path.join(args.data_path, 'coco_2014', 'test2014')
         elif args.task_dataset == 'coco2017':
             if split == 'train':
                 original_image_path = os.path.join(args.data_path, 'coco', 'train2017')
@@ -102,6 +166,9 @@ def preprocessing(args: argparse.Namespace) -> None:
                 original_image_path = os.path.join(args.data_path, 'coco', 'val2017')
             elif split == 'test':
                 original_image_path = os.path.join(args.data_path, 'coco', 'test2017')
+
+        # remove duplicated image names
+        data_dict[split]['image_names'] = list(set(data_dict[split]['image_names']))
 
         # Resize the images
         for image_name in tqdm(data_dict[split]['image_names'], desc=f'Resizing {split} images...'):
@@ -117,6 +184,8 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     elif args.task_dataset == 'flickr30k':
         # From https://www.kaggle.com/datasets/hsankesara/flickr-image-dataset
         dataset_path = os.path.join(args.data_path, 'flickr30k')
+    elif args.task_dataset == 'coco2014':
+        dataset_path = os.path.join(args.data_path, 'coco_2014')
     elif args.task_dataset == 'coco2017':
         dataset_path = os.path.join(args.data_path, 'coco')
 
@@ -127,6 +196,12 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     elif args.task_dataset == 'flickr30k':
         # From https://www.kaggle.com/datasets/hsankesara/flickr-image-dataset
         annotation_path = os.path.join(dataset_path, 'results.csv')
+    elif args.task_dataset == 'coco2014':
+        # https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100
+        annotation_path = {
+            'train': os.path.join(dataset_path, 'annotations/captions_train2014_korean.json'), # ai-hub korean caption dataset
+            'valid': os.path.join(dataset_path, 'annotations/captions_val2014_korean.json')
+        }
     elif args.task_dataset == 'coco2017':
         annotation_path = {
             'train': os.path.join(dataset_path, 'annotations/captions_train2017.json'),
@@ -184,6 +259,43 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         caption_df.loc[:int(len(caption_df) * 0.8), 'split'] = 0 # 80% = train
         caption_df.loc[int(len(caption_df) * 0.8):int(len(caption_df) * 0.9), 'split'] = 1 # 10% = valid
         caption_df.loc[int(len(caption_df) * 0.9):, 'split'] = 2 # 10% = test
+    elif args.task_dataset == 'coco2014':
+        train_df = pd.read_json(annotation_path['train'])
+        valid_df = pd.read_json(annotation_path['valid'])
+
+        # create empty dataframe to store the captions
+        caption_df = pd.DataFrame(columns=['image_name', 'caption_number', 'caption_text', 'caption_text_ko', 'split'])
+
+        # get the captions for the train set
+        for i, row in tqdm(train_df.iterrows(), total=len(train_df), desc='Loading coco train captions'):
+            row = row.to_dict()['annotations']
+            image_name = row['file_path']
+            image_name = image_name.split('_')[-1]
+            captions_en = row['captions'] # List
+            captions_ko = row['caption_ko'] # List
+            for j, caption_en, caption_ko in zip(range(len(captions_en)), captions_en, captions_ko):
+                caption_df = caption_df.append({'image_name': image_name, 'caption_number': j+1,
+                                                'caption_text': caption_en, 'caption_text_ko': caption_ko, 'split': 0}, ignore_index=True)
+
+        # get the captions for the valid set
+        for i, row in tqdm(valid_df.iterrows(), total=len(valid_df), desc='Loading coco valid captions'):
+            row = row.to_dict()['annotations']
+            image_name = row['file_path']
+            image_name = image_name.split('_')[-1]
+            captions_en = row['captions']
+            captions_ko = row['caption_ko']
+            for j, caption_en, caption_ko in zip(range(len(captions_en)), captions_en, captions_ko):
+                caption_df = caption_df.append({'image_name': image_name, 'caption_number': j+1,
+                                                'caption_text': caption_en, 'caption_text_ko': caption_ko, 'split': 1}, ignore_index=True)
+
+        # for test set, we just append the image names to the dataframe
+        test_image_names = os.listdir(os.path.join(dataset_path, 'test2014'))
+        for image_name in tqdm(test_image_names, desc='Loading coco test captions'):
+            caption_df = caption_df.append({'image_name': image_name, 'caption_number': 1,
+                                            'caption_text': '', 'caption_text_ko': '', 'split': 2}, ignore_index=True)
+
+        print(caption_df)
+        return caption_df
     elif args.task_dataset == 'coco2017':
         train_coco = COCO(annotation_path['train'])
         valid_coco = COCO(annotation_path['valid'])

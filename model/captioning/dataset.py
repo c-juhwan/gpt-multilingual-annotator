@@ -17,6 +17,8 @@ class CaptioningDataset(Dataset):
             data_ = pickle.load(f)
 
         self.data_list = []
+        self.tokenizer = data_['tokenizer']
+
         """
         https://pytorch.org/vision/stable/models.html
         Every pre-trained models expect input images normalized in the same way,

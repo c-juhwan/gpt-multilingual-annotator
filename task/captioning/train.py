@@ -38,27 +38,37 @@ def training(args: argparse.Namespace) -> None:
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
     dataset_dict, dataloader_dict = {}, {}
-    if args.annotation_mode == 'original':
-        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_processed.pkl'), 'train')
-        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_processed.pkl'), 'valid')
-    elif args.annotation_mode == 'gpt_en':
+    if args.annotation_mode == 'original_en':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_ORIGINAL_EN.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid')
+    elif args.annotation_mode == 'aihub_ko':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_AIHUB_KO.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_en' and args.gpt_model_version == 'gpt-3.5-turbo':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT35_EN.pkl'), 'train')
-        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_processed.pkl'), 'valid') # Valid set is same as original
-    elif args.annotation_mode == 'gpt_ko':
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
+    elif args.annotation_mode == 'gpt_ko' and args.gpt_model_version == 'gpt-3.5-turbo':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT35_KO.pkl'), 'train')
-        dataset_dict['valid'] = None # Todo: valid_test_translation
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_en' and args.gpt_model_version == 'gpt-4':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_EN.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
+    elif args.annotation_mode == 'gpt_ko' and args.gpt_model_version == 'gpt-4':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_KO.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
     elif args.annotation_mode == 'backtrans_en':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_BT_EN.pkl'), 'train')
-        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_processed.pkl'), 'valid') # Valid set is same as original
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
     elif args.annotation_mode == 'backtrans_ko':
+        raise NotImplementedError("We don't have backtranslation for Korean.")
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_BT_KO.pkl'), 'train')
-        dataset_dict['valid'] = None # Todo: valid_test_translation
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
 
-    dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
+    dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.test_batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
-    dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.batch_size, num_workers=args.num_workers,
+    dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.test_batch_size, num_workers=args.num_workers,
                                           shuffle=False, pin_memory=True, drop_last=True, collate_fn=collate_fn)
-    tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base')
+    tokenizer = dataset_dict['train']['tokenizer']
     args.vocab_size = tokenizer.vocab_size
     args.pad_token_id = tokenizer.pad_token_id
     args.eos_token_id = tokenizer.eos_token_id
