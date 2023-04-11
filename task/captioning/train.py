@@ -1,6 +1,7 @@
 # Standard Library Modules
 import os
 import sys
+import math
 import shutil
 import logging
 import argparse
@@ -64,11 +65,11 @@ def training(args: argparse.Namespace) -> None:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_BT_KO.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
 
-    dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.test_batch_size, num_workers=args.num_workers,
+    dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
-    dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.test_batch_size, num_workers=args.num_workers,
+    dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=False, pin_memory=True, drop_last=True, collate_fn=collate_fn)
-    tokenizer = dataset_dict['train']['tokenizer']
+    tokenizer = dataset_dict['train'].tokenizer
     args.vocab_size = tokenizer.vocab_size
     args.pad_token_id = tokenizer.pad_token_id
     args.eos_token_id = tokenizer.eos_token_id
@@ -110,12 +111,41 @@ def training(args: argparse.Namespace) -> None:
             scheduler.load_state_dict(checkpoint['scheduler'])
         model = model.to(device)
         write_log(logger, f"Loaded checkpoint from {load_checkpoint_name}")
+
+        if args.use_wandb:
+            import wandb # Only import wandb when it is used
+            wandb.init(
+                project=args.proj_name,
+                config=args,
+                tags=[f"Dataset: {args.task_dataset}",
+                      f"Annotation: {args.annotation_mode}",
+                      f"Encoder: {args.encoder_type}",
+                      f"Decoder: {args.decoder_type}",
+                      f"Desc: {args.description}"],
+                resume=True,
+                id=checkpoint['wandb_id']
+            )
+            wandb.watch(model=model, criterion=seq_loss, log='all', log_freq=10)
         del checkpoint
 
     # Initialize tensorboard writer
     if args.use_tensorboard:
         writer = SummaryWriter(os.path.join(args.log_path, get_tb_exp_name(args)))
         writer.add_text('args', str(args))
+
+    # Initialize wandb
+    if args.use_wandb and args.job == 'train':
+        import wandb # Only import wandb when it is used
+        wandb.init(
+            project=args.proj_name,
+            config=args,
+            tags=[f"Dataset: {args.task_dataset}",
+                  f"Annotation: {args.annotation_mode}",
+                  f"Encoder: {args.encoder_type}",
+                  f"Decoder: {args.decoder_type}",
+                  f"Desc: {args.description}"]
+        )
+        wandb.watch(model=model, criterion=seq_loss, log='all', log_freq=10)
 
     # Train/Valid - Start training
     best_epoch_idx = 0
@@ -149,6 +179,22 @@ def training(args: argparse.Namespace) -> None:
             non_pad_mask = target_ids.ne(args.pad_token_id) # get non_pad target tokens for accuracy
             batch_acc_seq = seq_logits.argmax(dim=-1).eq(target_ids).masked_select(non_pad_mask).sum().item() / non_pad_mask.sum().item()
 
+            # Train - If loss is nan, stop training
+            if math.isnan(batch_loss_seq.item()):
+                write_log(logger, f"TRAIN - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['train'])}] - Loss: {batch_loss_seq.item():.4f}")
+                write_log(logger, f"TRAIN - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['train'])}] - Acc: {batch_acc_seq:.4f}")
+
+                write_log(logger, f"TRAIN - Input: {tokenizer.decode(input_ids[0])}")
+                write_log(logger, f"TRAIN - Target: {tokenizer.decode(target_ids[0])}")
+                write_log(logger, f"TRAIN - Output: {tokenizer.decode(seq_logits.argmax(dim=-1)[0])}")
+                write_log(logger, f"TRAIN - Input_IDs: {input_ids[0]}")
+                write_log(logger, f"TRAIN - Target_IDs: {target_ids[0]}")
+                write_log(logger, f"TRAIN - Output_IDs: {seq_logits.argmax(dim=-1)[0]}")
+                write_log(logger, f"TRAIN - Image_Path: {image_path[0]}")
+                write_log(logger, f"TRAIN - Image: {image[0]}")
+
+                raise ValueError('TRAIN - Loss is nan, stop training')
+
             # Train - Backward pass
             optimizer.zero_grad()
             batch_loss_seq.backward()
@@ -167,11 +213,20 @@ def training(args: argparse.Namespace) -> None:
                 write_log(logger, f"TRAIN - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['train'])}] - Acc: {batch_acc_seq:.4f}")
             if args.use_tensorboard:
                 writer.add_scalar('TRAIN/Learning_Rate', optimizer.param_groups[0]['lr'], epoch_idx * len(dataloader_dict['train']) + iter_idx)
+            if args.use_wandb:
+                wandb.log({'TRAIN/Learning_Rate': optimizer.param_groups[0]['lr'],
+                           'TRAIN/Batch_Acc': batch_acc_seq,
+                           'TRAIN/Batch_Loss': batch_loss_seq.item()},
+                           step=epoch_idx * len(dataloader_dict['train']) + iter_idx)
 
         # Train - End of epoch logging
         if args.use_tensorboard:
             writer.add_scalar('TRAIN/Loss', train_loss_seq / len(dataloader_dict['train']), epoch_idx)
             writer.add_scalar('TRAIN/Acc', train_acc_seq / len(dataloader_dict['train']), epoch_idx)
+        if args.use_wandb:
+            wandb.log({'TRAIN/Epoch_Loss': train_loss_seq / len(dataloader_dict['train']),
+                       'TRAIN/Epoch_Acc': train_acc_seq / len(dataloader_dict['train'])},
+                       step=epoch_idx)
 
         # Valid - Set model to eval mode
         model = model.eval()
@@ -199,6 +254,22 @@ def training(args: argparse.Namespace) -> None:
             non_pad_mask = target_ids.ne(args.pad_token_id) # get non_pad target tokens for accuracy
             batch_acc_seq = seq_logits.argmax(dim=-1).eq(target_ids).masked_select(non_pad_mask).sum().item() / non_pad_mask.sum().item()
 
+            # Valid - If loss is nan, stop training
+            if math.isnan(batch_loss_seq.item()):
+                write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Loss: {batch_loss_seq.item():.4f}")
+                write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Acc: {batch_acc_seq:.4f}")
+
+                write_log(logger, f"VALID - Input: {tokenizer.decode(input_ids[0])}")
+                write_log(logger, f"VALID - Target: {tokenizer.decode(target_ids[0])}")
+                write_log(logger, f"VALID - Output: {tokenizer.decode(seq_logits.argmax(dim=-1)[0])}")
+                write_log(logger, f"VALID - Input_IDs: {input_ids[0]}")
+                write_log(logger, f"VALID - Target_IDs: {target_ids[0]}")
+                write_log(logger, f"VALID - Output_IDs: {seq_logits.argmax(dim=-1)[0]}")
+                write_log(logger, f"VALID - Image_Path: {image_path[0]}")
+                write_log(logger, f"VALID - Image: {image[0]}")
+
+                raise ValueError('VALID - Loss is nan, stop training')
+
             # Valid - Logging
             valid_loss_seq += batch_loss_seq.item()
             valid_acc_seq += batch_acc_seq
@@ -206,6 +277,10 @@ def training(args: argparse.Namespace) -> None:
             if iter_idx % args.log_freq == 0 or iter_idx == len(dataloader_dict['valid']) - 1:
                 write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Loss: {batch_loss_seq.item():.4f}")
                 write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Acc: {batch_acc_seq:.4f}")
+            if args.use_wandb:
+                wandb.log({'VALID/Batch_Acc': batch_acc_seq,
+                           'VALID/Batch_Loss': batch_loss_seq.item()},
+                           step=epoch_idx * len(dataloader_dict['valid']) + iter_idx)
 
         # Valid - Call scheduler
         if args.scheduler == 'LambdaLR':
@@ -238,7 +313,8 @@ def training(args: argparse.Namespace) -> None:
                 'epoch': epoch_idx,
                 'model': model.state_dict(),
                 'optimizer': optimizer.state_dict(),
-                'scheduler': scheduler.state_dict() if scheduler is not None else None
+                'scheduler': scheduler.state_dict() if scheduler is not None else None,
+                'wandb_id': wandb.run.id if args.use_wandb else ''
             }, os.path.join(checkpoint_save_path, f'{args.encoder_type}_{args.decoder_type}_checkpoint_{args.annotation_mode}.pt'))
             write_log(logger, f"VALID - Best valid at epoch {best_epoch_idx} - {args.optimize_objective}: {abs(best_valid_objective_value):.4f}")
             write_log(logger, f"VALID - Saved checkpoint to {checkpoint_save_path}")
@@ -250,6 +326,10 @@ def training(args: argparse.Namespace) -> None:
         if args.use_tensorboard:
             writer.add_scalar('VALID/Loss', valid_loss_seq, epoch_idx)
             writer.add_scalar('VALID/Acc', valid_acc_seq, epoch_idx)
+        if args.use_wandb:
+            wandb.log({'VALID/Epoch_Loss': valid_loss_seq,
+                       'VALID/Epoch_Acc': valid_acc_seq},
+                       step=epoch_idx)
 
         # Valid - Early stopping
         if early_stopping_counter >= args.early_stopping_patience:
@@ -260,6 +340,7 @@ def training(args: argparse.Namespace) -> None:
     write_log(logger, f"Done! Best valid at epoch {best_epoch_idx} - {args.optimize_objective}: {abs(best_valid_objective_value):.4f}")
     if args.use_tensorboard:
         writer.add_text('VALID/Best', f"Best valid at epoch {best_epoch_idx} - {args.optimize_objective}: {abs(best_valid_objective_value):.4f}")
+        writer.close()
 
     # Final - Save best checkpoint as result model
     final_model_save_path = os.path.join(args.model_path, args.task, args.task_dataset)
@@ -267,4 +348,6 @@ def training(args: argparse.Namespace) -> None:
     shutil.copyfile(os.path.join(checkpoint_save_path, f'{args.encoder_type}_{args.decoder_type}_checkpoint_{args.annotation_mode}.pt'),
                     os.path.join(final_model_save_path, f'{args.encoder_type}_{args.decoder_type}_final_model_{args.annotation_mode}.pt')) # Copy best checkpoint as final model
     write_log(logger, f"FINAL - Saved final model to {final_model_save_path}")
-    writer.close()
+
+    if args.use_wandb:
+        wandb.finish()

@@ -270,7 +270,8 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         for i, row in tqdm(train_df.iterrows(), total=len(train_df), desc='Loading coco train captions'):
             row = row.to_dict()['annotations']
             image_name = row['file_path']
-            image_name = image_name.split('_')[-1]
+            #image_name = image_name.split('_')[-1]
+            image_name = os.path.basename(image_name)
             captions_en = row['captions'] # List
             captions_ko = row['caption_ko'] # List
             for j, caption_en, caption_ko in zip(range(len(captions_en)), captions_en, captions_ko):
@@ -281,7 +282,8 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         for i, row in tqdm(valid_df.iterrows(), total=len(valid_df), desc='Loading coco valid captions'):
             row = row.to_dict()['annotations']
             image_name = row['file_path']
-            image_name = image_name.split('_')[-1]
+            #image_name = image_name.split('_')[-1]
+            image_name = os.path.basename(image_name)
             captions_en = row['captions']
             captions_ko = row['caption_ko']
             for j, caption_en, caption_ko in zip(range(len(captions_en)), captions_en, captions_ko):

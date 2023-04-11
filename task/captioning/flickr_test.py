@@ -46,7 +46,7 @@ def testing(args: argparse.Namespace) -> None:
     dataset_test = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_EN.pkl'), 'test')
     dataloader_test = DataLoader(dataset_test, batch_size=args.test_batch_size, num_workers=args.num_workers,
                                  shuffle=False, pin_memory=True, drop_last=False, collate_fn=collate_fn)
-    tokenizer = dataset_test['tokenizer']
+    tokenizer = dataset_test.tokenizer
     args.vocab_size = tokenizer.vocab_size
     args.bos_token_id = tokenizer.bos_token_id
     args.pad_token_id = tokenizer.pad_token_id
@@ -69,6 +69,23 @@ def testing(args: argparse.Namespace) -> None:
     model.load_state_dict(checkpoint['model'])
     model = model.to(device)
     write_log(logger, f"Loaded model weights from {load_model_name}")
+
+    # Load Wandb
+    if args.use_wandb:
+        import wandb
+        wandb.init(
+                project=args.proj_name,
+                config=args,
+                tags=[f"Dataset: {args.task_dataset}",
+                      f"Annotation: {args.annotation_mode}",
+                      f"Encoder: {args.encoder_type}",
+                      f"Decoder: {args.decoder_type}",
+                      f"Desc: {args.description}"],
+                resume=True,
+                id=checkpoint['wandb_id']
+            )
+        #wandb.watch(model=model, criterion=seq_loss, log='all', log_freq=10) # Don't use wandb.watch() in testing
+
     del checkpoint
 
     # Test - Start evaluation
@@ -105,8 +122,10 @@ def testing(args: argparse.Namespace) -> None:
         batch_pred_sentences = tokenizer.batch_decode(batch_pred_ids, skip_special_tokens=False) # list of str
         for each_pred_sentence, each_reference in zip(batch_pred_sentences, caption):
             # If '</s>' is in the string, remove it and everything after it
-            if '</s>' in each_pred_sentence:
+            if '</s>' in each_pred_sentence: # facebook/bart-base
                 each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('</s>')]
+            elif '[EOS]' in each_pred_sentence: # cosmoquester/bart-ko-base
+                each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('[EOS]')]
 
             # Convert ' .' to '.' in reference - We need this trust me
             each_reference = each_reference.replace(' .', '.')
@@ -158,6 +177,16 @@ def testing(args: argparse.Namespace) -> None:
         writer.add_scalar('TEST/Meteor', metrics_dict['METEOR'], global_step=0)
 
         writer.close()
+    if args.use_wandb:
+        wandb.log({'TEST/Acc': test_acc_seq,
+                   'TEST/Bleu_1': metrics_dict['Bleu_1'],
+                   'TEST/Bleu_2': metrics_dict['Bleu_2'],
+                   'TEST/Bleu_3': metrics_dict['Bleu_3'],
+                   'TEST/Bleu_4': metrics_dict['Bleu_4'],
+                   'TEST/Bleu_avg': (metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4,
+                   'TEST/Rouge_L': metrics_dict['ROUGE_L'],
+                   'TEST/Meteor': metrics_dict['METEOR']})
+        wandb.finish()
 
     # Save result_df to csv file
     save_path = os.path.join(args.result_path, args.task, args.task_dataset)

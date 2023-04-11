@@ -101,12 +101,14 @@ def get_tb_exp_name(args: argparse.Namespace):
         exp_name += "ENC=%s - " % args.encoder_type.upper()
         exp_name += "DEC=%s - " % args.decoder_type.upper()
         exp_name += "DATA=%s - " % args.task_dataset.upper()
+        exp_name += "ANN=%s - " % args.annotation_mode.upper()
         exp_name += "DESC=%s - " % args.description
     elif args.job == 'testing':
         exp_name += 'TEST - '
         exp_name += "ENC=%s - " % args.encoder_type.upper()
         exp_name += "DEC=%s - " % args.decoder_type.upper()
         exp_name += "DATA=%s - " % args.task_dataset.upper()
+        exp_name += "ANN=%s - " % args.annotation_mode.upper()
         exp_name += "DESC=%s - " % args.description
     exp_name += "TS=%s" % ts
 

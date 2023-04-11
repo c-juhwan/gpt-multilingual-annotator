@@ -30,10 +30,9 @@ def main(args: argparse.Namespace) -> None:
                 raise ValueError(f'Invalid job: {args.job}')
         elif args.task == 'annotating':
             if args.job == 'gpt_annotating':
-                #from task.annotating.gpt_annotating import gpt_annotating as job
                 from task.annotating.gpt_annotating_multiprocess import gpt_annotating_multiprocess as job
             elif args.job == 'backtrans_annotating':
-                from task.annotating.backtrans_annotating import backtrans_annotating as job
+                from task.annotating.backtrans_annotating_easynmt import backtrans_annotating as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         else:

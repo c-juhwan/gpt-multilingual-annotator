@@ -128,6 +128,8 @@ class ArgParser():
                                  help='Random seed; Default is 2023')
         self.parser.add_argument('--use_tensorboard', type=parse_bool, default=True,
                                  help='Using tensorboard; Default is True')
+        self.parser.add_argument('--use_wandb', type=parse_bool, default=True,
+                                 help='Using wandb; Default is True')
         self.parser.add_argument('--log_freq', default=500, type=int,
                                  help='Logging frequency; Default is 500')
 

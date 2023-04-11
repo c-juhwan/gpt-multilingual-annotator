@@ -12,8 +12,7 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
-from nlgeval import NLGEval
-from googletrans import Translator
+from easynmt import EasyNMT
 # Pytorch Modules
 import torch
 import torch.nn as nn
@@ -58,7 +57,7 @@ def testing(args: argparse.Namespace) -> None:
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
     dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.test_batch_size, num_workers=args.num_workers,
                                           shuffle=False, pin_memory=True, drop_last=True, collate_fn=collate_fn)
-    tokenizer = dataset_dict['valid']['tokenizer'] # Depends on annotation_mode -> language
+    tokenizer = dataset_dict['valid'].tokenizer # Depends on annotation_mode -> language
     args.vocab_size = tokenizer.vocab_size
     args.pad_token_id = tokenizer.pad_token_id
     args.eos_token_id = tokenizer.eos_token_id
@@ -91,6 +90,8 @@ def testing(args: argparse.Namespace) -> None:
         image_path = data_dicts['image_path']
         # Get image id from image path
         image_id = [os.path.basename(image_path).split('.')[0] for image_path in image_path]
+        if args.task_dataset == 'coco2014':
+            image_id = [image_id.split('_')[-1] for image_id in image_id] # Remove leading 'COCO_val2014_' from image_id
         image_id = [int(image_id) for image_id in image_id] # Remove leading zeros
 
         # Load image from image_path and make batch
@@ -118,6 +119,8 @@ def testing(args: argparse.Namespace) -> None:
         image_path = data_dicts['image_path']
         # Get image id from image path
         image_id = [os.path.basename(image_path).split('.')[0] for image_path in image_path]
+        if args.task_dataset == 'coco2014':
+            image_id = [image_id.split('_')[-1] for image_id in image_id] # Remove leading 'COCO_test2014_' from image_id
         image_id = [int(image_id) for image_id in image_id] # Remove leading zeros
 
         # Load image from image_path and make batch
@@ -136,6 +139,8 @@ def testing(args: argparse.Namespace) -> None:
             # If '</s>' is in the string, remove it and everything after it
             if '</s>' in each_pred_sentence:
                 each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('</s>')]
+            elif '[EOS]' in each_pred_sentence: # cosmoquester/bart-ko-base
+                each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('[EOS]')]
 
             test_df = test_df.append({'image_id': each_id,
                                       'caption': each_pred_sentence}, ignore_index=True)
@@ -155,54 +160,19 @@ def testing(args: argparse.Namespace) -> None:
                                      f'captions_test2014_{args.annotation_mode}_results_ko.json'), orient='records')
         translate_to_eng(args, valid_df, test_df)
 
-NUM_PROCESS = 4
-tqdm_bar = tqdm(total=100, desc='Progress', position=0)
 def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
+    nmt_model = EasyNMT('mbart50_m2m_100')
 
+    # Translate valid_df and test_df to English
+    valid_df_translated = valid_df.copy()
+    for idx, row in tqdm(valid_df.iterrows(), total=len(valid_df), desc='Translating valid_df to English'):
+        valid_df_translated.loc[idx, 'caption'] = nmt_model.translate(row['caption'], target_lang='en')
+    test_df_translated = test_df.copy()
+    for idx, row in tqdm(test_df.iterrows(), total=len(test_df), desc='Translating test_df to English'):
+        test_df_translated.loc[idx, 'caption'] = nmt_model.translate(row['caption'], target_lang='en')
 
-    # Define Translators
-    random_port = [
-        (random.randint(1000, 9999), random.randint(1000, 9999)) for _ in range(NUM_PROCESS)
-    ]
-    translators = [
-        Translator(url=['translate.google.com', 'translate.google.co.kr'],
-                   proxies={'http': f'127.0.0.1:{port[0]}', 'http://host.name': f'127.0.0.1:{port[1]}'}) for port in random_port
-    ]
-
-    # Split valid_df and test_df into NUM_PROCESS parts
-    valid_df_subset = np.array_split(valid_df, NUM_PROCESS)
-    test_df_subset = np.array_split(test_df, NUM_PROCESS)
-
-    # Reset index of valid_df_subset and test_df_subset
-    for i in range(NUM_PROCESS):
-        valid_df_subset[i].reset_index(drop=True, inplace=True)
-        test_df_subset[i].reset_index(drop=True, inplace=True)
-
-    # Call multiprocessing
-    test_starmap_items = [
-        (test_df_subset[i], translators[i]) for i in range(NUM_PROCESS)
-    ]
-    valid_starmap_items = [
-        (valid_df_subset[i], translators[i]) for i in range(NUM_PROCESS)
-    ]
-
-    print(f"Start multiprocessing with {NUM_PROCESS} processes")
-
-    with Pool(NUM_PROCESS) as p:
-        test_result = p.starmap(try_call_trans, test_starmap_items)
-    with Pool(NUM_PROCESS) as p:
-        valid_result = p.starmap(try_call_trans, valid_starmap_items)
-
-    # Concatenate valid_result and test_result
-    valid_df_translated = []
-    test_df_translated = []
-    for i in range(NUM_PROCESS):
-        valid_df_translated += valid_result[i]
-        test_df_translated += test_result[i]
-
-    # Convert to DataFrame
-    valid_df_translated = pd.DataFrame(valid_df_translated)
-    test_df_translated = pd.DataFrame(test_df_translated)
+    assert len(valid_df_translated) == len(valid_df)
+    assert len(test_df_translated) == len(test_df)
 
     # Save valid_df_translated and test_df_translated to json file for coco evaluation
     check_path(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode))
@@ -210,30 +180,3 @@ def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: 
                                              f'captions_val2014_{args.annotation_mode}_results.json'), orient='records')
     test_df_translated.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                             f'captions_test2014_{args.annotation_mode}_results.json'), orient='records')
-
-    tqdm_bar.close()
-
-
-def try_call_trans(df_subset: pd.DataFrame, translator) -> list:
-    try:
-        return call_trans(df_subset, translator)
-    except KeyboardInterrupt as k:
-        raise k
-    except Exception as e:
-        logging.exception(f"Error in try_call_trans: {e}")
-
-def call_trans(df_subset: pd.DataFrame, translator) -> list:
-    subset_list = []
-
-    for idx in tqdm(range(len(df_subset)), desc='Translating to English'):
-        # Get image id and caption
-        image_id = df_subset.loc[idx, 'image_id']
-        caption = df_subset.loc[idx, 'caption']
-
-        # Translate to English
-        translated_caption = translator.translate(caption, dest='en').text
-
-        # Append to subset_list
-        subset_list.append({'image_id': image_id, 'caption': translated_caption})
-
-    tqdm_bar.update(1)
