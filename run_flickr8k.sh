@@ -1,6 +1,8 @@
 DEVICE=cuda:3
 DATA=flickr8k
 
+clear
+
 #python main.py --job=preprocessing --task_dataset=${DATA}
 #python main.py --task=annotating --job=backtrans_annotating --task_dataset=${DATA}
 #python main.py --task=annotating --job=gpt_annotating --task_dataset=${DATA}

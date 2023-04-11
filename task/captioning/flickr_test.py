@@ -21,7 +21,7 @@ from transformers import AutoTokenizer
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from model.captioning.model import CaptioningModel
 from model.captioning.dataset import CaptioningDataset, collate_fn
-from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_torch_device, check_path
+from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path
 
 def testing(args: argparse.Namespace) -> None:
     device = get_torch_device(args.device)
@@ -75,6 +75,7 @@ def testing(args: argparse.Namespace) -> None:
         import wandb
         wandb.init(
                 project=args.proj_name,
+                name=get_wandb_exp_name(args),
                 config=args,
                 tags=[f"Dataset: {args.task_dataset}",
                       f"Annotation: {args.annotation_mode}",

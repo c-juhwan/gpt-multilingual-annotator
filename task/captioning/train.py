@@ -21,7 +21,7 @@ from model.captioning.model import CaptioningModel
 from model.captioning.dataset import CaptioningDataset, collate_fn
 from model.optimizer.optimizer import get_optimizer
 from model.optimizer.scheduler import get_scheduler
-from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_torch_device, check_path
+from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path
 
 def training(args: argparse.Namespace) -> None:
     device = get_torch_device(args.device)
@@ -114,8 +114,10 @@ def training(args: argparse.Namespace) -> None:
 
         if args.use_wandb:
             import wandb # Only import wandb when it is used
+            from wandb import AlertLevel
             wandb.init(
                 project=args.proj_name,
+                name=get_wandb_exp_name(args),
                 config=args,
                 tags=[f"Dataset: {args.task_dataset}",
                       f"Annotation: {args.annotation_mode}",
@@ -125,7 +127,7 @@ def training(args: argparse.Namespace) -> None:
                 resume=True,
                 id=checkpoint['wandb_id']
             )
-            wandb.watch(model=model, criterion=seq_loss, log='all', log_freq=10)
+            wandb.watch(models=model, criterion=seq_loss, log='all', log_freq=10)
         del checkpoint
 
     # Initialize tensorboard writer
@@ -134,10 +136,12 @@ def training(args: argparse.Namespace) -> None:
         writer.add_text('args', str(args))
 
     # Initialize wandb
-    if args.use_wandb and args.job == 'train':
+    if args.use_wandb and args.job == 'training':
         import wandb # Only import wandb when it is used
+        from wandb import AlertLevel
         wandb.init(
             project=args.proj_name,
+            name=get_wandb_exp_name(args),
             config=args,
             tags=[f"Dataset: {args.task_dataset}",
                   f"Annotation: {args.annotation_mode}",
@@ -145,7 +149,7 @@ def training(args: argparse.Namespace) -> None:
                   f"Decoder: {args.decoder_type}",
                   f"Desc: {args.description}"]
         )
-        wandb.watch(model=model, criterion=seq_loss, log='all', log_freq=10)
+        wandb.watch(models=model, criterion=seq_loss, log='all', log_freq=10)
 
     # Train/Valid - Start training
     best_epoch_idx = 0
@@ -268,7 +272,15 @@ def training(args: argparse.Namespace) -> None:
                 write_log(logger, f"VALID - Image_Path: {image_path[0]}")
                 write_log(logger, f"VALID - Image: {image[0]}")
 
-                raise ValueError('VALID - Loss is nan, stop training')
+                if args.use_wandb:
+                    wandb.alert(
+                        title='NaN Loss',
+                        text='VALID - Loss is NaN, stop training',
+                        level=AlertLevel.ERROR,
+                        wait_duration=300
+                    )
+                raise ValueError('VALID - Loss is NaN, stop training')
+
 
             # Valid - Logging
             valid_loss_seq += batch_loss_seq.item()
@@ -330,6 +342,12 @@ def training(args: argparse.Namespace) -> None:
             wandb.log({'VALID/Epoch_Loss': valid_loss_seq,
                        'VALID/Epoch_Acc': valid_acc_seq},
                        step=epoch_idx)
+            wandb.alert(
+                title='Epoch End',
+                text=f"VALID - Epoch {epoch_idx} - Loss: {valid_loss_seq:.4f} - Acc: {valid_acc_seq:.4f}",
+                level=AlertLevel.INFO,
+                wait_duration=300
+            )
 
         # Valid - Early stopping
         if early_stopping_counter >= args.early_stopping_patience:

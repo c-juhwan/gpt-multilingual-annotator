@@ -114,6 +114,17 @@ def get_tb_exp_name(args: argparse.Namespace):
 
     return exp_name
 
+def get_wandb_exp_name(args: argparse.Namespace):
+    """
+    Get the experiment name for weight and biases experiment.
+    """
+
+    exp_name = str()
+    exp_name += "%s: " % args.task_dataset.upper()
+    exp_name += "%s" % args.annotation_mode.upper()
+
+    return exp_name
+
 def get_huggingface_model_name(model_type: str) -> str:
     name = model_type.lower()
 
