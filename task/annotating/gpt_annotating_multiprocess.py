@@ -48,7 +48,7 @@ Paraphrase 4: The hitters at the plate wait for themselves to take their swings 
 
 en_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base')
 ko_tokenizer = AutoTokenizer.from_pretrained('cosmoquester/bart-ko-base')
-NUM_PROCESS = 4
+NUM_PROCESS = 8
 tqdm_bar = tqdm(total=100, desc='Progress', position=0)
 
 def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
@@ -85,6 +85,7 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
     # Remain only 1 caption per each image_name
     train_df = train_df.groupby('image_name').first().reset_index()
     train_df.reset_index(drop=True, inplace=True)
+    print(train_df)
 
     # Call multiprocessing using starmap
     # Divide train_df into NUM_PROCESS parts
@@ -112,13 +113,27 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         data_dict_en['captions'] += result[0]['captions']
         data_dict_en['all_captions'] += result[0]['all_captions']
         data_dict_en['caption_numbers'] += result[0]['caption_numbers']
-        data_dict_en['input_ids'] += result[0]['input_ids']
+        #data_dict_en['input_ids'] += result[0]['input_ids'] # This will be done after concatenating all data_dict_en
 
         data_dict_ko['image_names'] += result[1]['image_names'] # result[1] is data_dict_ko
         data_dict_ko['captions'] += result[1]['captions']
         data_dict_ko['all_captions'] += result[1]['all_captions']
         data_dict_ko['caption_numbers'] += result[1]['caption_numbers']
-        data_dict_ko['input_ids'] += result[1]['input_ids']
+        #data_dict_ko['input_ids'] += result[1]['input_ids'] # This will be done after concatenating all data_dict_ko
+
+    for idx in tqdm(range(len(data_dict_en['captions'])), desc='Tokenizing English captions'):
+        cap = data_dict_en['captions'][idx]
+        tokenized = en_tokenizer(cap, padding='max_length', truncation=True,
+                                 max_length=args.max_seq_len, return_tensors='pt')
+        data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
+    for idx in tqdm(range(len(data_dict_ko['captions'])), desc='Tokenizing Korean captions'):
+        cap = data_dict_ko['captions'][idx]
+        tokenized = ko_tokenizer(cap, padding='max_length', truncation=True,
+                                 max_length=args.max_seq_len, return_tensors='pt')
+        data_dict_ko['input_ids'].append(tokenized['input_ids'].squeeze())
+
+    assert len(data_dict_en['image_names']) == len(data_dict_en['captions']) == len(data_dict_en['all_captions']) == len(data_dict_en['caption_numbers']) == len(data_dict_en['input_ids'])
+    assert len(data_dict_ko['image_names']) == len(data_dict_ko['captions']) == len(data_dict_ko['all_captions']) == len(data_dict_ko['caption_numbers']) == len(data_dict_ko['input_ids'])
 
     # Save data_dict_en & data_dict_ko as pickle file
     if args.gpt_model_version == 'gpt-3.5-turbo':
@@ -226,23 +241,23 @@ def call_gpt(args: argparse.Namespace, train_df_subset: pd.DataFrame) -> dict:
         # Tokenize and append to data_dict_en & data_dict_ko
         for i in range(len(result_sentences)):
             # Tokenize
-            en_tokenized = en_tokenizer(result_sentences[i]['en'], padding='max_length', truncation=True,
-                                        max_length=args.max_seq_len, return_tensors='pt')
-            ko_tokenized = ko_tokenizer(result_sentences[i]['ko'], padding='max_length', truncation=True,
-                                        max_length=args.max_seq_len, return_tensors='pt')
+            #en_tokenized = en_tokenizer(result_sentences[i]['en'], padding='max_length', truncation=True,
+            #                            max_length=args.max_seq_len, return_tensors='pt')
+            #ko_tokenized = ko_tokenizer(result_sentences[i]['ko'], padding='max_length', truncation=True,
+            #                            max_length=args.max_seq_len, return_tensors='pt')
 
             # Append to data_dict_en
             subset_dict_en['image_names'].append(image_name)
             subset_dict_en['captions'].append(result_sentences[i]['en'])
             subset_dict_en['caption_numbers'].append(i+1)
-            subset_dict_en['input_ids'].append(en_tokenized['input_ids'].squeeze())
+            #subset_dict_en['input_ids'].append(en_tokenized['input_ids'].squeeze()) # This will be done after multiprocessing
             subset_dict_en['all_captions'].append([result_sentences[i]['en'] for i in range(len(result_sentences))])
 
             # Append to data_dict_ko
             subset_dict_ko['image_names'].append(image_name)
             subset_dict_ko['captions'].append(result_sentences[i]['ko'])
             subset_dict_ko['caption_numbers'].append(i+1)
-            subset_dict_ko['input_ids'].append(ko_tokenized['input_ids'].squeeze())
+            #subset_dict_ko['input_ids'].append(ko_tokenized['input_ids'].squeeze()) # This will be done after multiprocessing
             subset_dict_ko['all_captions'].append([result_sentences[i]['ko'] for i in range(len(result_sentences))])
 
         tqdm_bar.update(1)
