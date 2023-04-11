@@ -10,6 +10,8 @@ import pandas as pd
 from tqdm.auto import tqdm
 from PIL import Image
 from pycocotools.coco import COCO
+# Pytorch Modules
+import torch
 # Huggingface Modules
 from transformers import AutoTokenizer
 # Custom Modules
@@ -36,7 +38,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'train': {
             'image_names': [],
             'captions': [],
-            'all_captions': [],
+            #'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': en_tokenizer,
@@ -44,7 +46,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'valid': {
             'image_names': [],
             'captions': [],
-            'all_captions': [],
+            #'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': en_tokenizer,
@@ -52,7 +54,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'test': {
             'image_names': [],
             'captions': [],
-            'all_captions': [],
+            #'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': en_tokenizer,
@@ -62,7 +64,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'train': {
             'image_names': [],
             'captions': [],
-            'all_captions': [],
+            #'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': ko_tokenizer,
@@ -70,7 +72,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'valid': {
             'image_names': [],
             'captions': [],
-            'all_captions': [],
+            #'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': ko_tokenizer,
@@ -78,7 +80,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'test': {
             'image_names': [],
             'captions': [],
-            'all_captions': [],
+            #'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': ko_tokenizer,
@@ -93,8 +95,8 @@ def preprocessing(args: argparse.Namespace) -> None:
         # Get the data from the dataframe
         image_name = caption_df['image_name'][idx]
         caption = caption_df['caption_text'][idx]
-        image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
-        all_caption = image_all_caption_df['caption_text'].tolist()
+        #image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
+        #all_caption = image_all_caption_df['caption_text'].tolist()
         caption_number = caption_df['caption_number'][idx]
         split_ = caption_df['split'][idx]
         split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
@@ -107,7 +109,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         data_dict[split]['image_names'].append(image_name)
         data_dict[split]['caption_numbers'].append(caption_number)
         data_dict[split]['captions'].append(caption)
-        data_dict[split]['all_captions'].append(all_caption) # list of string
+        #data_dict[split]['all_captions'].append(all_caption) # list of string
         data_dict[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
 
     # Save the data_dict for each split as pickle file
@@ -120,22 +122,32 @@ def preprocessing(args: argparse.Namespace) -> None:
             # Get the data from the dataframe
             image_name = caption_df['image_name'][idx]
             caption = caption_df['caption_text_ko'][idx]
-            image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
-            all_caption = image_all_caption_df['caption_text_ko'].tolist()
+            #image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
+            #all_caption = image_all_caption_df['caption_text_ko'].tolist()
             caption_number = caption_df['caption_number'][idx]
             split_ = caption_df['split'][idx]
             split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
 
             # Tokenize the caption
             tokenized_caption = ko_tokenizer(caption, padding='max_length', truncation=True,
-                                             max_length=args.max_seq_len, return_tensors='pt')
+                                             max_length=args.max_seq_len-1, return_tensors='pt') # -1 for [BOS], [EOS] will be added later
+            tokenized_caption_ = []
+            # Add [BOS] and [EOS] tokens
+            for each_input_id in tokenized_caption['input_ids']:
+                each_input_id = torch.cat([torch.tensor([ko_tokenizer.bos_token_id]), each_input_id])
+                # Find the first [PAD] token and replace it with [EOS] token
+                first_pad_idx = torch.where(each_input_id == ko_tokenizer.pad_token_id)[0][0]
+                each_input_id[first_pad_idx] = ko_tokenizer.eos_token_id
+                tokenized_caption_.append(each_input_id)
+            tokenized_caption_ = torch.stack(tokenized_caption_) # Convert list to tensor
 
             # Append the data to the data_dict
             data_dict_ko[split]['image_names'].append(image_name)
             data_dict_ko[split]['caption_numbers'].append(caption_number)
             data_dict_ko[split]['captions'].append(caption)
-            data_dict_ko[split]['all_captions'].append(all_caption) # list of string
-            data_dict_ko[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
+            #data_dict_ko[split]['all_captions'].append(all_caption) # list of string
+            data_dict_ko[split]['input_ids'].append(tokenized_caption_.squeeze())
+
 
         # Save the data_dict for each split as pickle file
         for split in data_dict_ko.keys():

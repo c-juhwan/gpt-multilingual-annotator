@@ -15,6 +15,8 @@ openai.api_key = os.environ['OPENAI_API_KEY']
 import pandas as pd
 import numpy as np
 from tqdm.auto import tqdm
+# Pytorch Modules
+import torch
 # Huggingface Modules
 from transformers import AutoTokenizer
 # Custom Modules
@@ -128,9 +130,17 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
     for idx in tqdm(range(len(data_dict_ko['captions'])), desc='Tokenizing Korean captions'):
         cap = data_dict_ko['captions'][idx]
-        tokenized = ko_tokenizer(cap, padding='max_length', truncation=True,
-                                 max_length=args.max_seq_len, return_tensors='pt')
-        data_dict_ko['input_ids'].append(tokenized['input_ids'].squeeze())
+
+        ko_tokenized = ko_tokenizer(cap, padding='max_length', truncation=True,
+                                    max_length=args.max_seq_len-1, return_tensors='pt') # -1 for [BOS]
+
+        ko_tokenized_ = torch.cat([torch.tensor([ko_tokenizer.bos_token_id]), # ko_tokenizer requires manual [BOS] and [EOS]
+                                    ko_tokenized['input_ids'].squeeze()], dim=0)
+        # Change the first padding token to [EOS]
+        first_pad_idx = torch.where(ko_tokenized_ == ko_tokenizer.pad_token_id)[0][0]
+        ko_tokenized_[first_pad_idx] = ko_tokenizer.eos_token_id
+
+        data_dict_ko['input_ids'].append(ko_tokenized_.squeeze())
 
     assert len(data_dict_en['image_names']) == len(data_dict_en['captions']) == len(data_dict_en['all_captions']) == len(data_dict_en['caption_numbers']) == len(data_dict_en['input_ids'])
     assert len(data_dict_ko['image_names']) == len(data_dict_ko['captions']) == len(data_dict_ko['all_captions']) == len(data_dict_ko['caption_numbers']) == len(data_dict_ko['input_ids'])

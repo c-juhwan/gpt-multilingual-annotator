@@ -11,6 +11,8 @@ import openai
 openai.api_key = os.environ['OPENAI_API_KEY']
 import pandas as pd
 from tqdm.auto import tqdm
+# Pytorch Modules
+import torch
 # Huggingface Modules
 from transformers import AutoTokenizer
 # Custom Modules
@@ -58,7 +60,7 @@ def gpt_annotating(args: argparse.Namespace) -> None:
     data_dict_en = {
         'image_names': [],
         'captions': [],
-        'all_captions': [],
+        #'all_captions': [],
         'caption_numbers': [],
         'input_ids': [],
         'tokenizer': en_tokenizer,
@@ -66,7 +68,7 @@ def gpt_annotating(args: argparse.Namespace) -> None:
     data_dict_ko = {
         'image_names': [],
         'captions': [],
-        'all_captions': [],
+        #'all_captions': [],
         'caption_numbers': [],
         'input_ids': [],
         'tokenizer': ko_tokenizer,
@@ -147,21 +149,26 @@ def gpt_annotating(args: argparse.Namespace) -> None:
             en_tokenized = en_tokenizer(result_sentences[i]['en'], padding='max_length', truncation=True,
                                         max_length=args.max_seq_len, return_tensors='pt')
             ko_tokenized = ko_tokenizer(result_sentences[i]['ko'], padding='max_length', truncation=True,
-                                        max_length=args.max_seq_len, return_tensors='pt')
+                                        max_length=args.max_seq_len-1, return_tensors='pt') # -1 for [BOS]
+
+            ko_tokenized_ = torch.cat([torch.tensor([ko_tokenizer.bos_token_id]),
+                                   ko_tokenized['input_ids'].squeeze()], dim=0) # Now length = max_seq_len
+            first_pad_idx = torch.where(ko_tokenized_ == ko_tokenizer.pad_token_id)[0][0]
+            ko_tokenized_[first_pad_idx] = ko_tokenizer.eos_token_id
 
             # Append to data_dict_en
             data_dict_en['image_names'].append(image_name)
             data_dict_en['captions'].append(result_sentences[i]['en'])
             data_dict_en['caption_numbers'].append(i+1)
             data_dict_en['input_ids'].append(en_tokenized['input_ids'].squeeze())
-            data_dict_en['all_captions'].append([result_sentences[i]['en'] for i in range(len(result_sentences))])
 
             # Append to data_dict_ko
             data_dict_ko['image_names'].append(image_name)
             data_dict_ko['captions'].append(result_sentences[i]['ko'])
             data_dict_ko['caption_numbers'].append(i+1)
-            data_dict_ko['input_ids'].append(ko_tokenized['input_ids'].squeeze())
-            data_dict_ko['all_captions'].append([result_sentences[i]['ko'] for i in range(len(result_sentences))])
+            data_dict_ko['input_ids'].append(ko_tokenized_)
+        #data_dict_en['all_captions'].append([result_sentences[i]['en'] for i in range(len(result_sentences))]) # Append all captions
+        #data_dict_ko['all_captions'].append([result_sentences[i]['ko'] for i in range(len(result_sentences))])
         tqdm.write(str([result_sentences[i]['en'] for i in range(len(result_sentences))]))
 
     # Save data_dict_en & data_dict_ko as pickle file
