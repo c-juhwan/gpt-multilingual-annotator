@@ -22,23 +22,23 @@ from utils.utils import check_path
 from task.captioning.preprocessing import load_caption_data
 
 en_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base')
-NUM_PROCESS = 4
+NUM_PROCESS = 8
 tqdm_bar = tqdm(total=100, desc='Progress', position=0)
 tmp_lang = ['fr', 'de', 'es', 'ja']
+
+# Define BackTranslators
+random_port = [
+    (random.randint(1000, 9999), random.randint(1000, 9999)) for _ in range(NUM_PROCESS)
+]
+back_translators = [
+    # Has to be different port for each process because of multiprocessing
+    BackTranslation(url=['translate.google.com', 'translate.google.co.kr'],
+                    proxies={'http': f'127.0.0.1:{port[0]}', 'http://host.name': f'127.0.0.1:{port[1]}'}) for port in random_port
+]
 
 def backtrans_annotating_multiprocess(args: argparse.Namespace) -> None:
     # Load caption data
     caption_df = load_caption_data(args)
-
-    # Define BackTranslators
-    random_port = [
-        (random.randint(1000, 9999), random.randint(1000, 9999)) for _ in range(NUM_PROCESS)
-    ]
-    back_translators = [
-        # Has to be different port for each process because of multiprocessing
-        BackTranslation(url=['translate.google.com', 'translate.google.co.kr'],
-                        proxies={'http': f'127.0.0.1:{port[0]}', 'http://host.name': f'127.0.0.1:{port[1]}'}) for port in random_port
-    ]
 
     # Define data_dict
     data_dict_en = {
@@ -71,14 +71,13 @@ def backtrans_annotating_multiprocess(args: argparse.Namespace) -> None:
 
     # Call multiprocessing
     starmap_items = [
-        (args, train_df_subset[i]) for i in range(NUM_PROCESS)
+        (args, train_df_subset[i], i) for i in range(NUM_PROCESS)
     ]
 
     print(f"Start multiprocessing with {NUM_PROCESS} processes")
 
     with Pool(NUM_PROCESS) as p:
        results = p.starmap(try_call_bt, starmap_items)
-
 
     print("Done with multiprocessing")
 
@@ -87,7 +86,16 @@ def backtrans_annotating_multiprocess(args: argparse.Namespace) -> None:
         data_dict_en['captions'] += result[0]['captions']
         data_dict_en['all_captions'] += result[0]['all_captions']
         data_dict_en['caption_numbers'] += result[0]['caption_numbers']
-        data_dict_en['input_ids'] += result[0]['input_ids']
+        #data_dict_en['input_ids'] += result[0]['input_ids'] # This will be done after concatenating all data_dict_en
+
+    # Tokenizing captions
+    for idx in range(len(data_dict_en['captions'])):
+        cap = data_dict_en['captions'][idx]
+        tokenized = en_tokenizer(cap, padding='max_length', truncation=True,
+                                 max_length=args.max_seq_len, return_tensors='pt')
+        data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
+
+    assert len(data_dict_en['image_names']) == len(data_dict_en['captions']) == len(data_dict_en['all_captions']) == len(data_dict_en['caption_numbers']) == len(data_dict_en['input_ids'])
 
     save_name = 'train_BT_EN.pkl'
     with open(os.path.join(preprocessed_path, save_name), 'wb') as f:
@@ -96,15 +104,15 @@ def backtrans_annotating_multiprocess(args: argparse.Namespace) -> None:
 
     tqdm_bar.close()
 
-def try_call_bt(args: argparse.Namespace, train_df_subset: pd.DataFrame, BackTranslator) -> dict:
+def try_call_bt(args: argparse.Namespace, train_df_subset: pd.DataFrame, process_idx: int) -> dict:
     try:
-        return call_bt(args, train_df_subset, BackTranslator)
+        return call_bt(args, train_df_subset, process_idx)
     except KeyboardInterrupt as k:
         raise k
     except Exception as e:
         logging.exception(f"Error in try_call_bt: {e}")
 
-def call_bt(args: argparse.Namespace, train_df_subset: pd.DataFrame, BackTranslator) -> dict:
+def call_bt(args: argparse.Namespace, train_df_subset: pd.DataFrame, process_idx: int) -> dict:
     subset_dict_en = {
         'image_names': [],
         'captions': [],
@@ -114,7 +122,7 @@ def call_bt(args: argparse.Namespace, train_df_subset: pd.DataFrame, BackTransla
         'tokenizer': en_tokenizer,
     }
 
-    for idx in tqdm(range(len(train_df_subset)), desc='Annotating with BackTranslation...'):
+    for idx in range(len(train_df_subset)):
         # Get image_name, caption
         image_name = train_df_subset['image_name'][idx]
         gold_caption = train_df_subset['caption_text'][idx]
@@ -123,36 +131,37 @@ def call_bt(args: argparse.Namespace, train_df_subset: pd.DataFrame, BackTransla
         error_counter = 0
         while True:
             try:
+                time.sleep(1)
                 # Get backtranslated captions
                 backtrans_captions = [
-                    BackTranslator.translate(gold_caption, src='en', tmp=lang).result_text for lang in tmp_lang
+                    back_translators[process_idx].translate(gold_caption, src='en', tmp=lang).result_text for lang in tmp_lang
                 ] # Save 4 backtranslated captions for each gold caption
 
                 result_sentences = [gold_caption] + backtrans_captions
             except KeyboardInterrupt as k:
                 raise k # if KeyboardInterrupt, raise it to stop the program
             except Exception as e:
-                #print(f"Error {error_counter}: {Exception}")
+                print(f"Error {error_counter}: {Exception.__name__} in call_bt: {e}")
                 error_counter += 1
                 if error_counter > 3:
                     #print("Error: Too many errors. Skip this image.")
                     break
                 else:
-                    time.sleep(0.5)
+                    time.sleep(1)
                     continue
             break
 
         # Tokenize and append to data_dict
         for i in range(len(result_sentences)):
             # Tokenize
-            tokenized = en_tokenizer(result_sentences[i], padding='max_length', truncation=True,
-                                     max_length=args.max_seq_len, return_tensors='pt')
+            #tokenized = en_tokenizer(result_sentences[i], padding='max_length', truncation=True,
+            #                         max_length=args.max_seq_len, return_tensors='pt')
 
             # Append to data_dict
             subset_dict_en['image_names'].append(image_name)
             subset_dict_en['captions'].append(result_sentences[i])
             subset_dict_en['caption_numbers'].append(i+1)
-            subset_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
+            # subset_dict_en['input_ids'].append(tokenized['input_ids'].squeeze()) # This will be done after multiprocessing
             subset_dict_en['all_captions'].append(result_sentences)
 
         tqdm_bar.update(1)
