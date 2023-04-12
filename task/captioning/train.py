@@ -217,20 +217,11 @@ def training(args: argparse.Namespace) -> None:
                 write_log(logger, f"TRAIN - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['train'])}] - Acc: {batch_acc_seq:.4f}")
             if args.use_tensorboard:
                 writer.add_scalar('TRAIN/Learning_Rate', optimizer.param_groups[0]['lr'], epoch_idx * len(dataloader_dict['train']) + iter_idx)
-            if args.use_wandb:
-                wandb.log({'TRAIN/Learning_Rate': optimizer.param_groups[0]['lr'],
-                           'TRAIN/Batch_Acc': batch_acc_seq,
-                           'TRAIN/Batch_Loss': batch_loss_seq.item()},
-                           step=epoch_idx * len(dataloader_dict['train']) + iter_idx)
 
         # Train - End of epoch logging
         if args.use_tensorboard:
             writer.add_scalar('TRAIN/Loss', train_loss_seq / len(dataloader_dict['train']), epoch_idx)
             writer.add_scalar('TRAIN/Acc', train_acc_seq / len(dataloader_dict['train']), epoch_idx)
-        if args.use_wandb:
-            wandb.log({'TRAIN/Epoch_Loss': train_loss_seq / len(dataloader_dict['train']),
-                       'TRAIN/Epoch_Acc': train_acc_seq / len(dataloader_dict['train'])},
-                       step=epoch_idx)
 
         # Valid - Set model to eval mode
         model = model.eval()
@@ -281,7 +272,6 @@ def training(args: argparse.Namespace) -> None:
                     )
                 raise ValueError('VALID - Loss is NaN, stop training')
 
-
             # Valid - Logging
             valid_loss_seq += batch_loss_seq.item()
             valid_acc_seq += batch_acc_seq
@@ -289,10 +279,6 @@ def training(args: argparse.Namespace) -> None:
             if iter_idx % args.log_freq == 0 or iter_idx == len(dataloader_dict['valid']) - 1:
                 write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Loss: {batch_loss_seq.item():.4f}")
                 write_log(logger, f"VALID - Epoch [{epoch_idx}/{args.num_epochs}] - Iter [{iter_idx}/{len(dataloader_dict['valid'])}] - Acc: {batch_acc_seq:.4f}")
-            if args.use_wandb:
-                wandb.log({'VALID/Batch_Acc': batch_acc_seq,
-                           'VALID/Batch_Loss': batch_loss_seq.item()},
-                           step=epoch_idx * len(dataloader_dict['valid']) + iter_idx)
 
         # Valid - Call scheduler
         if args.scheduler == 'LambdaLR':
@@ -339,9 +325,11 @@ def training(args: argparse.Namespace) -> None:
             writer.add_scalar('VALID/Loss', valid_loss_seq, epoch_idx)
             writer.add_scalar('VALID/Acc', valid_acc_seq, epoch_idx)
         if args.use_wandb:
-            wandb.log({'VALID/Epoch_Loss': valid_loss_seq,
-                       'VALID/Epoch_Acc': valid_acc_seq},
-                       step=epoch_idx)
+            wandb.log({'TRAIN/Epoch_Loss': train_loss_seq / len(dataloader_dict['train']),
+                       'TRAIN/Epoch_Acc': train_acc_seq / len(dataloader_dict['train']),
+                       'VALID/Epoch_Loss': valid_loss_seq,
+                       'VALID/Epoch_Acc': valid_acc_seq,
+                       'Epoch_Index': epoch_idx})
             wandb.alert(
                 title='Epoch End',
                 text=f"VALID - Epoch {epoch_idx} - Loss: {valid_loss_seq:.4f} - Acc: {valid_acc_seq:.4f}",

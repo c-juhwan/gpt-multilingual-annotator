@@ -24,7 +24,7 @@ from transformers import AutoTokenizer
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from model.captioning.model import CaptioningModel
 from model.captioning.dataset import CaptioningDataset, collate_fn
-from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_torch_device, check_path
+from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path
 
 def testing(args: argparse.Namespace) -> None:
     device = get_torch_device(args.device)
@@ -78,6 +78,23 @@ def testing(args: argparse.Namespace) -> None:
     model.load_state_dict(checkpoint['model'])
     model = model.to(device)
     write_log(logger, f"Loaded model weights from {load_model_name}")
+
+    # Load Wandb
+    if args.use_wandb:
+        import wandb
+        wandb.init(
+                project=args.proj_name,
+                name=get_wandb_exp_name(args),
+                config=args,
+                tags=[f"Dataset: {args.task_dataset}",
+                      f"Annotation: {args.annotation_mode}",
+                      f"Encoder: {args.encoder_type}",
+                      f"Decoder: {args.decoder_type}",
+                      f"Desc: {args.description}"],
+                resume=True,
+                id=checkpoint['wandb_id']
+            )
+
     del checkpoint
 
     # Test - Start evaluation
@@ -159,6 +176,9 @@ def testing(args: argparse.Namespace) -> None:
         test_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                      f'captions_test2014_{args.annotation_mode}_results_ko.json'), orient='records')
         translate_to_eng(args, valid_df, test_df)
+
+    if args.use_wandb:
+        wandb.finish() # Finish wandb run -> send alert
 
 def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
     nmt_model = EasyNMT('mbart50_m2m_100')

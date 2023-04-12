@@ -179,14 +179,18 @@ def testing(args: argparse.Namespace) -> None:
 
         writer.close()
     if args.use_wandb:
-        wandb.log({'TEST/Acc': test_acc_seq,
-                   'TEST/Bleu_1': metrics_dict['Bleu_1'],
-                   'TEST/Bleu_2': metrics_dict['Bleu_2'],
-                   'TEST/Bleu_3': metrics_dict['Bleu_3'],
-                   'TEST/Bleu_4': metrics_dict['Bleu_4'],
-                   'TEST/Bleu_avg': (metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4,
-                   'TEST/Rouge_L': metrics_dict['ROUGE_L'],
-                   'TEST/Meteor': metrics_dict['METEOR']})
+        wandb_df = pd.DataFrame({
+            'TEST/Acc': [test_acc_seq],
+            'TEST/Bleu_1': [metrics_dict['Bleu_1']],
+            'TEST/Bleu_2': [metrics_dict['Bleu_2']],
+            'TEST/Bleu_3': [metrics_dict['Bleu_3']],
+            'TEST/Bleu_4': [metrics_dict['Bleu_4']],
+            'TEST/Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
+            'TEST/Rouge_L': [metrics_dict['ROUGE_L']],
+            'TEST/Meteor': [metrics_dict['METEOR']]
+        })
+        wandb_table = wandb.Table(dataframe=wandb_df)
+        wandb.log({f'TEST_{args.decoding_strategy}': wandb_table})
         wandb.finish()
 
     # Save result_df to csv file
