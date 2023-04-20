@@ -183,7 +183,7 @@ def testing(args: argparse.Namespace) -> None:
         wandb.finish() # Finish wandb run -> send alert
 
 def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: pd.DataFrame) -> None:
-    nmt_model = EasyNMT('mbart50_m2m_100')
+    nmt_model = EasyNMT('mbart50_m2m')
 
     # Translate valid_df and test_df to English
     valid_df_translated = valid_df.copy()
