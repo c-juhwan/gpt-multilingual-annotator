@@ -73,6 +73,7 @@ def testing(args: argparse.Namespace) -> None:
     # Load Wandb
     if args.use_wandb:
         import wandb
+        from wandb import AlertLevel
         wandb.init(
                 project=args.proj_name,
                 name=get_wandb_exp_name(args),
@@ -190,7 +191,19 @@ def testing(args: argparse.Namespace) -> None:
             'TEST/Meteor': [metrics_dict['METEOR']]
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
-        wandb.log({f'TEST_{args.decoding_strategy}': wandb_table})
+        if args.decoding_strategy == 'greedy':
+            wandb.log({'TEST/Result_Greedy': wandb_table})
+        elif args.decoding_strategy == 'beam':
+            wandb.log({f'TEST/Result_Beam:{args.beam_size}': wandb_table})
+
+        # Send wandb alert
+        wandb.alert(
+                title='Test End',
+                text=f"TEST - {args.decoding_strategy}/{args.beam_size}: BLEU_Avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4}",
+                level=AlertLevel.INFO,
+                wait_duration=300
+        )
+
         wandb.finish()
 
     # Save result_df to csv file

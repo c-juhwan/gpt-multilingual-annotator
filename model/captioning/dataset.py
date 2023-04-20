@@ -40,10 +40,18 @@ class CaptioningDataset(Dataset):
 
         resized_image_path = os.path.join(args.preprocess_path, args.task, args.task_dataset, f'{split}_resized_images')
 
+        already_loaded_data = []
+
         for idx in tqdm(range(len(data_['input_ids'])), desc=f'Loading data from {data_path}'):
             # Load image and convert to tensor
             image_name = data_['image_names'][idx]
             image_path = os.path.join(resized_image_path, image_name)
+
+            if args.job == 'testing':
+                if image_name in already_loaded_data:
+                    continue # Skip already loaded image
+                else:
+                    already_loaded_data.append(image_name)
 
             # Load original caption and encoded input_ids
             caption = data_['captions'][idx] # single string

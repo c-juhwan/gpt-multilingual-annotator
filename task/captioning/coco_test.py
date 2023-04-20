@@ -54,16 +54,18 @@ def testing(args: argparse.Namespace) -> None:
         dataset_dict['valid']  = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
 
     dataloader_dict['test'] = DataLoader(dataset_dict['test'], batch_size=args.test_batch_size, num_workers=args.num_workers,
-                                          shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
+                                          shuffle=False, pin_memory=True, drop_last=False, collate_fn=collate_fn)
     dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.test_batch_size, num_workers=args.num_workers,
-                                          shuffle=False, pin_memory=True, drop_last=True, collate_fn=collate_fn)
+                                          shuffle=False, pin_memory=True, drop_last=False, collate_fn=collate_fn)
     tokenizer = dataset_dict['valid'].tokenizer # Depends on annotation_mode -> language
     args.vocab_size = tokenizer.vocab_size
+    args.bos_token_id = tokenizer.bos_token_id
     args.pad_token_id = tokenizer.pad_token_id
     args.eos_token_id = tokenizer.eos_token_id
     image_transform = dataset_dict['valid'].transform
 
     write_log(logger, "Loaded data successfully")
+    write_log(logger, f"Number of valid samples: {len(dataset_dict['valid'])} | Number of test samples: {len(dataset_dict['test'])}")
 
     # Get model instance
     write_log(logger, "Building model")
@@ -167,14 +169,14 @@ def testing(args: argparse.Namespace) -> None:
     check_path(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode))
     if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en']:
         valid_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                      f'captions_val2014_{args.annotation_mode}_results.json'), orient='records')
+                                      f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
         test_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                     f'captions_test2014_{args.annotation_mode}_results.json'), orient='records')
+                                     f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
     elif args.annotation_mode in ['aihub_ko', 'gpt_ko', 'backtrans_ko']:
         valid_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                      f'captions_val2014_{args.annotation_mode}_results_ko.json'), orient='records')
+                                      f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records')
         test_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                     f'captions_test2014_{args.annotation_mode}_results_ko.json'), orient='records')
+                                     f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records')
         translate_to_eng(args, valid_df, test_df)
 
     if args.use_wandb:
@@ -197,6 +199,6 @@ def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: 
     # Save valid_df_translated and test_df_translated to json file for coco evaluation
     check_path(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode))
     valid_df_translated.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                             f'captions_val2014_{args.annotation_mode}_results.json'), orient='records')
+                                             f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
     test_df_translated.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                            f'captions_test2014_{args.annotation_mode}_results.json'), orient='records')
+                                            f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
