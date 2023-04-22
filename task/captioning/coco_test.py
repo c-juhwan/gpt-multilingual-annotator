@@ -166,7 +166,6 @@ def testing(args: argparse.Namespace) -> None:
             test_df = test_df.append({'image_id': each_id,
                                       'caption': each_pred_sentence}, ignore_index=True)
 
-
     # Save valid_df and test_df to json file for coco evaluation
     check_path(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode))
     if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en']:

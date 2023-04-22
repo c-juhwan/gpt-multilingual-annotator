@@ -109,7 +109,7 @@ class ArgParser():
         # Testing/Inference arguments
         self.parser.add_argument('--test_batch_size', default=1, type=int,
                                  help='Batch size for test; Default is 1')
-        strategy_list = ['greedy', 'beam']
+        strategy_list = ['greedy', 'beam', 'multinomial', 'topk', 'topp']
         self.parser.add_argument('--decoding_strategy', type=str, choices=strategy_list, default='greedy',
                                  help='Decoding strategy for test; Default is greedy')
         self.parser.add_argument('--beam_size', default=5, type=int,
@@ -118,6 +118,12 @@ class ArgParser():
                                  help='Beam search length normalization; Default is 0.7')
         self.parser.add_argument('--beam_repetition_penalty', default=1.3, type=float,
                                  help='Beam search repetition penalty term; Default is 1.3')
+        self.parser.add_argument('--topk', default=5, type=int,
+                                 help='Topk sampling size; Default is 5')
+        self.parser.add_argument('--topp', default=0.9, type=float,
+                                 help='Topk sampling size; Default is 0.9')
+        self.parser.add_argument('--softmax_temp', default=1.0, type=float,
+                                 help='Softmax temperature; Default is 1.0')
 
         # Other arguments - Device, Seed, Logging, etc.
         self.parser.add_argument('--device', type=str, default='cuda:0',

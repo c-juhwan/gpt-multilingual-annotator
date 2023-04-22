@@ -40,8 +40,8 @@ class CaptioningModel(nn.Module):
 
         features = self.encoder(images)
 
-        if self.args.decoding_strategy == 'greedy':
-            seq_output = self.decoder.greedy_generate(features)
+        if self.args.decoding_strategy in ['greedy', 'multinomial', 'topk', 'topp']:
+            seq_output = self.decoder.generate(features)
         elif self.args.decoding_strategy == 'beam':
             seq_output = self.decoder.beam_generate(features)
         else:
@@ -216,15 +216,49 @@ class Decoder(nn.Module):
             # Avoid generating <s> and <pad> tokens
             next_token_logits[:, self.args.bos_token_id] = -float('inf')
             next_token_logits[:, self.args.pad_token_id] = -float('inf')
+            next_token_scores = next_token_logits / self.args.softmax_temp
+            next_word_probs = F.softmax(next_token_scores, dim=1) # (batch_size, vocab_size)
+
             # Generate the next token
-            next_token = torch.argmax(next_token_logits, dim=1).unsqueeze(1) # (batch_size, 1)
+            if self.args.decoding_strategy == 'greedy':
+                next_token = torch.argmax(next_word_probs, dim=1) # (batch_size)
+            elif self.args.decoding_strategy == 'multinomial':
+                next_token = torch.multinomial(next_word_probs, num_samples=1).squeeze(1) # (batch_size)
+            elif self.args.decoding_strategy == 'topk':
+                # Get the top-k tokens
+                topk_prob, topk_idx = torch.topk(next_word_probs, self.args.topk, dim=-1) # (batch_size, topk)
+                norm_prob = topk_prob / torch.sum(topk_prob.sum(dim=-1, keepdim=True)) # (batch_size, topk) - normalize probability to sum 1
+                next_token_idx = torch.multinomial(norm_prob, 1).squeeze(1) # (batch_size)
+                next_token = topk_idx[torch.arange(topk_idx.size(0)), next_token_idx] # (batch_size)
+            elif self.args.decoding_strategy == 'topp':
+                # Get topp token
+                sorted_prob, sorted_idx = torch.sort(next_word_probs, descending=True, dim=-1)
+                cumulative_prob = sorted_prob.cumsum(dim=-1) # (batch_size, vocab_num)
+
+                # Get index of first token whose cumulative probability is greater than topp
+                topp_mask = cumulative_prob > self.args.topp
+                # Apply mask to sorted index
+                topp_prob = sorted_prob.masked_fill(topp_mask, 0)
+
+                for _ in range(batch_size):
+                    if torch.sum(topp_prob[_]) == 0: # When top-1 is very probable so it already exceeds topp
+                        topp_prob[_, 0] = 1 # If all tokens are masked, set first token to 1 (=top-1 token)
+
+                norm_prob = topp_prob / torch.sum(topp_prob.sum(dim=-1, keepdim=True)) # (batch_size, vocab_num) - normalize probability to sum 1
+
+                next_token_idx = torch.multinomial(norm_prob, 1).squeeze(1) # (batch_size) - sample token from topp token
+                next_token = sorted_idx[torch.arange(sorted_idx.size(0)), next_token_idx] # (batch_size)
+            else:
+                raise ValueError(f'Unknown decoding strategy: {self.args.decoding_strategy}')
+
             # Concatenate next token to decoder_input
+            next_token = next_token.unsqueeze(1) # (batch_size, 1)
             decoder_input = torch.cat([decoder_input, next_token], dim=1) # (batch_size, cur_seq_len + 1)
 
         # Remove <bos> token from the output
-        best_seq = decoder_input[:, 1:]
+        result_seq = decoder_input[:, 1:]
 
-        return best_seq
+        return result_seq
 
     def beam_generate(self, features: torch.Tensor) -> torch.Tensor:
         """

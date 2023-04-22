@@ -181,6 +181,8 @@ def testing(args: argparse.Namespace) -> None:
         writer.close()
     if args.use_wandb:
         wandb_df = pd.DataFrame({
+            'TEST/Decoding': [args.decoding_strategy],
+            'TEST/Dec_arg': [args.beam_size if args.decoding_strategy == 'beam' else args.top_k if args.decoding_strategy == 'topk' else args.top_p if args.decoding_strategy == 'topp' else 0],
             'TEST/Acc': [test_acc_seq],
             'TEST/Bleu_1': [metrics_dict['Bleu_1']],
             'TEST/Bleu_2': [metrics_dict['Bleu_2']],
@@ -191,15 +193,23 @@ def testing(args: argparse.Namespace) -> None:
             'TEST/Meteor': [metrics_dict['METEOR']]
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
-        if args.decoding_strategy == 'greedy':
-            wandb.log({'TEST/Result_Greedy': wandb_table})
-        elif args.decoding_strategy == 'beam':
-            wandb.log({f'TEST/Result_Beam:{args.beam_size}': wandb_table})
+        wandb.log({"TEST": wandb_table})
 
         # Send wandb alert
+        if args.decoding_strategy == 'greedy':
+            alert_text = f"TEST - Greedy: BLEU_Avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4}"
+        elif args.decoding_strategy == 'multinomial':
+            alert_text = f"TEST - Multinomial: BLEU_Avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4}"
+        elif args.decoding_strategy == 'topk':
+            alert_text = f"TEST - TopK:{args.topk}: BLEU_Avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4}"
+        elif args.decoding_strategy == 'topp':
+            alert_text = f"TEST - TopP:{args.topp}: BLEU_Avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4}"
+        elif args.decoding_strategy == 'beam':
+            alert_text = f"TEST - Beam:{args.beam_size}: BLEU_Avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4}"
+
         wandb.alert(
                 title='Test End',
-                text=f"TEST - {args.decoding_strategy}/{args.beam_size}: BLEU_Avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4}",
+                text=alert_text,
                 level=AlertLevel.INFO,
                 wait_duration=300
         )
