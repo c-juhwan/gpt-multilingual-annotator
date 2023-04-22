@@ -37,6 +37,8 @@ def main(args: argparse.Namespace) -> None:
                 from task.annotating.eda_annotating import eda_annotating as job
             elif args.job == 'synonym_annotating':
                 from task.annotating.synonym_annotating import synonym_annotating as job
+            elif args.job == 'onlyone_annotating':
+                from task.annotating.onlyone_annotating import onlyone_annotating as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         else:

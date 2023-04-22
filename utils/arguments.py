@@ -15,7 +15,7 @@ class ArgParser():
         self.parser.add_argument('--task', type=str, choices=task_list, default='captioning',
                                  help='Task to do; Must be given.')
         job_list = ['preprocessing', 'training', 'resume_training', 'testing', # For captioning
-                    'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating'] # For annotating
+                    'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating', 'onlyone_annotating'] # For annotating
         self.parser.add_argument('--job', type=str, choices=job_list, default='training',
                                  help='Job to do; Must be given.')
         dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017']
@@ -23,7 +23,7 @@ class ArgParser():
                                  help='Dataset for the task; Must be given.')
         self.parser.add_argument('--description', type=str, default='default',
                                  help='Description of the experiment; Default is "default"')
-        annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', 'backtrans_en', 'eda_en', 'synonym_en']
+        annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en']
         self.parser.add_argument('--annotation_mode', type=str, choices=annotation_mode_list, default='original',
                                  help='Annotation mode; Default is "original"')
 
