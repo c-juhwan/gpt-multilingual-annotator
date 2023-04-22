@@ -127,8 +127,10 @@ def testing(args: argparse.Namespace) -> None:
         batch_pred_sentences = tokenizer.batch_decode(batch_pred_ids, skip_special_tokens=False) # list of str
         for each_pred_sentence, each_id in zip(batch_pred_sentences, image_id):
             # If '</s>' is in the string, remove it and everything after it
-            if '</s>' in each_pred_sentence:
+            if '</s>' in each_pred_sentence: # facebook/bart-base
                 each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('</s>')]
+            elif '[EOS]' in each_pred_sentence: # cosmoquester/bart-ko-base
+                each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('[EOS]')]
 
             valid_df = valid_df.append({'image_id': each_id,
                                         'caption': each_pred_sentence}, ignore_index=True)
@@ -174,9 +176,9 @@ def testing(args: argparse.Namespace) -> None:
                                      f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
     elif args.annotation_mode in ['aihub_ko', 'gpt_ko', 'backtrans_ko']:
         valid_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                      f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records')
+                                      f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records', force_ascii=False)
         test_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
-                                     f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records')
+                                     f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records', force_ascii=False)
         translate_to_eng(args, valid_df, test_df)
 
     if args.use_wandb:
