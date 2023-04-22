@@ -13,10 +13,12 @@ import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 from easynmt import EasyNMT
+from nlgeval import NLGEval
 # Pytorch Modules
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from torch.utils.data.dataset import Dataset
 from torch.utils.tensorboard import SummaryWriter
 # Huggingface Modules
 from transformers import AutoTokenizer
@@ -168,17 +170,18 @@ def testing(args: argparse.Namespace) -> None:
 
     # Save valid_df and test_df to json file for coco evaluation
     check_path(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode))
-    if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en']:
+    if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en', 'eda_en', 'synonym_en']:
         valid_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                       f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
         test_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                      f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
-    elif args.annotation_mode in ['aihub_ko', 'gpt_ko', 'backtrans_ko']:
+    elif args.annotation_mode in ['aihub_ko', 'gpt_ko']:
         valid_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                       f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records', force_ascii=False)
         test_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                      f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results_ko.json'), orient='records', force_ascii=False)
         translate_to_eng(args, valid_df, test_df)
+        evaluate_kor_valid(args, valid_df, dataset_dict['valid'], logger, writer)
 
     if args.use_wandb:
         wandb.finish() # Finish wandb run -> send alert
@@ -203,3 +206,66 @@ def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: 
                                              f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
     test_df_translated.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                             f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
+
+def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_dataset: Dataset, logger, writer) -> None:
+    Eval = NLGEval(metrics_to_omit=['CIDEr', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
+    valid_dataset = valid_dataset.data_list
+
+    # Get valid_df['image_id'] and valid_df['caption']
+    ref_list = []
+    hyp_list = []
+
+    for idx in range(len(valid_df)):
+        image_id = valid_df.loc[idx, 'image_id']
+
+        image_path = valid_dataset[idx]['image_path']
+        image_id_ = os.path.basename(image_path).split('.')[0]
+        if args.task_dataset == 'coco2014':
+            image_id_ = image_id_.split('_')[-1] # Remove leading 'COCO_val2014_' from image_id
+        image_id_ = int(image_id_)
+
+        assert image_id == image_id_ # Check if image_id is correct
+
+        caption = valid_df.loc[idx, 'caption']
+        ref_list.append([valid_dataset[idx]['caption']])
+        hyp_list.append(caption)
+
+    # Convert ' .' in reference to '.' - I don't know why but we need to do this, otherwise it will give error
+    replace_lambda = lambda x: x.replace(' .', '.')
+    ref_list2 = [list(map(replace_lambda, refs)) for refs in zip(*ref_list)]
+
+    metrics_dict = Eval.compute_metrics(ref_list2, hyp_list)
+    print(metrics_dict)
+
+    write_log(logger, f"TEST - Bleu_1: {metrics_dict['Bleu_1']:.4f}")
+    write_log(logger, f"TEST - Bleu_2: {metrics_dict['Bleu_2']:.4f}")
+    write_log(logger, f"TEST - Bleu_3: {metrics_dict['Bleu_3']:.4f}")
+    write_log(logger, f"TEST - Bleu_4: {metrics_dict['Bleu_4']:.4f}")
+    write_log(logger, f"TEST - Bleu_avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4:.4f}")
+    write_log(logger, f"TEST - Rouge_L: {metrics_dict['ROUGE_L']:.4f}")
+    write_log(logger, f"TEST - Meteor: {metrics_dict['METEOR']:.4f}")
+
+    if args.use_tensorboard:
+        writer.add_scalar('TEST/KoVal_Bleu_1', metrics_dict['Bleu_1'], global_step=0)
+        writer.add_scalar('TEST/KoVal_Bleu_2', metrics_dict['Bleu_2'], global_step=0)
+        writer.add_scalar('TEST/KoVal_Bleu_3', metrics_dict['Bleu_3'], global_step=0)
+        writer.add_scalar('TEST/KoVal_Bleu_4', metrics_dict['Bleu_4'], global_step=0)
+        writer.add_scalar('TEST/KoVal_Bleu_avg', (metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4, global_step=0)
+        writer.add_scalar('TEST/KoVal_Rouge_L', metrics_dict['ROUGE_L'], global_step=0)
+        writer.add_scalar('TEST/KoVal_Meteor', metrics_dict['METEOR'], global_step=0)
+
+    if args.use_wandb:
+        import wandb
+        wandb_df = pd.DataFrame({
+            'TEST/Ko_Val/Decoding': [args.decoding_strategy],
+            'TEST/Ko_Val/Dec_arg': [args.beam_size if args.decoding_strategy == 'beam' else args.top_k if args.decoding_strategy == 'topk' else args.top_p if args.decoding_strategy == 'topp' else 0],
+            'TEST/Ko_Val/Bleu_1': [metrics_dict['Bleu_1']],
+            'TEST/Ko_Val/Bleu_2': [metrics_dict['Bleu_2']],
+            'TEST/Ko_Val/Bleu_3': [metrics_dict['Bleu_3']],
+            'TEST/Ko_Val/Bleu_4': [metrics_dict['Bleu_4']],
+            'TEST/Ko_Val/Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
+            'TEST/Ko_Val/Rouge_L': [metrics_dict['ROUGE_L']],
+            'TEST/Ko_Val/Meteor': [metrics_dict['METEOR']]
+        })
+        wandb_table = wandb.Table(dataframe=wandb_df)
+        wandb.log({"TEST/Ko_Val/Result": wandb_table})
