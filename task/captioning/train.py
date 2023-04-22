@@ -60,10 +60,12 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'backtrans_en':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_BT_EN.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
-    elif args.annotation_mode == 'backtrans_ko':
-        raise NotImplementedError("We don't have backtranslation for Korean.")
-        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_BT_KO.pkl'), 'train')
-        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
+    elif args.annotation_mode == 'eda_en':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_EDA_EN.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
+    elif args.annotation_mode == 'synonym_en':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_SR_EN.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
 
     dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)

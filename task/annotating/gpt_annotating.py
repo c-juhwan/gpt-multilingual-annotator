@@ -167,8 +167,6 @@ def gpt_annotating(args: argparse.Namespace) -> None:
             data_dict_ko['captions'].append(result_sentences[i]['ko'])
             data_dict_ko['caption_numbers'].append(i+1)
             data_dict_ko['input_ids'].append(ko_tokenized_)
-        #data_dict_en['all_captions'].append([result_sentences[i]['en'] for i in range(len(result_sentences))]) # Append all captions
-        #data_dict_ko['all_captions'].append([result_sentences[i]['ko'] for i in range(len(result_sentences))])
         tqdm.write(str([result_sentences[i]['en'] for i in range(len(result_sentences))]))
 
     # Save data_dict_en & data_dict_ko as pickle file

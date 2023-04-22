@@ -109,7 +109,6 @@ def preprocessing(args: argparse.Namespace) -> None:
         data_dict[split]['image_names'].append(image_name)
         data_dict[split]['caption_numbers'].append(caption_number)
         data_dict[split]['captions'].append(caption)
-        #data_dict[split]['all_captions'].append(all_caption) # list of string
         data_dict[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
 
     # Save the data_dict for each split as pickle file
@@ -122,8 +121,6 @@ def preprocessing(args: argparse.Namespace) -> None:
             # Get the data from the dataframe
             image_name = caption_df['image_name'][idx]
             caption = caption_df['caption_text_ko'][idx]
-            #image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
-            #all_caption = image_all_caption_df['caption_text_ko'].tolist()
             caption_number = caption_df['caption_number'][idx]
             split_ = caption_df['split'][idx]
             split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
@@ -145,7 +142,6 @@ def preprocessing(args: argparse.Namespace) -> None:
             data_dict_ko[split]['image_names'].append(image_name)
             data_dict_ko[split]['caption_numbers'].append(caption_number)
             data_dict_ko[split]['captions'].append(caption)
-            #data_dict_ko[split]['all_captions'].append(all_caption) # list of string
             data_dict_ko[split]['input_ids'].append(tokenized_caption_.squeeze())
 
 
@@ -282,7 +278,6 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         for i, row in tqdm(train_df.iterrows(), total=len(train_df), desc='Loading coco train captions'):
             row = row.to_dict()['annotations']
             image_name = row['file_path']
-            #image_name = image_name.split('_')[-1]
             image_name = os.path.basename(image_name)
             captions_en = row['captions'] # List
             captions_ko = row['caption_ko'] # List
@@ -294,7 +289,6 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         for i, row in tqdm(valid_df.iterrows(), total=len(valid_df), desc='Loading coco valid captions'):
             row = row.to_dict()['annotations']
             image_name = row['file_path']
-            #image_name = image_name.split('_')[-1]
             image_name = os.path.basename(image_name)
             captions_en = row['captions']
             captions_ko = row['caption_ko']

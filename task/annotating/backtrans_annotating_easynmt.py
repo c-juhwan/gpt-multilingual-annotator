@@ -17,7 +17,6 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utils.utils import check_path
 from task.captioning.preprocessing import load_caption_data
 
-#tmp_lang = ['fr', 'de', 'es', 'it', 'nl', 'ru', 'zh', 'jap']
 tmp_lang = ['fr', 'de', 'es', 'ru']
 
 def backtrans_annotating(args: argparse.Namespace) -> None:
@@ -26,7 +25,6 @@ def backtrans_annotating(args: argparse.Namespace) -> None:
 
     # Define tokenizer - we use bart tokenizer because it has start and end token
     en_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base')
-    #nmt_model = EasyNMT('opus-mt')
     nmt_model = EasyNMT('mbart50_m2m')
 
     # Define data_dict
@@ -89,7 +87,7 @@ def backtrans_annotating(args: argparse.Namespace) -> None:
             data_dict_en['captions'].append(result_sentences[i])
             data_dict_en['caption_numbers'].append(i+1)
             data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
-            data_dict_en['all_captions'].append(result_sentences)
+            #data_dict_en['all_captions'].append(result_sentences)
 
     save_name = 'train_BT_EN.pkl'
     with open(os.path.join(preprocessed_path, save_name), 'wb') as f:
@@ -97,8 +95,6 @@ def backtrans_annotating(args: argparse.Namespace) -> None:
         print(f"Saved {save_name} in {preprocessed_path}")
 
 def back_translation(model, src: str, num: int=4) -> list: # list of str (backtranslated captions)
-    #assert num == len(tmp_lang)
-
     mid_result = [model.translate(src, target_lang=each_tmp_lang) for each_tmp_lang in tmp_lang]
     result = [model.translate(each_mid_result, target_lang='en') for each_mid_result in mid_result]
 
