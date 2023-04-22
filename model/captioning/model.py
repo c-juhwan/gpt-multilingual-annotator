@@ -173,7 +173,7 @@ class Decoder(nn.Module):
         decoder_logits = self.out(decoder_output) # (batch_size, max_seq_len, vocab_size)
         return decoder_logits
 
-    def greedy_generate(self, features: torch.Tensor) -> torch.Tensor:
+    def generate(self, features: torch.Tensor) -> torch.Tensor:
         # Greedy decoding
         batch_size = features.size(0)
         feature_embed = features.unsqueeze(1) # (batch_size, 1, embed_size)

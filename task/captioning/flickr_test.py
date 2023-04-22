@@ -15,8 +15,6 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-# Huggingface Modules
-from transformers import AutoTokenizer
 # Custom Modules
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from model.captioning.model import CaptioningModel
@@ -193,7 +191,7 @@ def testing(args: argparse.Namespace) -> None:
             'TEST/Meteor': [metrics_dict['METEOR']]
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
-        wandb.log({"TEST": wandb_table})
+        wandb.log({"TEST/Result": wandb_table})
 
         # Send wandb alert
         if args.decoding_strategy == 'greedy':
