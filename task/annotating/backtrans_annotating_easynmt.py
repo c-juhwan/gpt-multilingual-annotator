@@ -54,6 +54,14 @@ def backtrans_annotating(args: argparse.Namespace) -> None:
         image_name = caption_df['image_name'][idx]
         gold_caption = caption_df['caption_text'][idx]
 
+        # Append gold to data_dict
+        gold_tokenized = en_tokenizer(gold_caption, padding='max_length', truncation=True,
+                                      max_length=args.max_seq_len, return_tensors='pt')
+        data_dict_en['image_names'].append(image_name)
+        data_dict_en['captions'].append(gold_caption)
+        data_dict_en['caption_numbers'].append(1)
+        data_dict_en['input_ids'].append(gold_tokenized['input_ids'].squeeze())
+
         # Backtranslate
         error_counter = 0
         while True:
@@ -85,14 +93,14 @@ def backtrans_annotating(args: argparse.Namespace) -> None:
             # Append to data_dict
             data_dict_en['image_names'].append(image_name)
             data_dict_en['captions'].append(result_sentences[i])
-            data_dict_en['caption_numbers'].append(i+1)
+            data_dict_en['caption_numbers'].append(i+2) # 1 is gold caption
             data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
-            #data_dict_en['all_captions'].append(result_sentences)
 
     save_name = 'train_BT_EN.pkl'
     with open(os.path.join(preprocessed_path, save_name), 'wb') as f:
         pickle.dump(data_dict_en, f)
         print(f"Saved {save_name} in {preprocessed_path}")
+        print(len(data_dict_en['image_names']))
 
 def back_translation(model, src: str, num: int=4) -> list: # list of str (backtranslated captions)
     mid_result = [model.translate(src, target_lang=each_tmp_lang) for each_tmp_lang in tmp_lang]

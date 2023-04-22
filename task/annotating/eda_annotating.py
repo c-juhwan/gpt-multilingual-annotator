@@ -57,6 +57,14 @@ def eda_annotating(args: argparse.Namespace) -> None:
         image_name = caption_df['image_name'][idx]
         gold_caption = caption_df['caption_text'][idx]
 
+        # Append gold to data_dict
+        gold_tokenized = en_tokenizer(gold_caption, padding='max_length', truncation=True,
+                                      max_length=args.max_seq_len, return_tensors='pt')
+        data_dict_en['image_names'].append(image_name)
+        data_dict_en['captions'].append(gold_caption)
+        data_dict_en['caption_numbers'].append(1)
+        data_dict_en['input_ids'].append(gold_tokenized['input_ids'].squeeze())
+
         # Apply EDA
         eda_sentences = run_eda(gold_caption)
 
@@ -68,13 +76,14 @@ def eda_annotating(args: argparse.Namespace) -> None:
             # Append to data_dict
             data_dict_en['image_names'].append(image_name)
             data_dict_en['captions'].append(eda_sentences[i])
-            data_dict_en['caption_numbers'].append(i+1)
+            data_dict_en['caption_numbers'].append(i+2) # 1 is gold caption
             data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
 
     save_name = 'train_EDA_EN.pkl'
     with open(os.path.join(preprocessed_path, save_name), 'wb') as f:
         pickle.dump(data_dict_en, f)
         print(f'Saved {save_name} at {preprocessed_path}')
+        print(len(data_dict_en['image_names']))
 
 # List of stopwords
 stop_words = ['i', 'me', 'my', 'myself', 'we', 'our',
