@@ -56,12 +56,14 @@ class CaptioningDataset(Dataset):
             # Load original caption and encoded input_ids
             caption = data_['captions'][idx] # single string
             input_ids = data_['input_ids'][idx]
+            cap_number = data_['caption_numbers'][idx]
 
             self.data_list.append({
                 'image_path': image_path,
                 'caption': caption,
                 'input_ids': input_ids,
-                'index': idx
+                'index': idx,
+                'caption_number': cap_number
             })
 
         del data_

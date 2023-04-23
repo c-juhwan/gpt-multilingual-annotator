@@ -26,6 +26,8 @@ def main(args: argparse.Namespace) -> None:
                     from task.captioning.flickr_test import testing as job
                 elif args.task_dataset in ['coco2014', 'coco2017']:
                     from task.captioning.coco_test import testing as job
+            elif args.job == 'eval_similarity':
+                from task.captioning.eval_similarity import eval_similarity as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         elif args.task == 'annotating':

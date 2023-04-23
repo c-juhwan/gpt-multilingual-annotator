@@ -57,10 +57,6 @@ def backtrans_annotating(args: argparse.Namespace) -> None:
         # Append gold to data_dict
         gold_tokenized = en_tokenizer(gold_caption, padding='max_length', truncation=True,
                                       max_length=args.max_seq_len, return_tensors='pt')
-        data_dict_en['image_names'].append(image_name)
-        data_dict_en['captions'].append(gold_caption)
-        data_dict_en['caption_numbers'].append(1)
-        data_dict_en['input_ids'].append(gold_tokenized['input_ids'].squeeze())
 
         # Backtranslate
         error_counter = 0
@@ -93,7 +89,7 @@ def backtrans_annotating(args: argparse.Namespace) -> None:
             # Append to data_dict
             data_dict_en['image_names'].append(image_name)
             data_dict_en['captions'].append(result_sentences[i])
-            data_dict_en['caption_numbers'].append(i+2) # 1 is gold caption
+            data_dict_en['caption_numbers'].append(i+1)
             data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
 
     save_name = 'train_BT_EN.pkl'
