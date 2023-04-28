@@ -24,7 +24,7 @@ class ArgParser():
         self.parser.add_argument('--description', type=str, default='default',
                                  help='Description of the experiment; Default is "default"')
         annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en']
-        self.parser.add_argument('--annotation_mode', type=str, choices=annotation_mode_list, default='original',
+        self.parser.add_argument('--annotation_mode', type=str, choices=annotation_mode_list, default='original_en',
                                  help='Annotation mode; Default is "original"')
 
         # Path arguments
@@ -79,8 +79,8 @@ class ArgParser():
                                  help="Scheduler to use for classification; If None, no scheduler is used; Default is CosineAnnealingLR")
 
         # Training arguments 1
-        self.parser.add_argument('--num_epochs', type=int, default=50,
-                                 help='Training epochs; Default is 50')
+        self.parser.add_argument('--num_epochs', type=int, default=10,
+                                 help='Training epochs; Default is 10')
         self.parser.add_argument('--learning_rate', type=float, default=5e-5,
                                  help='Learning rate of optimizer; Default is 5e-5')
         # Training arguments 2
@@ -94,8 +94,8 @@ class ArgParser():
                                  help='Gradient clipping norm; Default is 5')
         self.parser.add_argument('--label_smoothing_eps', type=float, default=0.05,
                                  help='Label smoothing epsilon; Default is 0.05')
-        self.parser.add_argument('--early_stopping_patience', type=int, default=5,
-                                 help='Early stopping patience; No early stopping if None; Default is 5')
+        self.parser.add_argument('--early_stopping_patience', type=int, default=10,
+                                 help='Early stopping patience; Default is 10 -> No early stopping')
         objective_list = ['loss', 'accuracy']
         self.parser.add_argument('--optimize_objective', type=str, choices=objective_list, default='accuracy',
                                  help='Objective to optimize; Default is accuracy')

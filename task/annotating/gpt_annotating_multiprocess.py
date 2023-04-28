@@ -61,6 +61,30 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
     caption_df = load_caption_data(args)
 
     # Define data_dict
+    with open(os.path.join(args.preprocess_path, 'captioning', args.task_dataset, 'train_ORIGINAL_EN.pkl'), 'rb') as f:
+        loaded_data = pickle.load(f)
+
+    train_data_dict = {
+        'image_names': [],
+        'caption_numbers': [],
+        'captions': [],
+        'all_captions': [],
+        'input_ids': [],
+        'tokenizer': en_tokenizer,
+    }
+
+    # gather only caption_number == 1
+    for idx in range(len(loaded_data['caption_numbers'])):
+        if loaded_data['caption_numbers'][idx] == 1:
+            train_data_dict['image_names'].append(loaded_data['image_names'][idx])
+            train_data_dict['caption_numbers'].append(loaded_data['caption_numbers'][idx])
+            train_data_dict['captions'].append(loaded_data['captions'][idx])
+            train_data_dict['all_captions'].append(loaded_data['all_captions'][idx])
+            train_data_dict['input_ids'].append(loaded_data['input_ids'][idx])
+        else:
+            continue
+
+    # Define data_dict
     data_dict_en = {
         'image_names': [],
         'captions': [],
@@ -82,25 +106,15 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
     preprocessed_path = os.path.join(args.preprocess_path, 'captioning', args.task_dataset)
     check_path(preprocessed_path)
 
-    # for split == 0, only remain caption_number == 1
-    train_df = caption_df[caption_df['split'] == 0]
-    # Remain only 1 caption per each image_name
-    train_df = train_df.groupby('image_name').first().reset_index()
-    train_df.reset_index(drop=True, inplace=True)
-    print(train_df)
-
     # Call multiprocessing using starmap
     # Divide train_df into NUM_PROCESS parts
-    train_df_subset = np.array_split(train_df, NUM_PROCESS)
-    tqdm_bar.total = len(train_df) // NUM_PROCESS
-
-    # Reset index of train_df_subset
-    for i in range(NUM_PROCESS):
-        train_df_subset[i].reset_index(drop=True, inplace=True)
+    image_names_sublist = np.array_split(train_data_dict['image_names'], NUM_PROCESS)
+    captions_sublist = np.array_split(train_data_dict['captions'], NUM_PROCESS)
+    tqdm_bar.total = len(train_data_dict['image_names']) // NUM_PROCESS
 
     # Call multiprocessing
     starmap_items = [
-        (args, train_df_subset[i]) for i in range(NUM_PROCESS)
+        (args, image_names_sublist, captions_sublist) for i in range(NUM_PROCESS)
     ]
 
     print(f"Start multiprocessing with {NUM_PROCESS} processes")
@@ -162,15 +176,17 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
 
     tqdm_bar.close()
 
-def try_call_gpt(args: argparse.Namespace, train_df_subset: pd.DataFrame) -> dict:
+def try_call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_sublist: list) -> dict:
+    assert len(image_names_sublist) == len(captions_sublist)
+
     try:
-        return call_gpt(args, train_df_subset)
+        return call_gpt(args, image_names_sublist, captions_sublist)
     except KeyboardInterrupt as k:
         raise k
     except Exception as e:
         logging.exception(f"Error in try_call_gpt: {e}")
 
-def call_gpt(args: argparse.Namespace, train_df_subset: pd.DataFrame) -> dict:
+def call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_sublist: list) -> dict:
     """
     Call GPT-3 API
     """
@@ -191,10 +207,10 @@ def call_gpt(args: argparse.Namespace, train_df_subset: pd.DataFrame) -> dict:
         'tokenizer': ko_tokenizer,
     }
 
-    for idx in range(len(train_df_subset)):
+    for idx in range(len(image_names_sublist)):
         # Get image_name, caption
-        image_name = train_df_subset['image_name'][idx]
-        gold_caption = train_df_subset['caption_text'][idx]
+        image_name = image_names_sublist[idx]
+        gold_caption = captions_sublist[idx]
 
         # Remove last user input from prompt_message and add new user input
         prompt_message.pop()

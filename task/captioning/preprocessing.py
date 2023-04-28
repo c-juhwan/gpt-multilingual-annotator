@@ -2,6 +2,7 @@
 import os
 import sys
 import pickle
+import random
 import argparse
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarning for pandas
@@ -25,7 +26,6 @@ def preprocessing(args: argparse.Namespace) -> None:
     Args:
         args (argparse.Namespace): Arguments.
     """
-
     # Load the data
     caption_df = load_caption_data(args)
 
@@ -38,7 +38,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'train': {
             'image_names': [],
             'captions': [],
-            #'all_captions': [],
+            'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': en_tokenizer,
@@ -46,7 +46,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'valid': {
             'image_names': [],
             'captions': [],
-            #'all_captions': [],
+            'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': en_tokenizer,
@@ -54,7 +54,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'test': {
             'image_names': [],
             'captions': [],
-            #'all_captions': [],
+            'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': en_tokenizer,
@@ -64,7 +64,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'train': {
             'image_names': [],
             'captions': [],
-            #'all_captions': [],
+            'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': ko_tokenizer,
@@ -72,7 +72,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'valid': {
             'image_names': [],
             'captions': [],
-            #'all_captions': [],
+            'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': ko_tokenizer,
@@ -80,7 +80,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         'test': {
             'image_names': [],
             'captions': [],
-            #'all_captions': [],
+            'all_captions': [],
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': ko_tokenizer,
@@ -95,8 +95,8 @@ def preprocessing(args: argparse.Namespace) -> None:
         # Get the data from the dataframe
         image_name = caption_df['image_name'][idx]
         caption = caption_df['caption_text'][idx]
-        #image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
-        #all_caption = image_all_caption_df['caption_text'].tolist()
+        image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
+        all_caption = image_all_caption_df['caption_text'].tolist()
         caption_number = caption_df['caption_number'][idx]
         split_ = caption_df['split'][idx]
         split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
@@ -109,7 +109,37 @@ def preprocessing(args: argparse.Namespace) -> None:
         data_dict[split]['image_names'].append(image_name)
         data_dict[split]['caption_numbers'].append(caption_number)
         data_dict[split]['captions'].append(caption)
+        data_dict[split]['all_captions'].append(all_caption)
         data_dict[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
+
+    if args.task_dataset in ['flickr8k', 'flickr30k']:
+        # For flickr, remain only 1 data for each image in valid and test split
+        for split in ['valid', 'test']:
+            # gather only caption_number == 1
+            data_dict_new = {
+                'image_names': [],
+                'captions': [],
+                'all_captions': [],
+                'caption_numbers': [],
+                'input_ids': [],
+                'tokenizer': data_dict[split]['tokenizer'],
+            }
+
+            for idx in range(len(data_dict[split]['caption_numbers'])):
+                if data_dict[split]['caption_numbers'][idx] == 1:
+                    data_dict_new['image_names'].append(data_dict[split]['image_names'][idx])
+                    data_dict_new['caption_numbers'].append(data_dict[split]['caption_numbers'][idx])
+                    data_dict_new['captions'].append(data_dict[split]['captions'][idx])
+                    data_dict_new['all_captions'].append(data_dict[split]['all_captions'][idx])
+                    data_dict_new['input_ids'].append(data_dict[split]['input_ids'][idx])
+                else:
+                    continue
+
+            data_dict[split] = data_dict_new
+
+        print(len(data_dict['train']['image_names']))
+        print(len(data_dict['valid']['image_names']))
+        print(len(data_dict['test']['image_names']))
 
     # Save the data_dict for each split as pickle file
     for split in data_dict.keys():
@@ -220,6 +250,9 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     return dataset_path, annotation_path
 
 def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
+    if args.seed is not None:
+        random.seed(args.seed)
+
     dataset_path, annotation_path = get_dataset_path(args)
 
     # Load the annotations
@@ -230,15 +263,23 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         caption_df = caption_df.rename(columns={'image': 'image_name', 'caption': 'caption_text'}) # Rename the columns
 
         # add caption number column to the dataframe
-        caption_df['caption_number'] = caption_df.groupby('image_name').cumcount() + 1
+        caption_df['caption_number'] = caption_df.groupby('image_name').cumcount() + 1 # Start from 1
 
         # add train/valid/test split column to the dataframe, 0 = train, 1 = valid, 2 = test
         caption_df['split'] = -1 # -1 = not assigned
         # split the dataset into train/valid/test, 80% = train, 10% = valid, 10% = test
-        caption_df = caption_df.sample(frac=1, random_state=args.seed).reset_index(drop=True)
-        caption_df.loc[:int(len(caption_df) * 0.8), 'split'] = 0 # 80% = train
-        caption_df.loc[int(len(caption_df) * 0.8):int(len(caption_df) * 0.9), 'split'] = 1 # 10% = valid
-        caption_df.loc[int(len(caption_df) * 0.9):, 'split'] = 2 # 10% = test
+        # gather the image names
+        image_names = list(set(caption_df['image_name']))
+        random.shuffle(image_names)
+        # split the image names into train/valid/test
+        train_image_names = image_names[:int(len(image_names) * 0.8)]
+        valid_image_names = image_names[int(len(image_names) * 0.8):int(len(image_names) * 0.9)]
+        test_image_names = image_names[int(len(image_names) * 0.9):]
+
+        # assign the split to the dataframe
+        caption_df.loc[caption_df['image_name'].isin(train_image_names), 'split'] = 0
+        caption_df.loc[caption_df['image_name'].isin(valid_image_names), 'split'] = 1
+        caption_df.loc[caption_df['image_name'].isin(test_image_names), 'split'] = 2
 
         # preprocess the captions: remove " from the captions
         # some captions have " in the captions, which causes misunderstanding to the model
@@ -258,14 +299,23 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         caption_df = caption_df.dropna() # Drop the rows with NaN values
         caption_df = caption_df.reset_index(drop=True) # Reset the index
         caption_df = caption_df.rename(columns={'image_name': 'image_name', 'comment_number': 'caption_number', 'comment': 'caption_text'}) # Rename the columns
+        caption_df['caption_number'] = caption_df.groupby('image_name').cumcount() + 1 # Start from 1
 
         # add train/valid/test split column to the dataframe, 0 = train, 1 = valid, 2 = test
         caption_df['split'] = -1 # -1 = not assigned
         # split the dataset into train/valid/test, 80% = train, 10% = valid, 10% = test
-        caption_df = caption_df.sample(frac=1, random_state=args.seed).reset_index(drop=True)
-        caption_df.loc[:int(len(caption_df) * 0.8), 'split'] = 0 # 80% = train
-        caption_df.loc[int(len(caption_df) * 0.8):int(len(caption_df) * 0.9), 'split'] = 1 # 10% = valid
-        caption_df.loc[int(len(caption_df) * 0.9):, 'split'] = 2 # 10% = test
+        # gather the image names
+        image_names = list(set(caption_df['image_name']))
+        random.shuffle(image_names)
+        # split the image names into train/valid/test
+        train_image_names = image_names[:int(len(image_names) * 0.8)]
+        valid_image_names = image_names[int(len(image_names) * 0.8):int(len(image_names) * 0.9)]
+        test_image_names = image_names[int(len(image_names) * 0.9):]
+
+        # assign the split to the dataframe
+        caption_df.loc[caption_df['image_name'].isin(train_image_names), 'split'] = 0
+        caption_df.loc[caption_df['image_name'].isin(valid_image_names), 'split'] = 1
+        caption_df.loc[caption_df['image_name'].isin(test_image_names), 'split'] = 2
     elif args.task_dataset == 'coco2014':
         train_df = pd.read_json(annotation_path['train'])
         valid_df = pd.read_json(annotation_path['valid'])
@@ -281,7 +331,7 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
             captions_en = row['captions'] # List
             captions_ko = row['caption_ko'] # List
             for j, caption_en, caption_ko in zip(range(len(captions_en)), captions_en, captions_ko):
-                caption_df = caption_df.append({'image_name': image_name, 'caption_number': j+1,
+                caption_df = caption_df.append({'image_name': image_name, 'caption_number': j+1, # Start from 1
                                                 'caption_text': caption_en, 'caption_text_ko': caption_ko, 'split': 0}, ignore_index=True)
 
         # get the captions for the valid set
@@ -292,7 +342,7 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
             captions_en = row['captions']
             captions_ko = row['caption_ko']
             for j, caption_en, caption_ko in zip(range(len(captions_en)), captions_en, captions_ko):
-                caption_df = caption_df.append({'image_name': image_name, 'caption_number': j+1,
+                caption_df = caption_df.append({'image_name': image_name, 'caption_number': j+1, # Start from 1
                                                 'caption_text': caption_en, 'caption_text_ko': caption_ko, 'split': 1}, ignore_index=True)
 
         # for test set, we just append the image names to the dataframe
