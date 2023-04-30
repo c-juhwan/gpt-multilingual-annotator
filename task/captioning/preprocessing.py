@@ -91,7 +91,6 @@ def preprocessing(args: argparse.Namespace) -> None:
     preprocessed_path = os.path.join(args.preprocess_path, args.task, args.task_dataset)
     check_path(preprocessed_path)
 
-    """
     for idx in tqdm(range(len(caption_df)), desc='Preprocessing captions...'):
         # Get the data from the dataframe
         image_name = caption_df['image_name'][idx]
@@ -146,7 +145,7 @@ def preprocessing(args: argparse.Namespace) -> None:
     for split in data_dict.keys():
         with open(os.path.join(preprocessed_path, f'{split}_ORIGINAL_EN.pkl'), 'wb') as f:
             pickle.dump(data_dict[split], f)
-    """
+
     if args.task_dataset == 'coco2014': # Process the Korean captions for the COCO2014 dataset
         for idx in tqdm(range(len(caption_df)), desc='Preprocessing Korean captions...'):
             # Get the data from the dataframe
@@ -183,7 +182,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             with open(os.path.join(preprocessed_path, f'{split}_AIHUB_KO.pkl'), 'wb') as f:
                 pickle.dump(data_dict_ko[split], f)
 
-    """
+
     # Resize the images
     for split in data_dict.keys():
         # create the directory to store the resized images
@@ -217,7 +216,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
             image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
             image.save(os.path.join(resized_image_path, image_name), image.format)
-    """
+
 def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     # Specify the path to the dataset
     if args.task_dataset == 'flickr8k':
