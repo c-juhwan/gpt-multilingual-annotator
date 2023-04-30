@@ -72,19 +72,15 @@ def testing(args: argparse.Namespace) -> None:
     if args.use_wandb:
         import wandb
         from wandb import AlertLevel
-        wandb.init(
-                project=args.proj_name,
-                name=get_wandb_exp_name(args),
-                config=args,
-                tags=[f"Dataset: {args.task_dataset}",
-                      f"Annotation: {args.annotation_mode}",
-                      f"Encoder: {args.encoder_type}",
-                      f"Decoder: {args.decoder_type}",
-                      f"Desc: {args.description}"],
-                resume=True,
-                id=checkpoint['wandb_id']
-            )
-        #wandb.watch(model=model, criterion=seq_loss, log='all', log_freq=10) # Don't use wandb.watch() in testing
+        wandb.init(project=args.proj_name,
+                   name=get_wandb_exp_name(args) + f' - Test: {args.decoding_strategy}',
+                   config=args,
+                   notes=args.description,
+                   tags=["TEST",
+                         f"Dataset: {args.task_dataset}",
+                         f"Annotation: {args.annotation_mode}",
+                         f"Encoder: {args.encoder_type}",
+                         f"Decoder: {args.decoder_type}"])
 
     del checkpoint
 
@@ -103,6 +99,7 @@ def testing(args: argparse.Namespace) -> None:
         input_ids = data_dicts['input_ids'].to(device) # [batch_size, max_seq_len]
         target_ids = input_ids[:, 1:] # [batch_size, max_seq_len - 1] # Remove <bos> token
         caption = data_dicts['caption'] # list of str: for saving result
+        all_caption = data_dicts['all_captions'] # list of list of str: for nlg-eval
 
         # Load image from image_path and make batch
         PIL_images = [Image.open(image_path).convert('RGB') for image_path in image_path]
@@ -120,7 +117,7 @@ def testing(args: argparse.Namespace) -> None:
         # Test - Calculate bleu score
         batch_pred_ids = seq_output.cpu().numpy() # [test_batch_size, max_seq_len]
         batch_pred_sentences = tokenizer.batch_decode(batch_pred_ids, skip_special_tokens=False) # list of str
-        for each_pred_sentence, each_reference in zip(batch_pred_sentences, caption):
+        for each_pred_sentence, each_reference in zip(batch_pred_sentences, all_caption):
             # If '</s>' is in the string, remove it and everything after it
             if '</s>' in each_pred_sentence: # facebook/bart-base
                 each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('</s>')]
@@ -128,12 +125,12 @@ def testing(args: argparse.Namespace) -> None:
                 each_pred_sentence = each_pred_sentence[:each_pred_sentence.index('[EOS]')]
 
             # Convert ' .' to '.' in reference - We need this trust me
-            each_reference = each_reference.replace(' .', '.')
+            each_reference = [each_ref.replace(' .', '.') for each_ref in each_reference]
 
             result_df = result_df.append({'reference': each_reference,
                                           'generated': each_pred_sentence}, ignore_index=True)
 
-            ref_list.append([each_reference])
+            ref_list.append(each_reference) # multiple reference
             hyp_list.append(each_pred_sentence)
 
         # Test - Logging
@@ -149,10 +146,9 @@ def testing(args: argparse.Namespace) -> None:
     write_log(logger, "TEST - Calculating NLG-eval metrics...")
     Eval = NLGEval(metrics_to_omit=['CIDEr', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
 
-    # Convert ' .' in reference to '.' - I don't know why but we need to do this, otherwise it will give error
-    replace_lambda = lambda x: x.replace(' .', '.')
-    ref_list2 = [list(map(replace_lambda, refs)) for refs in zip(*ref_list)]
-
+    # I don't know why but we need this
+    _strip = lambda x: x.strip()
+    ref_list2 = [list(map(_strip, refs)) for refs in zip(*ref_list)]
     metrics_dict = Eval.compute_metrics(ref_list2, hyp_list)
     print(metrics_dict)
 
@@ -179,19 +175,21 @@ def testing(args: argparse.Namespace) -> None:
         writer.close()
     if args.use_wandb:
         wandb_df = pd.DataFrame({
-            'TEST/Decoding': [args.decoding_strategy],
-            'TEST/Dec_arg': [args.beam_size if args.decoding_strategy == 'beam' else args.top_k if args.decoding_strategy == 'topk' else args.top_p if args.decoding_strategy == 'topp' else 0],
-            'TEST/Acc': [test_acc_seq],
-            'TEST/Bleu_1': [metrics_dict['Bleu_1']],
-            'TEST/Bleu_2': [metrics_dict['Bleu_2']],
-            'TEST/Bleu_3': [metrics_dict['Bleu_3']],
-            'TEST/Bleu_4': [metrics_dict['Bleu_4']],
-            'TEST/Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
-            'TEST/Rouge_L': [metrics_dict['ROUGE_L']],
-            'TEST/Meteor': [metrics_dict['METEOR']]
+            'Dataset': [args.task_dataset],
+            'Annotation': [args.annotation_mode],
+            'Decoding': [args.decoding_strategy],
+            'Dec_arg': [args.beam_size if args.decoding_strategy == 'beam' else args.topk if args.decoding_strategy == 'topk' else args.topp if args.decoding_strategy == 'topp' else 0],
+            'Acc': [test_acc_seq],
+            'Bleu_1': [metrics_dict['Bleu_1']],
+            'Bleu_2': [metrics_dict['Bleu_2']],
+            'Bleu_3': [metrics_dict['Bleu_3']],
+            'Bleu_4': [metrics_dict['Bleu_4']],
+            'Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
+            'Rouge_L': [metrics_dict['ROUGE_L']],
+            'Meteor': [metrics_dict['METEOR']]
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
-        wandb.log({"TEST/Result": wandb_table})
+        wandb.log({"TEST_Result": wandb_table})
 
         # Send wandb alert
         if args.decoding_strategy == 'greedy':

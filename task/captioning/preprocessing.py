@@ -91,6 +91,7 @@ def preprocessing(args: argparse.Namespace) -> None:
     preprocessed_path = os.path.join(args.preprocess_path, args.task, args.task_dataset)
     check_path(preprocessed_path)
 
+    """
     for idx in tqdm(range(len(caption_df)), desc='Preprocessing captions...'):
         # Get the data from the dataframe
         image_name = caption_df['image_name'][idx]
@@ -145,12 +146,14 @@ def preprocessing(args: argparse.Namespace) -> None:
     for split in data_dict.keys():
         with open(os.path.join(preprocessed_path, f'{split}_ORIGINAL_EN.pkl'), 'wb') as f:
             pickle.dump(data_dict[split], f)
-
+    """
     if args.task_dataset == 'coco2014': # Process the Korean captions for the COCO2014 dataset
         for idx in tqdm(range(len(caption_df)), desc='Preprocessing Korean captions...'):
             # Get the data from the dataframe
             image_name = caption_df['image_name'][idx]
             caption = caption_df['caption_text_ko'][idx]
+            image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
+            all_caption = image_all_caption_df['caption_text'].tolist()
             caption_number = caption_df['caption_number'][idx]
             split_ = caption_df['split'][idx]
             split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
@@ -172,6 +175,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             data_dict_ko[split]['image_names'].append(image_name)
             data_dict_ko[split]['caption_numbers'].append(caption_number)
             data_dict_ko[split]['captions'].append(caption)
+            data_dict[split]['all_captions'].append(all_caption)
             data_dict_ko[split]['input_ids'].append(tokenized_caption_.squeeze())
 
         # Save the data_dict for each split as pickle file
@@ -179,6 +183,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             with open(os.path.join(preprocessed_path, f'{split}_AIHUB_KO.pkl'), 'wb') as f:
                 pickle.dump(data_dict_ko[split], f)
 
+    """
     # Resize the images
     for split in data_dict.keys():
         # create the directory to store the resized images
@@ -212,7 +217,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
             image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
             image.save(os.path.join(resized_image_path, image_name), image.format)
-
+    """
 def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     # Specify the path to the dataset
     if args.task_dataset == 'flickr8k':

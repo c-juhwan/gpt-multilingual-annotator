@@ -57,7 +57,7 @@ class CaptioningDataset(Dataset):
             caption = data_['captions'][idx] # single string
             input_ids = data_['input_ids'][idx]
             cap_number = data_['caption_numbers'][idx]
-            all_caption = data_['all_captions'][idx] # list of strings
+            all_caption = data_['all_captions'][idx] if args.job == 'testing' else None
 
             self.data_list.append({
                 'image_path': image_path,
@@ -81,7 +81,7 @@ def collate_fn(data):
     captions = [d['caption'] for d in data] # list of strings (batch_size)
     input_ids = torch.stack([d['input_ids'] for d in data], dim=0) # (batch_size, max_seq_len)
     indices = [d['index'] for d in data] # list of integers
-    all_captions = [d['all_captions'] for d in data] # list of list of strings
+    all_captions = [d['all_captions'] for d in data]
 
     datas_dict = {
         'image_path': image_path,

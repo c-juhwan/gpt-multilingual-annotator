@@ -9,8 +9,8 @@ tensorboard==2.11.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
 tokenizers==0.13.2
---find-links https://download.pytorch.org/whl/cu116
-torch==1.13.0+cu116
+#--find-links https://download.pytorch.org/whl/cu116
+#torch==1.13.0+cu116
 torch-tb-profiler==0.4.1
 torchtext==0.14.0
 torchvision==0.14.0

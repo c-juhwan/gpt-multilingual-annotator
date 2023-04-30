@@ -23,7 +23,7 @@ class ArgParser():
                                  help='Dataset for the task; Must be given.')
         self.parser.add_argument('--description', type=str, default='default',
                                  help='Description of the experiment; Default is "default"')
-        annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en']
+        annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en', 'hrqvae_en']
         self.parser.add_argument('--annotation_mode', type=str, choices=annotation_mode_list, default='original_en',
                                  help='Annotation mode; Default is "original"')
 

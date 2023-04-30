@@ -220,3 +220,5 @@ poetry.toml
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,python
 /wandb
+/task/annotating/hrqvae_data
+/task/annotating/hrqvae_model

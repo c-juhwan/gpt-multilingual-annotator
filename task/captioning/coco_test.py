@@ -86,18 +86,15 @@ def testing(args: argparse.Namespace) -> None:
     # Load Wandb
     if args.use_wandb:
         import wandb
-        wandb.init(
-                project=args.proj_name,
-                name=get_wandb_exp_name(args),
-                config=args,
-                tags=[f"Dataset: {args.task_dataset}",
-                      f"Annotation: {args.annotation_mode}",
-                      f"Encoder: {args.encoder_type}",
-                      f"Decoder: {args.decoder_type}",
-                      f"Desc: {args.description}"],
-                resume=True,
-                id=checkpoint['wandb_id']
-            )
+        wandb.init(project=args.proj_name,
+                   name=get_wandb_exp_name(args) + f' - Test: {args.decoding_strategy}',
+                   config=args,
+                   notes=args.description,
+                   tags=["TEST",
+                         f"Dataset: {args.task_dataset}",
+                         f"Annotation: {args.annotation_mode}",
+                         f"Encoder: {args.encoder_type}",
+                         f"Decoder: {args.decoder_type}"])
 
     del checkpoint
 
@@ -257,15 +254,17 @@ def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_d
     if args.use_wandb:
         import wandb
         wandb_df = pd.DataFrame({
-            'TEST/Ko_Val/Decoding': [args.decoding_strategy],
-            'TEST/Ko_Val/Dec_arg': [args.beam_size if args.decoding_strategy == 'beam' else args.top_k if args.decoding_strategy == 'topk' else args.top_p if args.decoding_strategy == 'topp' else 0],
-            'TEST/Ko_Val/Bleu_1': [metrics_dict['Bleu_1']],
-            'TEST/Ko_Val/Bleu_2': [metrics_dict['Bleu_2']],
-            'TEST/Ko_Val/Bleu_3': [metrics_dict['Bleu_3']],
-            'TEST/Ko_Val/Bleu_4': [metrics_dict['Bleu_4']],
-            'TEST/Ko_Val/Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
-            'TEST/Ko_Val/Rouge_L': [metrics_dict['ROUGE_L']],
-            'TEST/Ko_Val/Meteor': [metrics_dict['METEOR']]
+            'Dataset': [args.task_dataset],
+            'Annotation': [args.annotation_mode],
+            'Decoding': [args.decoding_strategy],
+            'Dec_arg': [args.beam_size if args.decoding_strategy == 'beam' else args.topk if args.decoding_strategy == 'topk' else args.topp if args.decoding_strategy == 'topp' else 0],
+            'Bleu_1': [metrics_dict['Bleu_1']],
+            'Bleu_2': [metrics_dict['Bleu_2']],
+            'Bleu_3': [metrics_dict['Bleu_3']],
+            'Bleu_4': [metrics_dict['Bleu_4']],
+            'Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
+            'Rouge_L': [metrics_dict['ROUGE_L']],
+            'Meteor': [metrics_dict['METEOR']]
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
-        wandb.log({"TEST/Ko_Val/Result": wandb_table})
+        wandb.log({"TEST_Result": wandb_table})

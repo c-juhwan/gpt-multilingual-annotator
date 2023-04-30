@@ -69,6 +69,9 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'onlyone_en':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_ONE_EN.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
+    elif args.annotation_mode == 'hrqvae_en':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_HRQ_EN.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
 
     dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
@@ -120,18 +123,17 @@ def training(args: argparse.Namespace) -> None:
         if args.use_wandb:
             import wandb # Only import wandb when it is used
             from wandb import AlertLevel
-            wandb.init(
-                project=args.proj_name,
-                name=get_wandb_exp_name(args),
-                config=args,
-                tags=[f"Dataset: {args.task_dataset}",
-                      f"Annotation: {args.annotation_mode}",
-                      f"Encoder: {args.encoder_type}",
-                      f"Decoder: {args.decoder_type}",
-                      f"Desc: {args.description}"],
-                resume=True,
-                id=checkpoint['wandb_id']
-            )
+            wandb.init(project=args.proj_name,
+                       name=get_wandb_exp_name(args),
+                       config=args,
+                       notes=args.description,
+                       tags=["TRAIN",
+                             f"Dataset: {args.task_dataset}",
+                             f"Annotation: {args.annotation_mode}",
+                             f"Encoder: {args.encoder_type}",
+                             f"Decoder: {args.decoder_type}"],
+                       resume=True,
+                       id=checkpoint['wandb_id'])
             wandb.watch(models=model, criterion=seq_loss, log='all', log_freq=10)
         del checkpoint
 
@@ -144,16 +146,15 @@ def training(args: argparse.Namespace) -> None:
     if args.use_wandb and args.job == 'training':
         import wandb # Only import wandb when it is used
         from wandb import AlertLevel
-        wandb.init(
-            project=args.proj_name,
-            name=get_wandb_exp_name(args),
-            config=args,
-            tags=[f"Dataset: {args.task_dataset}",
-                  f"Annotation: {args.annotation_mode}",
-                  f"Encoder: {args.encoder_type}",
-                  f"Decoder: {args.decoder_type}",
-                  f"Desc: {args.description}"]
-        )
+        wandb.init(project=args.proj_name,
+                       name=get_wandb_exp_name(args),
+                       config=args,
+                       notes=args.description,
+                       tags=["TRAIN",
+                             f"Dataset: {args.task_dataset}",
+                             f"Annotation: {args.annotation_mode}",
+                             f"Encoder: {args.encoder_type}",
+                             f"Decoder: {args.decoder_type}"])
         wandb.watch(models=model, criterion=seq_loss, log='all', log_freq=10)
 
     # Train/Valid - Start training
