@@ -215,6 +215,6 @@ def testing(args: argparse.Namespace) -> None:
     # Save result_df to csv file
     save_path = os.path.join(args.result_path, args.task, args.task_dataset)
     check_path(save_path)
-    result_df.to_csv(os.path.join(args.result_path, args.task, args.task_dataset, 'result.csv'), index=False)
+    result_df.to_csv(os.path.join(args.result_path, args.task, args.task_dataset, f'result_{args.annotation_mode}_{args.decoding_strategy}.csv'), index=False)
 
     return test_acc_seq, metrics_dict

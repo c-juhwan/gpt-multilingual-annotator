@@ -363,6 +363,13 @@ class Decoder(nn.Module):
         if not beam_complete.any():
             final_beam_seqs = decoder_input
             final_beam_scores = current_beam_scores
+        # If some sequences are completed but not all, save the completed sequences
+        elif not beam_complete.all():
+            for beam_idx, is_complete in enumerate(beam_complete):
+                if is_complete:
+                    continue # Don't overwrite the completed sequences
+                final_beam_seqs[beam_idx, :decoder_input.size(1)] = decoder_input[beam_idx, :]
+                final_beam_scores[beam_idx] = current_beam_scores[beam_idx]
 
         # Beam Length Normalization
         each_seq_len = torch.sum(final_beam_seqs != self.args.pad_token_id, dim=1).float() # (beam_size)
