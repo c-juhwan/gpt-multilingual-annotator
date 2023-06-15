@@ -1,5 +1,6 @@
 # Standard Library Modules
 import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import sys
 import random
 import logging
@@ -16,6 +17,7 @@ from easynmt import EasyNMT
 from nlgeval import NLGEval
 # Pytorch Modules
 import torch
+torch.set_num_threads(2)
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
@@ -50,7 +52,7 @@ def testing(args: argparse.Namespace) -> None:
     write_log(logger, "Loading dataset...")
     dataset_dict, dataloader_dict = {}, {}
     dataset_dict['test'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_EN.pkl'), 'test')
-    if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en']:
+    if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en', 'eda_en', 'synonym_en', 'hrqvae_en', 'onlyone_en', 'budget_en']:
         dataset_dict['valid']  = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid')
     elif args.annotation_mode in ['aihub_ko', 'gpt_ko', 'backtrans_ko']:
         dataset_dict['valid']  = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
@@ -167,7 +169,7 @@ def testing(args: argparse.Namespace) -> None:
 
     # Save valid_df and test_df to json file for coco evaluation
     check_path(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode))
-    if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en', 'eda_en', 'synonym_en']:
+    if args.annotation_mode in ['original_en', 'gpt_en', 'backtrans_en', 'eda_en', 'synonym_en', 'hrqvae_en', 'onlyone_en', 'budget_en']:
         valid_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,
                                       f'captions_val2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
         test_df.to_json(os.path.join(args.result_path, args.task, args.task_dataset, args.annotation_mode,

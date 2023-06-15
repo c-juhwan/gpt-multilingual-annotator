@@ -1,5 +1,6 @@
 # Standard Library Modules
 import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import sys
 import math
 import shutil
@@ -10,6 +11,7 @@ from PIL import Image
 from tqdm.auto import tqdm
 # Pytorch Modules
 import torch
+torch.set_num_threads(2)
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
@@ -71,6 +73,9 @@ def training(args: argparse.Namespace) -> None:
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
     elif args.annotation_mode == 'hrqvae_en':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_HRQ_EN.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
+    elif args.annotation_mode == 'budget_en':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_BUD_EN.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
 
     dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,

@@ -174,14 +174,13 @@ def preprocessing(args: argparse.Namespace) -> None:
             data_dict_ko[split]['image_names'].append(image_name)
             data_dict_ko[split]['caption_numbers'].append(caption_number)
             data_dict_ko[split]['captions'].append(caption)
-            data_dict[split]['all_captions'].append(all_caption)
+            data_dict_ko[split]['all_captions'].append(all_caption)
             data_dict_ko[split]['input_ids'].append(tokenized_caption_.squeeze())
 
         # Save the data_dict for each split as pickle file
         for split in data_dict_ko.keys():
             with open(os.path.join(preprocessed_path, f'{split}_AIHUB_KO.pkl'), 'wb') as f:
                 pickle.dump(data_dict_ko[split], f)
-
 
     # Resize the images
     for split in data_dict.keys():

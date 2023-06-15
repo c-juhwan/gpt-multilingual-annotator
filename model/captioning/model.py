@@ -286,10 +286,10 @@ class Decoder(nn.Module):
         for step in range(self.args.max_seq_len - 1): # -1 for <bos>
             if self.decoder_type == 'lstm':
                 word_embed = self.word_embed(decoder_input)
-                decoder_input_embed = word_embed + feature_embed.repeat(1, decoder_input.size(1), 1) # (beam_size, cur_seq_len, embed_size)
+                decoder_input_embed = word_embed + feature_embed.repeat(beam_size, decoder_input.size(1), 1) # (beam_size, cur_seq_len, embed_size)
 
                 # Initialize the hidden state as the feature vector
-                h_init = features.unsqueeze(0).repeat(self.args.decoder_lstm_nlayers, 1, 1) # (nlayers, beam_size, hidden_size)
+                h_init = features.unsqueeze(0).repeat(self.args.decoder_lstm_nlayers, beam_size, 1) # (nlayers, beam_size, hidden_size)
                 c_init = torch.zeros_like(h_init) # (nlayers, beam_size, hidden_size)
 
                 # Pass the input through the LSTM

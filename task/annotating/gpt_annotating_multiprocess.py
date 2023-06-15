@@ -33,6 +33,7 @@ prompt_message = [
     {"role": "system", "content": "You will generate a translation of input sentence in Korean, and also generate 4 paraphrases and its translaton in Korean."},
     {"role": "system", "content": "Output sentence should be neutral expression. You should not generate phrases like 'You will see' or 'You will find'."},
     {"role": "system", "content": "Output sentence will be complete, natural and fluent."},
+    {"role": "system", "content": "Each output sentence should have different expressions as much as possible."},
     {"role": "system", "content": "You will not generate the same sentence as the input sentence."},
     {"role": "system", "content": "You must not generate any biased, offensive, or inappropriate paraphrases."},
     {"role": "system", "content": "User input example: The men at bat readies to swing at the pitch while the umpire looks on.\n"},
@@ -57,9 +58,6 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
     """
     Using multiprocessing
     """
-    # Load caption data
-    caption_df = load_caption_data(args)
-
     # Define data_dict
     with open(os.path.join(args.preprocess_path, 'captioning', args.task_dataset, 'train_ORIGINAL_EN.pkl'), 'rb') as f:
         loaded_data = pickle.load(f)
@@ -74,7 +72,9 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
     }
 
     # gather only caption_number == 1
-    for idx in range(len(loaded_data['caption_numbers'])):
+    total_length = len(loaded_data['image_names'])
+    print(f"Total {total_length} data points")
+    for idx in range(total_length):
         if loaded_data['caption_numbers'][idx] == 1:
             train_data_dict['image_names'].append(loaded_data['image_names'][idx])
             train_data_dict['caption_numbers'].append(loaded_data['caption_numbers'][idx])
@@ -83,6 +83,11 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
             train_data_dict['input_ids'].append(loaded_data['input_ids'][idx])
         else:
             continue
+    assert len(train_data_dict['image_names']) == len(train_data_dict['caption_numbers']) == len(train_data_dict['captions']) == len(train_data_dict['all_captions']) == len(train_data_dict['input_ids']), f"train_data_dict lengths are not equal"
+    #assert len(train_data_dict['image_names']) == total_length // 5, f"len(train_data_dict['image_names']):{len(train_data_dict['image_names'])} != total_length // 5:{total_length // 5}"
+    if len(train_data_dict['image_names']) != total_length // 5:
+        #raise UserWarning(f"len(train_data_dict['image_names']):{len(train_data_dict['image_names'])} != total_length // 5:{total_length // 5}")
+        print(f"len(train_data_dict['image_names']):{len(train_data_dict['image_names'])} != total_length // 5:{total_length // 5}")
 
     # Define data_dict
     data_dict_en = {
@@ -108,34 +113,40 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
 
     # Call multiprocessing using starmap
     # Divide train_df into NUM_PROCESS parts
-    image_names_sublist = np.array_split(train_data_dict['image_names'], NUM_PROCESS)
-    captions_sublist = np.array_split(train_data_dict['captions'], NUM_PROCESS)
-    tqdm_bar.total = len(train_data_dict['image_names']) // NUM_PROCESS
+    image_names_divided_list = []
+    captions_divided_list = []
+    for i in range(NUM_PROCESS):
+        image_names_divided_list.append(train_data_dict['image_names'][i::NUM_PROCESS])
+        captions_divided_list.append(train_data_dict['captions'][i::NUM_PROCESS])
+    tqdm_bar.total = len(train_data_dict['image_names'])
 
     # Call multiprocessing
     starmap_items = [
-        (args, image_names_sublist, captions_sublist) for i in range(NUM_PROCESS)
+        (args, image_names_divided_list[i], captions_divided_list[i]) for i in range(NUM_PROCESS)
     ]
 
+
     print(f"Start multiprocessing with {NUM_PROCESS} processes")
+    print(f"Total {len(train_data_dict['image_names'])} individual image-caption pairs will be processed")
 
     with Pool(NUM_PROCESS) as p:
        results = p.starmap(try_call_gpt, starmap_items)
 
     print("Done with multiprocessing")
+    tqdm_bar.close()
+    with open(os.path.join(preprocessed_path, 'GPT_TEMP.pkl'), 'wb') as f:
+        pickle.dump(results, f)
 
     for result in results:
         data_dict_en['image_names'] += result[0]['image_names'] # result[0] is data_dict_en
         data_dict_en['captions'] += result[0]['captions']
         data_dict_en['all_captions'] += result[0]['all_captions']
         data_dict_en['caption_numbers'] += result[0]['caption_numbers']
-        #data_dict_en['input_ids'] += result[0]['input_ids'] # This will be done after concatenating all data_dict_en
 
         data_dict_ko['image_names'] += result[1]['image_names'] # result[1] is data_dict_ko
         data_dict_ko['captions'] += result[1]['captions']
         data_dict_ko['all_captions'] += result[1]['all_captions']
         data_dict_ko['caption_numbers'] += result[1]['caption_numbers']
-        #data_dict_ko['input_ids'] += result[1]['input_ids'] # This will be done after concatenating all data_dict_ko
 
     for idx in tqdm(range(len(data_dict_en['captions'])), desc='Tokenizing English captions'):
         cap = data_dict_en['captions'][idx]
@@ -150,14 +161,18 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
 
         ko_tokenized_ = torch.cat([torch.tensor([ko_tokenizer.bos_token_id]), # ko_tokenizer requires manual [BOS] and [EOS]
                                     ko_tokenized['input_ids'].squeeze()], dim=0)
-        # Change the first padding token to [EOS]
-        first_pad_idx = torch.where(ko_tokenized_ == ko_tokenizer.pad_token_id)[0][0]
-        ko_tokenized_[first_pad_idx] = ko_tokenizer.eos_token_id
+        # Change the first padding token to [EOS] -> [BOS] + [Korean caption] + [EOS] + [PAD] + [PAD] + ...
+        try:
+            first_pad_idx = torch.where(ko_tokenized_ == ko_tokenizer.pad_token_id)[0][0]
+            ko_tokenized_[first_pad_idx] = ko_tokenizer.eos_token_id
+        except:
+            pass # If there is no padding token, do nothing
 
         data_dict_ko['input_ids'].append(ko_tokenized_.squeeze())
 
-    assert len(data_dict_en['image_names']) == len(data_dict_en['captions']) == len(data_dict_en['all_captions']) == len(data_dict_en['caption_numbers']) == len(data_dict_en['input_ids'])
-    assert len(data_dict_ko['image_names']) == len(data_dict_ko['captions']) == len(data_dict_ko['all_captions']) == len(data_dict_ko['caption_numbers']) == len(data_dict_ko['input_ids'])
+    assert len(data_dict_en['image_names']) == len(data_dict_en['captions']) == len(data_dict_en['all_captions']) == len(data_dict_en['caption_numbers']) == len(data_dict_en['input_ids']), f"data_dict_en lengths are not equal"
+    assert len(data_dict_en['image_names']) == len(data_dict_ko['image_names']), f"len(data_dict_en['image_names']):{len(data_dict_en['image_names'])} != len(data_dict_ko['image_names']):{len(data_dict_ko['image_names'])}"
+    assert len(data_dict_ko['image_names']) == len(data_dict_ko['captions']) == len(data_dict_ko['all_captions']) == len(data_dict_ko['caption_numbers']) == len(data_dict_ko['input_ids']), f"data_dict_ko lengths are not equal"
 
     # Save data_dict_en & data_dict_ko as pickle file
     if args.gpt_model_version == 'gpt-3.5-turbo':
@@ -174,10 +189,8 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         pickle.dump(data_dict_ko, f)
         print(f"Saved {save_name_ko} in {preprocessed_path}")
 
-    tqdm_bar.close()
-
 def try_call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_sublist: list) -> dict:
-    assert len(image_names_sublist) == len(captions_sublist)
+    assert len(image_names_sublist) == len(captions_sublist), "image_names_sublist and captions_sublist must have the same length"
 
     try:
         return call_gpt(args, image_names_sublist, captions_sublist)
@@ -247,7 +260,7 @@ def call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_subli
                 #print(f"Error {error_counter}: {gpt_response}")
                 error_counter += 1
                 if error_counter >= 3:
-                    #print("Error: Too many errors. Skip this image.")
+                    print("Error: Too many errors. Skip this image.")
                     break
                 continue
 
@@ -257,35 +270,28 @@ def call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_subli
                 # if gpt_response is not correctly generated, print error message and try again
                 error_counter += 1
                 if error_counter >= 3:
-                    #print("Error: Too many errors. Skip this image.")
+                    print("Error: Too many errors. Skip this image.")
                     break
                 #print(f"Error {error_counter}: {gpt_response}")
                 continue
         if error_counter >= 3:
             continue # skip this image
 
-        # Tokenize and append to data_dict_en & data_dict_ko
+        # Append to data_dict_en & data_dict_ko
         for i in range(len(result_sentences)):
-            # Tokenize
-            #en_tokenized = en_tokenizer(result_sentences[i]['en'], padding='max_length', truncation=True,
-            #                            max_length=args.max_seq_len, return_tensors='pt')
-            #ko_tokenized = ko_tokenizer(result_sentences[i]['ko'], padding='max_length', truncation=True,
-            #                            max_length=args.max_seq_len, return_tensors='pt')
-
             # Append to data_dict_en
             subset_dict_en['image_names'].append(image_name)
             subset_dict_en['captions'].append(result_sentences[i]['en'])
             subset_dict_en['caption_numbers'].append(i+1)
-            #subset_dict_en['input_ids'].append(en_tokenized['input_ids'].squeeze()) # This will be done after multiprocessing
             subset_dict_en['all_captions'].append([result_sentences[i]['en'] for i in range(len(result_sentences))])
 
             # Append to data_dict_ko
             subset_dict_ko['image_names'].append(image_name)
             subset_dict_ko['captions'].append(result_sentences[i]['ko'])
             subset_dict_ko['caption_numbers'].append(i+1)
-            #subset_dict_ko['input_ids'].append(ko_tokenized['input_ids'].squeeze()) # This will be done after multiprocessing
             subset_dict_ko['all_captions'].append([result_sentences[i]['ko'] for i in range(len(result_sentences))])
 
-        tqdm_bar.update(1)
+        if tqdm_bar.n + NUM_PROCESS <= tqdm_bar.total:
+            tqdm_bar.update(NUM_PROCESS)
 
     return subset_dict_en, subset_dict_ko # return data_dict_en & data_dict_ko

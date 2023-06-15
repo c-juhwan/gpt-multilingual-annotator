@@ -1,5 +1,6 @@
 # Standard Library Modules
 import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import sys
 import logging
 import argparse
@@ -12,6 +13,7 @@ from tqdm.auto import tqdm
 from nlgeval import NLGEval
 # Pytorch Modules
 import torch
+torch.set_num_threads(2)
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
