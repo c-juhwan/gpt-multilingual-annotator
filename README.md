@@ -10,5 +10,5 @@ pip install -r requirements.txt
 
 ```shell
 # Check utils/arguments.py and modify path arguments and others
-python total_run.py
+bash total_run.sh
 ```
