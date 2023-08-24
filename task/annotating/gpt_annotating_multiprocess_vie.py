@@ -27,10 +27,8 @@ from task.captioning.preprocessing import load_caption_data
 prompt_message = [
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "system", "content": "User will ask you to generate paraphrases of a sentence."},
-    {"role": "system", "content": "You will generate paraphrases of the sentence and its translation in Korean language."},
-    {"role": "system", "content": "VERY IMPORTANT: You must speak '-하다' form in Korean. You must not use '-합니다' or other forms. \
-한국어 문장을 번역하여 생성할 때, 반드시 '-하다' 체를 사용하여야 한다. '-합니다', '-입니다' 등의 표현을 절대 사용하지 않는다."},
-    {"role": "system", "content": "You will generate a translation of input sentence in Korean, and also generate 4 paraphrases and its translaton in Korean."},
+    {"role": "system", "content": "You will generate paraphrases of the sentence and its translation in Vietnamese language."},
+    {"role": "system", "content": "You will generate a translation of input sentence in Vietnamese, and also generate 4 paraphrases and its translaton in Vietnamese."},
     {"role": "system", "content": "Output sentence should be neutral expression. You should not generate phrases like 'You will see' or 'You will find'."},
     {"role": "system", "content": "Output sentence will be complete, natural and fluent."},
     {"role": "system", "content": "Each output sentence should have different expressions as much as possible."},
@@ -38,11 +36,11 @@ prompt_message = [
     {"role": "system", "content": "You must not generate any biased, offensive, or inappropriate paraphrases."},
     {"role": "system", "content": "User input example: The men at bat readies to swing at the pitch while the umpire looks on.\n"},
     {"role": "system", "content": "Your output example: \n"},
-    {"role": "system", "content": "Translation: 타석에 있는 남자들이 심판이 지켜보는 동안 스윙할 준비를 한다.\n\
-Paraphrase 1: The male players at the bat ready to hit the ball as the umpire watches attentively. / 심판이 주의 깊게 지켜보는 가운데 배트를 든 남자 선수들이 공을 칠 준비를 하고 있다.\n\
-Paraphrase 2: The male batters at the bat prepare to hit the pitch as the umpire stands watch. / 타석에 선 남성 타자들이 심판이 지켜보는 가운데 타구를 칠 준비를 하고 있다.\n\
-Paraphrase 3: The batters at the plate are poised to swing as the umpire keeps an eye on them. / 타석에 있는 타자가 심판이 지켜보는 가운데 스윙할 자세를 취한다.\n\
-Paraphrase 4: The hitters at the plate wait for themselves to take their swings at the ball while the umpire looks on. / 타석에 선 타자들은 심판이 지켜보는 동안 공을 향해 스윙할 준비를 한다.\n"},
+    {"role": "system", "content": "Translation: Những người đàn ông cầm gậy sẵn sàng vung vợt trên sân trong khi trọng tài quan sát.\n\
+Paraphrase 1: The male players at the bat ready to hit the ball as the umpire watches attentively. / Các cầu thủ nam sẵn sàng đánh bóng trong khi trọng tài chăm chú theo dõi.\n\
+Paraphrase 2: The male batters at the bat prepare to hit the pitch as the umpire stands watch. / Các nam đánh bóng chuẩn bị ra sân khi trọng tài đứng quan sát.\n\
+Paraphrase 3: The batters at the plate are poised to swing as the umpire keeps an eye on them. / Những người đánh bóng trên đĩa sẵn sàng xoay người khi trọng tài để mắt đến họ.\n\
+Paraphrase 4: The hitters at the plate wait for themselves to take their swings at the ball while the umpire looks on. / Những người đứng trên đĩa chờ đợi họ thực hiện cú vung bóng trong khi trọng tài quan sát.\n"},
     {"role": "system", "content": "You will not say 'Sure! here's the output' or any similar phrases."},
     {"role": "system", "content": "You will not say 'I don't know' or any similar phrases."},
     {"role": "system", "content": "You will just generate the output paraphrases following the output example."},
@@ -50,16 +48,13 @@ Paraphrase 4: The hitters at the plate wait for themselves to take their swings 
 ]
 
 en_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base')
-ko_tokenizer = AutoTokenizer.from_pretrained('cosmoquester/bart-ko-base')
+vie_tokenizer = AutoTokenizer.from_pretrained('vinai/bartpho-syllable')
 NUM_PROCESS = 8
 tqdm_bar = tqdm(total=100, desc='Progress', position=0)
 
-def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
-    """
-    Using multiprocessing
-    """
+def gpt_annotating_multiprocess_vie(args: argparse.Namespace) -> None:
     # Define data_dict
-    with open(os.path.join(args.preprocess_path, 'captioning', args.task_dataset, 'train_ORIGINAL_EN.pkl'), 'rb') as f:
+    with open(os.path.join(args.preprocess_path, 'captioning', args.task_dataset, 'train_COCO_EN.pkl'), 'rb') as f:
         loaded_data = pickle.load(f)
 
     train_data_dict = {
@@ -98,13 +93,13 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         'input_ids': [],
         'tokenizer': en_tokenizer,
     }
-    data_dict_ko = {
+    data_dict_vie = {
         'image_names': [],
         'captions': [],
         'all_captions': [],
         'caption_numbers': [],
         'input_ids': [],
-        'tokenizer': ko_tokenizer,
+        'tokenizer': vie_tokenizer,
     }
 
     # Save data as pickle file
@@ -125,7 +120,6 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         (args, image_names_divided_list[i], captions_divided_list[i]) for i in range(NUM_PROCESS)
     ]
 
-
     print(f"Start multiprocessing with {NUM_PROCESS} processes")
     print(f"Total {len(train_data_dict['image_names'])} individual image-caption pairs will be processed")
 
@@ -143,51 +137,40 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         data_dict_en['all_captions'] += result[0]['all_captions']
         data_dict_en['caption_numbers'] += result[0]['caption_numbers']
 
-        data_dict_ko['image_names'] += result[1]['image_names'] # result[1] is data_dict_ko
-        data_dict_ko['captions'] += result[1]['captions']
-        data_dict_ko['all_captions'] += result[1]['all_captions']
-        data_dict_ko['caption_numbers'] += result[1]['caption_numbers']
+        data_dict_vie['image_names'] += result[1]['image_names'] # result[1] is data_dict_vie
+        data_dict_vie['captions'] += result[1]['captions']
+        data_dict_vie['all_captions'] += result[1]['all_captions']
+        data_dict_vie['caption_numbers'] += result[1]['caption_numbers']
 
     for idx in tqdm(range(len(data_dict_en['captions'])), desc='Tokenizing English captions'):
         cap = data_dict_en['captions'][idx]
         tokenized = en_tokenizer(cap, padding='max_length', truncation=True,
                                  max_length=args.max_seq_len, return_tensors='pt')
         data_dict_en['input_ids'].append(tokenized['input_ids'].squeeze())
-    for idx in tqdm(range(len(data_dict_ko['captions'])), desc='Tokenizing Korean captions'):
-        cap = data_dict_ko['captions'][idx]
-
-        ko_tokenized = ko_tokenizer(cap, padding='max_length', truncation=True,
-                                    max_length=args.max_seq_len-1, return_tensors='pt') # -1 for [BOS]
-
-        ko_tokenized_ = torch.cat([torch.tensor([ko_tokenizer.bos_token_id]), # ko_tokenizer requires manual [BOS] and [EOS]
-                                    ko_tokenized['input_ids'].squeeze()], dim=0)
-        # Change the first padding token to [EOS] -> [BOS] + [Korean caption] + [EOS] + [PAD] + [PAD] + ...
-        try:
-            first_pad_idx = torch.where(ko_tokenized_ == ko_tokenizer.pad_token_id)[0][0]
-            ko_tokenized_[first_pad_idx] = ko_tokenizer.eos_token_id
-        except:
-            pass # If there is no padding token, do nothing
-
-        data_dict_ko['input_ids'].append(ko_tokenized_.squeeze())
+    for idx in tqdm(range(len(data_dict_vie['captions'])), desc='Tokenizing Vietnamese captions'):
+        cap = data_dict_vie['captions'][idx]
+        tokenized = vie_tokenizer(cap, padding='max_length', truncation=True,
+                                  max_length=args.max_seq_len, return_tensors='pt')
+        data_dict_vie['input_ids'].append(tokenized['input_ids'].squeeze())
 
     assert len(data_dict_en['image_names']) == len(data_dict_en['captions']) == len(data_dict_en['all_captions']) == len(data_dict_en['caption_numbers']) == len(data_dict_en['input_ids']), f"data_dict_en lengths are not equal"
-    assert len(data_dict_en['image_names']) == len(data_dict_ko['image_names']), f"len(data_dict_en['image_names']):{len(data_dict_en['image_names'])} != len(data_dict_ko['image_names']):{len(data_dict_ko['image_names'])}"
-    assert len(data_dict_ko['image_names']) == len(data_dict_ko['captions']) == len(data_dict_ko['all_captions']) == len(data_dict_ko['caption_numbers']) == len(data_dict_ko['input_ids']), f"data_dict_ko lengths are not equal"
+    assert len(data_dict_en['image_names']) == len(data_dict_vie['image_names']), f"len(data_dict_en['image_names']):{len(data_dict_en['image_names'])} != len(data_dict_vie['image_names']):{len(data_dict_vie['image_names'])}"
+    assert len(data_dict_vie['image_names']) == len(data_dict_vie['captions']) == len(data_dict_vie['all_captions']) == len(data_dict_vie['caption_numbers']) == len(data_dict_vie['input_ids']), f"data_dict_vie lengths are not equal"
 
-    # Save data_dict_en & data_dict_ko as pickle file
+    # Save data_dict_en & data_dict_vie as pickle file
     if args.gpt_model_version == 'gpt-3.5-turbo':
         save_name_en = 'train_GPT35_EN.pkl'
-        save_name_ko = 'train_GPT35_KO.pkl'
+        save_name_vie = 'train_GPT35_VIE.pkl'
     elif args.gpt_model_version == 'gpt-4':
         save_name_en = 'train_GPT4_EN.pkl'
-        save_name_ko = 'train_GPT4_KO.pkl'
+        save_name_vie = 'train_GPT4_VIE.pkl'
 
     with open(os.path.join(preprocessed_path, save_name_en), 'wb') as f:
         pickle.dump(data_dict_en, f)
         print(f"Saved {save_name_en} in {preprocessed_path}")
-    with open(os.path.join(preprocessed_path, save_name_ko), 'wb') as f:
-        pickle.dump(data_dict_ko, f)
-        print(f"Saved {save_name_ko} in {preprocessed_path}")
+    with open(os.path.join(preprocessed_path, save_name_vie), 'wb') as f:
+        pickle.dump(data_dict_vie, f)
+        print(f"Saved {save_name_vie} in {preprocessed_path}")
 
 def try_call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_sublist: list) -> dict:
     assert len(image_names_sublist) == len(captions_sublist), "image_names_sublist and captions_sublist must have the same length"
@@ -211,13 +194,13 @@ def call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_subli
         'input_ids': [],
         'tokenizer': en_tokenizer,
     }
-    subset_dict_ko = {
+    subset_dict_vie = {
         'image_names': [],
         'captions': [],
         'all_captions': [],
         'caption_numbers': [],
         'input_ids': [],
-        'tokenizer': ko_tokenizer,
+        'tokenizer': vie_tokenizer,
     }
 
     for idx in range(len(image_names_sublist)):
@@ -250,9 +233,9 @@ def call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_subli
                 gpt_sentences = list(filter(None, gpt_sentences))
 
                 result_sentences = []
-                result_sentences.append({"en": gold_caption, "ko": gpt_sentences[0]})
+                result_sentences.append({"en": gold_caption, "vie": gpt_sentences[0]})
                 for i in range(1, len(gpt_sentences)):
-                    result_sentences.append({"en": gpt_sentences[i].split(" / ")[0], "ko": gpt_sentences[i].split(" / ")[1]})
+                    result_sentences.append({"en": gpt_sentences[i].split(" / ")[0], "vie": gpt_sentences[i].split(" / ")[1]})
             except KeyboardInterrupt as k:
                 raise k # if KeyboardInterrupt, raise it to stop the program
             except:
@@ -277,7 +260,7 @@ def call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_subli
         if error_counter >= 3:
             continue # skip this image
 
-        # Append to data_dict_en & data_dict_ko
+        # Append to data_dict_en & data_dict_vie
         for i in range(len(result_sentences)):
             # Append to data_dict_en
             subset_dict_en['image_names'].append(image_name)
@@ -285,13 +268,13 @@ def call_gpt(args: argparse.Namespace, image_names_sublist: list, captions_subli
             subset_dict_en['caption_numbers'].append(i+1)
             subset_dict_en['all_captions'].append([result_sentences[i]['en'] for i in range(len(result_sentences))])
 
-            # Append to data_dict_ko
-            subset_dict_ko['image_names'].append(image_name)
-            subset_dict_ko['captions'].append(result_sentences[i]['ko'])
-            subset_dict_ko['caption_numbers'].append(i+1)
-            subset_dict_ko['all_captions'].append([result_sentences[i]['ko'] for i in range(len(result_sentences))])
+            # Append to data_dict_vie
+            subset_dict_vie['image_names'].append(image_name)
+            subset_dict_vie['captions'].append(result_sentences[i]['vie'])
+            subset_dict_vie['caption_numbers'].append(i+1)
+            subset_dict_vie['all_captions'].append([result_sentences[i]['vie'] for i in range(len(result_sentences))])
 
         if tqdm_bar.n + NUM_PROCESS <= tqdm_bar.total:
             tqdm_bar.update(NUM_PROCESS)
 
-    return subset_dict_en, subset_dict_ko # return data_dict_en & data_dict_ko
+    return subset_dict_en, subset_dict_vie # return data_dict_en & data_dict_vie

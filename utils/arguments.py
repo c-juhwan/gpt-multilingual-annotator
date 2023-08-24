@@ -15,15 +15,15 @@ class ArgParser():
         self.parser.add_argument('--task', type=str, choices=task_list, default='captioning',
                                  help='Task to do; Must be given.')
         job_list = ['preprocessing', 'training', 'resume_training', 'testing', 'eval_similarity', # For captioning
-                    'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating', 'onlyone_annotating', 'budget_annotating'] # For annotating
+                    'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating', 'onlyone_annotating', 'budget_annotating', 'translation_annotating'] # For annotating
         self.parser.add_argument('--job', type=str, choices=job_list, default='training',
                                  help='Job to do; Must be given.')
-        dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017']
+        dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017', 'uit_viic']
         self.parser.add_argument('--task_dataset', type=str, choices=dataset_list, default='flickr8k',
                                  help='Dataset for the task; Must be given.')
         self.parser.add_argument('--description', type=str, default='default',
                                  help='Description of the experiment; Default is "default"')
-        annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en', 'hrqvae_en', 'budget_en']
+        annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en', 'hrqvae_en', 'budget_en', 'coco_en', 'original_vie', 'translated_vie', 'gpt_vie']
         self.parser.add_argument('--annotation_mode', type=str, choices=annotation_mode_list, default='original_en',
                                  help='Annotation mode; Default is "original"')
 

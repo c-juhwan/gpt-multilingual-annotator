@@ -26,13 +26,18 @@ def main(args: argparse.Namespace) -> None:
                     from task.captioning.flickr_test import testing as job
                 elif args.task_dataset in ['coco2014', 'coco2017']:
                     from task.captioning.coco_test import testing as job
+                elif args.task_dataset == 'uit_viic':
+                    from task.captioning.uit_test import testing as job
             elif args.job == 'eval_similarity':
                 from task.captioning.eval_similarity import eval_similarity as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         elif args.task == 'annotating':
             if args.job == 'gpt_annotating':
-                from task.annotating.gpt_annotating_multiprocess import gpt_annotating_multiprocess as job
+                if args.task_dataset in ['flickr8k', 'flickr30k', 'coco2014']:
+                    from task.annotating.gpt_annotating_multiprocess_ko import gpt_annotating_multiprocess_ko as job
+                elif args.task_dataset == 'uit_viic':
+                    from task.annotating.gpt_annotating_multiprocess_vie import gpt_annotating_multiprocess_vie as job
             elif args.job == 'backtrans_annotating':
                 from task.annotating.backtrans_annotating_easynmt import backtrans_annotating as job
             elif args.job == 'eda_annotating':
@@ -43,6 +48,9 @@ def main(args: argparse.Namespace) -> None:
                 from task.annotating.onlyone_annotating import onlyone_annotating as job
             elif args.job == 'budget_annotating':
                 from task.annotating.budget_annotating import budget_annotating as job
+            elif args.job == 'translation_annotating':
+                if args.task_dataset == 'uit_viic':
+                    from task.annotating.translation_annotating_vie import translation_annotating_vie as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         else:

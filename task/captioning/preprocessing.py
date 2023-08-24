@@ -1,6 +1,7 @@
 # Standard Library Modules
 import os
 import sys
+import json
 import pickle
 import random
 import argparse
@@ -32,6 +33,7 @@ def preprocessing(args: argparse.Namespace) -> None:
     # Define tokenizer
     en_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base') # Use BART tokenizer for captioning
     ko_tokenizer = AutoTokenizer.from_pretrained('cosmoquester/bart-ko-base')
+    vie_tokenizer = AutoTokenizer.from_pretrained('vinai/bartpho-syllable')
 
     # Define data_dict
     data_dict = {
@@ -84,6 +86,32 @@ def preprocessing(args: argparse.Namespace) -> None:
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': ko_tokenizer,
+        },
+    }
+    data_dict_vie = {
+        'train': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': vie_tokenizer,
+        },
+        'valid': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': vie_tokenizer,
+        },
+        'test': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': vie_tokenizer,
         },
     }
 
@@ -181,6 +209,40 @@ def preprocessing(args: argparse.Namespace) -> None:
         for split in data_dict_ko.keys():
             with open(os.path.join(preprocessed_path, f'{split}_AIHUB_KO.pkl'), 'wb') as f:
                 pickle.dump(data_dict_ko[split], f)
+    if args.task_dataset == 'uit_viic': # Process the Vietnamese captions for the UIT-ViIC dataset
+        # Change name for english processed data_dict
+        for split in data_dict.keys():
+            os.rename(os.path.join(preprocessed_path, f'{split}_ORIGINAL_EN.pkl'), os.path.join(preprocessed_path, f'{split}_COCO_EN.pkl'))
+
+        for idx in tqdm(range(len(caption_df)), desc='Preprocessing Vietnamese captions...'):
+            # Get the data from the dataframe
+            image_name = caption_df['image_name'][idx]
+            caption = caption_df['caption_text_vie'][idx]
+            image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
+            all_caption = image_all_caption_df['caption_text_vie'].tolist()
+            # Remove None from all_caption list
+            all_caption = [x for x in all_caption if x is not None]
+            caption_number = caption_df['caption_number'][idx]
+            split_ = caption_df['split'][idx]
+            split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
+
+            if caption == None:
+                continue
+            # Tokenize the caption
+            tokenized_caption = vie_tokenizer(caption, padding='max_length', truncation=True,
+                                              max_length=args.max_seq_len, return_tensors='pt')
+
+            # Append the data to the data_dict
+            data_dict_vie[split]['image_names'].append(image_name)
+            data_dict_vie[split]['caption_numbers'].append(caption_number)
+            data_dict_vie[split]['captions'].append(caption)
+            data_dict_vie[split]['all_captions'].append(all_caption)
+            data_dict_vie[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
+
+        # Save the data_dict for each split as pickle file
+        for split in data_dict_vie.keys():
+            with open(os.path.join(preprocessed_path, f'{split}_ORIGINAL_VIE.pkl'), 'wb') as f:
+                pickle.dump(data_dict_vie[split], f)
 
     # Resize the images
     for split in data_dict.keys():
@@ -192,7 +254,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             original_image_path = os.path.join(args.data_path, 'flickr8k', 'Images')
         elif args.task_dataset == 'flickr30k':
             original_image_path = os.path.join(args.data_path, 'flickr30k', 'flickr30k_images')
-        elif args.task_dataset == 'coco2014':
+        elif args.task_dataset in ['coco2014', 'uit_viic']:
             if split == 'train':
                 original_image_path = os.path.join(args.data_path, 'coco_2014', 'train2014')
             elif split == 'valid':
@@ -212,9 +274,22 @@ def preprocessing(args: argparse.Namespace) -> None:
 
         # Resize the images
         for image_name in tqdm(data_dict[split]['image_names'], desc=f'Resizing {split} images...'):
-            image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
-            image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
-            image.save(os.path.join(resized_image_path, image_name), image.format)
+            if args.task_dataset != 'uit_viic':
+                image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
+                image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
+                image.save(os.path.join(resized_image_path, image_name), image.format)
+            else: # for uit_viic, we will only save the resized images for the train/valid/test split
+                # if image is included in the train/valid/test split, save the image
+                if image_name in data_dict[split]['image_names']:
+                    if "train" in image_name:
+                        image = Image.open(os.path.join(args.data_path, 'coco_2014', 'train2014', image_name)).convert('RGB')
+                    elif "val" in image_name:
+                        image = Image.open(os.path.join(args.data_path, 'coco_2014', 'val2014', image_name)).convert('RGB')
+                    image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
+
+                    image.save(os.path.join(resized_image_path, image_name), image.format)
+                else:
+                    continue # if not, skip the image
 
 def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     # Specify the path to the dataset
@@ -228,6 +303,8 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
         dataset_path = os.path.join(args.data_path, 'coco_2014')
     elif args.task_dataset == 'coco2017':
         dataset_path = os.path.join(args.data_path, 'coco')
+    elif args.task_dataset == 'uit_viic':
+        dataset_path = os.path.join(args.data_path, 'UIT-ViIC')
 
     # Specify the path to the annotations
     if args.task_dataset == 'flickr8k':
@@ -246,6 +323,17 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
         annotation_path = {
             'train': os.path.join(dataset_path, 'annotations/captions_train2017.json'),
             'valid': os.path.join(dataset_path, 'annotations/captions_val2017.json')
+        }
+    elif args.task_dataset == 'uit_viic':
+        annotation_path = {
+            'train_vie': os.path.join(dataset_path, 'uitviic_captions_train2017.json'),
+            'train_eng': os.path.join(dataset_path, 'uitviic_captions_train2017_EN.json'),
+            'valid_vie': os.path.join(dataset_path, 'uitviic_captions_val2017.json'),
+            'valid_eng': os.path.join(dataset_path, 'uitviic_captions_val2017_EN.json'),
+            'test_vie': os.path.join(dataset_path, 'uitviic_captions_test2017.json'),
+            'test_eng': os.path.join(dataset_path, 'uitviic_captions_test2017_EN.json'),
+            'image_train': os.path.join(args.data_path, 'coco_2014', 'train2014'), # for image path, we use coco2014 image folder
+            'image_valid': os.path.join(args.data_path, 'coco_2014', 'val2014')
         }
     else:
         raise ValueError('Invalid dataset name.')
@@ -393,6 +481,135 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
             caption_df = caption_df.append({'image_name': image_name, 'caption_number': 1,
                                             'caption_text': '', 'split': 2},
                                             ignore_index=True)
+    elif args.task_dataset == 'uit_viic':
+        with open(annotation_path['train_vie'], 'r') as f:
+            train_vie_json = json.load(f)
+            train_vie_df = pd.DataFrame(train_vie_json['annotations'])
+        with open(annotation_path['train_eng'], 'r') as f:
+            train_eng_json = json.load(f)
+            train_eng_df = pd.DataFrame(train_eng_json['annotations'])
+        with open(annotation_path['valid_vie'], 'r') as f:
+            valid_vie_json = json.load(f)
+            valid_vie_df = pd.DataFrame(valid_vie_json['annotations'])
+        with open(annotation_path['valid_eng'], 'r') as f:
+            valid_eng_json = json.load(f)
+            valid_eng_df = pd.DataFrame(valid_eng_json['annotations'])
+        with open(annotation_path['test_vie'], 'r') as f:
+            test_vie_json = json.load(f)
+            test_vie_df = pd.DataFrame(test_vie_json['annotations'])
+        with open(annotation_path['test_eng'], 'r') as f:
+            test_eng_json = json.load(f)
+            test_eng_df = pd.DataFrame(test_eng_json['annotations'])
 
-    print(caption_df)
-    return caption_df
+        # Create empty dataframe to store the captions
+        caption_df = pd.DataFrame(columns=['image_name', 'caption_number', 'caption_text', 'caption_text_vie', 'split'])
+
+        for i in tqdm(range(len(train_eng_df)), total=len(train_eng_df), desc='Loading COCO train captions'):
+            image_id = train_eng_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_eng = train_eng_df.iloc[i]['caption'] # Str
+            # If there is previous caption with same image name, caption_number + 1
+            if len(caption_df[caption_df['image_name'] == image_name]) > 0:
+                caption_number = caption_df[caption_df['image_name'] == image_name]['caption_number'].max() + 1
+            else:
+                caption_number = 1 # Start from 1
+            caption_df = caption_df.append({'image_name': image_name, 'caption_number': caption_number,
+                                            'caption_text': caption_eng, 'caption_text_vie': None, 'split': 0}, ignore_index=True)
+
+        # get the captions for the train set
+        for i in tqdm(range(len(train_vie_df)), total=len(train_vie_df), desc='Loading UIT-ViIC train captions'):
+            image_id = train_vie_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_vie = train_vie_df.iloc[i]['caption'] # Str
+
+            # Fill the caption_text_vie column of caption_df
+            # Find the row with same image_name and caption_number with empty caption_text_vie
+            caption_number = caption_df[(caption_df['image_name'] == image_name) & (caption_df['caption_text_vie'].isnull())]['caption_number'].min()
+
+            # Fill the caption_text_vie column
+            caption_df.loc[(caption_df['image_name'] == image_name) & (caption_df['caption_number'] == caption_number), 'caption_text_vie'] = caption_vie
+
+        # get the captions for the valid set
+        for i in tqdm(range(len(valid_eng_df)), total=len(valid_eng_df), desc='Loading COCO valid captions'):
+            image_id = valid_eng_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_eng = valid_eng_df.iloc[i]['caption'] # Str
+            # If there is previous caption with same image name, caption_number + 1
+            if len(caption_df[caption_df['image_name'] == image_name]) > 0:
+                caption_number = caption_df[caption_df['image_name'] == image_name]['caption_number'].max() + 1
+            else:
+                caption_number = 1 # Start from 1
+            caption_df = caption_df.append({'image_name': image_name, 'caption_number': caption_number,
+                                            'caption_text': caption_eng, 'caption_text_vie': None, 'split': 1}, ignore_index=True)
+
+        # get the captions for the valid set
+        for i in tqdm(range(len(valid_vie_df)), total=len(valid_vie_df), desc='Loading UIT-ViIC valid captions'):
+            image_id = valid_vie_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_vie = valid_vie_df.iloc[i]['caption'] # Str
+
+            # Fill the caption_text_vie column of caption_df
+            # Find the row with same image_name and caption_number with empty caption_text_vie
+            caption_number = caption_df[(caption_df['image_name'] == image_name) & (caption_df['caption_text_vie'].isnull())]['caption_number'].min()
+
+            # Fill the caption_text_vie column
+            caption_df.loc[(caption_df['image_name'] == image_name) & (caption_df['caption_number'] == caption_number), 'caption_text_vie'] = caption_vie
+
+        # get the captions for the test set
+        for i in tqdm(range(len(test_eng_df)), total=len(test_eng_df), desc='Loading COCO test captions'):
+            image_id = test_eng_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_eng = test_eng_df.iloc[i]['caption'] # Str
+            # If there is previous caption with same image name, caption_number + 1
+            if len(caption_df[caption_df['image_name'] == image_name]) > 0:
+                caption_number = caption_df[caption_df['image_name'] == image_name]['caption_number'].max() + 1
+            else:
+                caption_number = 1 # Start from 1
+            caption_df = caption_df.append({'image_name': image_name, 'caption_number': caption_number,
+                                            'caption_text': caption_eng, 'caption_text_vie': None, 'split': 2}, ignore_index=True)
+
+        # get the captions for the test set
+        for i in tqdm(range(len(test_vie_df)), total=len(test_vie_df), desc='Loading UIT-ViIC test captions'):
+            image_id = test_vie_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_vie = test_vie_df.iloc[i]['caption'] # Str
+
+            # Fill the caption_text_vie column of caption_df
+            # Find the row with same image_name and caption_number with empty caption_text_vie
+            caption_number = caption_df[(caption_df['image_name'] == image_name) & (caption_df['caption_text_vie'].isnull())]['caption_number'].min()
+
+            # Fill the caption_text_vie column
+            caption_df.loc[(caption_df['image_name'] == image_name) & (caption_df['caption_number'] == caption_number), 'caption_text_vie'] = caption_vie
+
+        print(caption_df)
+        return caption_df
