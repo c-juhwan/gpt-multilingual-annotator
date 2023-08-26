@@ -34,6 +34,7 @@ def preprocessing(args: argparse.Namespace) -> None:
     en_tokenizer = AutoTokenizer.from_pretrained('facebook/bart-base') # Use BART tokenizer for captioning
     ko_tokenizer = AutoTokenizer.from_pretrained('cosmoquester/bart-ko-base')
     vie_tokenizer = AutoTokenizer.from_pretrained('vinai/bartpho-syllable')
+    pl_tokenizer = AutoTokenizer.from_pretrained('sdadas/polish-bart-base')
 
     # Define data_dict
     data_dict = {
@@ -112,6 +113,32 @@ def preprocessing(args: argparse.Namespace) -> None:
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': vie_tokenizer,
+        },
+    }
+    data_dict_pl = {
+        'train': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': pl_tokenizer,
+        },
+        'valid': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': pl_tokenizer,
+        },
+        'test': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': pl_tokenizer,
         },
     }
 
@@ -243,6 +270,35 @@ def preprocessing(args: argparse.Namespace) -> None:
         for split in data_dict_vie.keys():
             with open(os.path.join(preprocessed_path, f'{split}_ORIGINAL_VIE.pkl'), 'wb') as f:
                 pickle.dump(data_dict_vie[split], f)
+    if args.task_dataset == 'aide': # Process the Polish captions for the AIDe dataset
+        # Change name for english processed data_dict
+        for split in data_dict.keys():
+            os.rename(os.path.join(preprocessed_path, f'{split}_ORIGINAL_EN.pkl'), os.path.join(preprocessed_path, f'{split}_FLICKR_EN.pkl'))
+
+        for idx in tqdm(range(len(caption_df)), desc='Preprocessing Polish captions...'):
+            # Get the data from the dataframe
+            image_name = caption_df['image_name'][idx]
+            caption = caption_df['caption_text_pl'][idx]
+            image_all_caption_df = caption_df[caption_df['image_name'] == image_name] # find the caption with same image name
+            all_caption = image_all_caption_df['caption_text_pl'].tolist()
+            split_ = caption_df['split'][idx]
+            split = 'train' if split_ == 0 else 'valid' if split_ == 1 else 'test'
+
+            # Tokenize the caption
+            tokenized_caption = pl_tokenizer(caption, padding='max_length', truncation=True,
+                                             max_length=args.max_seq_len, return_tensors='pt')
+
+            # Append the data to the data_dict
+            data_dict_pl[split]['image_names'].append(image_name)
+            data_dict_pl[split]['caption_numbers'].append(caption_number)
+            data_dict_pl[split]['captions'].append(caption)
+            data_dict_pl[split]['all_captions'].append(all_caption)
+            data_dict_pl[split]['input_ids'].append(tokenized_caption['input_ids'].squeeze())
+
+        # Save the data_dict for each split as pickle file
+        for split in data_dict_pl.keys():
+            with open(os.path.join(preprocessed_path, f'{split}_ORIGINAL_PL.pkl'), 'wb') as f:
+                pickle.dump(data_dict_pl[split], f)
 
     # Resize the images
     for split in data_dict.keys():
@@ -250,7 +306,7 @@ def preprocessing(args: argparse.Namespace) -> None:
         resized_image_path = os.path.join(args.preprocess_path, args.task, args.task_dataset, f'{split}_resized_images')
         check_path(resized_image_path)
 
-        if args.task_dataset == 'flickr8k':
+        if args.task_dataset in ['flickr8k', 'aide']:
             original_image_path = os.path.join(args.data_path, 'flickr8k', 'Images')
         elif args.task_dataset == 'flickr30k':
             original_image_path = os.path.join(args.data_path, 'flickr30k', 'flickr30k_images')
@@ -278,7 +334,7 @@ def preprocessing(args: argparse.Namespace) -> None:
                 image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
                 image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
                 image.save(os.path.join(resized_image_path, image_name), image.format)
-            else: # for uit_viic, we will only save the resized images for the train/valid/test split
+            elif args.task_dataset == 'uit_viic': # for uit_viic, we will only save the resized images for the train/valid/test split
                 # if image is included in the train/valid/test split, save the image
                 if image_name in data_dict[split]['image_names']:
                     if "train" in image_name:
@@ -290,6 +346,14 @@ def preprocessing(args: argparse.Namespace) -> None:
                     image.save(os.path.join(resized_image_path, image_name), image.format)
                 else:
                     continue # if not, skip the image
+            elif args.task_dataset == 'aide':
+                # if image is included in the train/valid/test split, save the image
+                if image_name in data_dict[split]['image_names']:
+                    image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
+                    image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
+                    image.save(os.path.join(resized_image_path, image_name), image.format)
+                else:
+                    continue
 
 def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     # Specify the path to the dataset
@@ -305,6 +369,8 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
         dataset_path = os.path.join(args.data_path, 'coco')
     elif args.task_dataset == 'uit_viic':
         dataset_path = os.path.join(args.data_path, 'UIT-ViIC')
+    elif args.task_dataset == 'aide':
+        dataset_path = os.path.join(args.data_path, 'AIDe')
 
     # Specify the path to the annotations
     if args.task_dataset == 'flickr8k':
@@ -334,6 +400,13 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
             'test_eng': os.path.join(dataset_path, 'uitviic_captions_test2017_EN.json'),
             'image_train': os.path.join(args.data_path, 'coco_2014', 'train2014'), # for image path, we use coco2014 image folder
             'image_valid': os.path.join(args.data_path, 'coco_2014', 'val2014')
+        }
+    elif args.task_dataset == 'aide':
+        annotation_path = {
+            'train': os.path.join(dataset_path, 'aide_train.json'),
+            'valid': os.path.join(dataset_path, 'aide_val.json'),
+            'test': os.path.join(dataset_path, 'aide_test.json'),
+            'image': os.path.join(args.data_path, 'flickr8k', 'Images')
         }
     else:
         raise ValueError('Invalid dataset name.')
@@ -610,6 +683,16 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
 
             # Fill the caption_text_vie column
             caption_df.loc[(caption_df['image_name'] == image_name) & (caption_df['caption_number'] == caption_number), 'caption_text_vie'] = caption_vie
+
+        print(caption_df)
+        return caption_df
+    elif args.task_dataset == 'aide':
+        train_df = pd.read_json(annotation_path['train'])
+        valid_df = pd.read_json(annotation_path['valid'])
+        test_df = pd.read_json(annotation_path['test'])
+
+        # Combine the train/valid/test dataframe into one dataframe
+        caption_df = pd.concat([train_df, valid_df, test_df], ignore_index=True)
 
         print(caption_df)
         return caption_df

@@ -7,7 +7,7 @@ from utils.utils import set_random_seed
 
 def main(args: argparse.Namespace) -> None:
     # Set random seed
-    if args.seed != 'None':
+    if args.seed != None:
         set_random_seed(args.seed)
 
     start_time = time.time()
@@ -28,6 +28,8 @@ def main(args: argparse.Namespace) -> None:
                     from task.captioning.coco_test import testing as job
                 elif args.task_dataset == 'uit_viic':
                     from task.captioning.uit_test import testing as job
+                elif args.task_dataset == 'aide':
+                    from task.captioning.aide_test import testing as job
             elif args.job == 'eval_similarity':
                 from task.captioning.eval_similarity import eval_similarity as job
             else:
@@ -38,6 +40,8 @@ def main(args: argparse.Namespace) -> None:
                     from task.annotating.gpt_annotating_multiprocess_ko import gpt_annotating_multiprocess_ko as job
                 elif args.task_dataset == 'uit_viic':
                     from task.annotating.gpt_annotating_multiprocess_vie import gpt_annotating_multiprocess_vie as job
+                elif args.task_dataset == 'aide':
+                    from task.annotating.gpt_annotating_multiprocess_pl import gpt_annotating_multiprocess_pl as job
             elif args.job == 'backtrans_annotating':
                 from task.annotating.backtrans_annotating_easynmt import backtrans_annotating as job
             elif args.job == 'eda_annotating':
@@ -51,6 +55,8 @@ def main(args: argparse.Namespace) -> None:
             elif args.job == 'translation_annotating':
                 if args.task_dataset == 'uit_viic':
                     from task.annotating.translation_annotating_vie import translation_annotating_vie as job
+                elif args.task_dataset == 'aide':
+                    from task.annotating.translation_annotating_pl import translation_annotating_pl as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         else:

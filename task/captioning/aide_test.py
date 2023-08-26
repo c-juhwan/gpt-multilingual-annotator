@@ -43,7 +43,7 @@ def testing(args: argparse.Namespace) -> None:
 
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
-    dataset_test = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_VIE.pkl'), 'test')
+    dataset_test = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_PL.pkl'), 'test')
     dataloader_test = DataLoader(dataset_test, batch_size=args.test_batch_size, num_workers=args.num_workers,
                                  shuffle=False, pin_memory=True, drop_last=False, collate_fn=collate_fn)
     tokenizer = dataset_test.tokenizer

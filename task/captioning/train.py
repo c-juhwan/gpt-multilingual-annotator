@@ -86,10 +86,18 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'translated_vie':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_VIE.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_VIE.pkl'), 'valid')
-    elif args.annotation_mode == 'gpt_vie':
-        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT_VIE.pkl'), 'train')
-        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_GPT_VIE.pkl'), 'valid')
-
+    elif args.annotation_mode == 'gpt_vie' and args.gpt_model_version == 'gpt-4':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_VIE.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_VIE.pkl'), 'valid')
+    elif args.annotation_mode == 'original_pl':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_ORIGINAL_PL.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
+    elif args.annotation_mode == 'translated_pl':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_PL.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_pl' and args.gpt_model_version == 'gpt-4':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_PL.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
 
     dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
