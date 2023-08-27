@@ -14,7 +14,7 @@ class ArgParser():
         task_list = ['captioning', 'annotating', 'text_style_transfer', 'annotating_tst', 'style_classification']
         self.parser.add_argument('--task', type=str, choices=task_list, default='captioning',
                                  help='Task to do; Must be given.')
-        job_list = ['preprocessing', 'training', 'resume_training', 'testing', 'eval_similarity', # For captioning
+        job_list = ['preprocessing', 'training', 'resume_training', 'testing', 'eval_similarity', 'inference', # For captioning/TST/classification
                     'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating', 'onlyone_annotating', 'budget_annotating', 'translation_annotating'] # For annotating
         self.parser.add_argument('--job', type=str, choices=job_list, default='training',
                                  help='Job to do; Must be given.')

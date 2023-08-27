@@ -224,3 +224,4 @@ poetry.toml
 /task/annotating/hrqvae_model
 /task/text_style_transfer/GYAFC_Corpus/
 /task/text_style_transfer/XFORMAL/
+/task/style_classification/XFORMAL/

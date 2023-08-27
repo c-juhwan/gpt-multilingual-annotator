@@ -4,11 +4,9 @@ import pickle
 import argparse
 # 3rd-party Modules
 from tqdm.auto import tqdm
-from PIL import Image
 # Pytorch Modules
 import torch
 from torch.utils.data.dataset import Dataset
-import torchvision.transforms as transforms
 
 class TSTDataset(Dataset):
     def __init__(self, args: argparse.Namespace, data_path: str, split: str) -> None:
@@ -18,8 +16,6 @@ class TSTDataset(Dataset):
 
         self.data_list = []
         self.tokenizer = data_['tokenizer']
-
-        already_loaded_data = []
 
         for idx in tqdm(range(len(data_['informal_text'])), desc=f'Loading data from {data_path}'):
             # Load data

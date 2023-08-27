@@ -20,8 +20,6 @@ from transformers import MBartForConditionalGeneration, MBart50TokenizerFast
 # Custom Modules
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from model.text_style_transfer.dataset import TSTDataset, collate_fn
-from model.optimizer.optimizer import get_optimizer
-from model.optimizer.scheduler import get_scheduler
 from utils.utils import TqdmLoggingHandler, write_log, get_tb_exp_name, get_wandb_exp_name, get_torch_device, check_path
 
 def testing(args: argparse.Namespace) -> None:
@@ -77,14 +75,12 @@ def testing(args: argparse.Namespace) -> None:
         import wandb
         from wandb import AlertLevel
         wandb.init(project=args.proj_name,
-                   name=get_wandb_exp_name(args) + f' - Test: {args.decoding_strategy}',
+                   name=get_wandb_exp_name(args),
                    config=args,
                    notes=args.description,
                    tags=["TEST",
                          f"Dataset: {args.task_dataset}",
-                         f"Annotation: {args.annotation_mode}",
-                         f"Encoder: {args.encoder_type}",
-                         f"Decoder: {args.decoder_type}"])
+                         f"Annotation: {args.annotation_mode}"])
 
     del checkpoint
 
@@ -95,7 +91,7 @@ def testing(args: argparse.Namespace) -> None:
     hyp_list = []
 
     for test_iter_idx, data_dicts in enumerate(tqdm(dataloader_test, total=len(dataloader_test), desc=f'Testing')):
-        # Train - Get data from batch
+        # Test - Get data from batch
         informal_text = data_dicts['informal_text']
         all_references = data_dicts['all_references'][0]
 

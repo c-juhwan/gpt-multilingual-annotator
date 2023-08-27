@@ -122,7 +122,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             with open(os.path.join(preprocessed_path, f'{split}_ORIGINAL_IT.pkl'), 'wb') as f:
                 pickle.dump(data_dict[split], f)
 
-def get_dataset_path(args: argparse.Namespace) -> str:
+def get_dataset_path(args: argparse.Namespace) -> tuple:
     # Specify the path to the dataset
     # print current working directory
 
@@ -142,7 +142,6 @@ def get_dataset_path(args: argparse.Namespace) -> str:
     return dataset_path, lang_code
 
 def load_data(args: argparse.Namespace) -> pd.DataFrame:
-
     dataset_path, lang_code = get_dataset_path(args)
 
     # Load the dataset - read json file into a pandas dataframe
