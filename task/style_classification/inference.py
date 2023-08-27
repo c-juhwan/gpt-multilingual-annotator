@@ -37,7 +37,7 @@ def inference(args: argparse.Namespace) -> None:
     logger.propagate = False
 
     # Preprocess generated data for inference
-    pass # TODO
+    preprocess_generated_data(args)
 
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
@@ -86,12 +86,10 @@ def inference(args: argparse.Namespace) -> None:
     model = model.eval()
     test_input_list = []
     test_logit_list = []
-    test_acc_cls = 0
-    test_f1_cls = 0
     for test_iter_idx, data_dicts in enumerate(tqdm(dataloader_test, total=len(dataloader_test), desc=f'Inference')):
         # Inference - Get data from batch
         text = data_dicts['text']
-        label = data_dicts['label'].to(device)
+        # label = data_dicts['label'].to(device)
 
         model_inputs = tokenizer(text, text_target=None,
                                  padding='max_length', truncation=True,
@@ -102,26 +100,13 @@ def inference(args: argparse.Namespace) -> None:
         with torch.no_grad():
             outputs = model(**model_inputs, labels=None) # labels=None for inference
 
-        # Inference - Calculate accuracy
-        batch_acc_cls = (outputs.logits.argmax(dim=-1) == label).float().mean().item()
-        batch_f1_cls = f1_score(label.cpu().numpy(), outputs.logits.argmax(dim=-1).cpu().numpy(), average='macro')
-
         # Logit: We want to save the logits of formality class - label 1
-        batch_logits = outputs.logits[:, 1].cpu().numpy().tolist()
+        output_probs = nn.functional.softmax(outputs.logits, dim=-1)
+        batch_logits = output_probs[:, 1].cpu().numpy().tolist()
         test_logit_list.extend(batch_logits)
         test_input_list.extend(text)
 
-        # Inference - Logging
-        test_acc_cls += batch_acc_cls
-        test_f1_cls += batch_f1_cls
-
-        if test_iter_idx % args.log_freq == 0 or test_iter_idx == len(dataloader_test) - 1:
-            write_log(logger, f"TEST - Iter [{test_iter_idx}/{len(dataloader_test)}] - Acc: {batch_acc_cls:.4f}")
-            write_log(logger, f"TEST - Iter [{test_iter_idx}/{len(dataloader_test)}] - F1: {batch_f1_cls:.4f}")
-
     # Inference - Check loss
-    test_acc_cls /= len(dataloader_test)
-    test_f1_cls /= len(dataloader_test)
     test_average_logit = sum(test_logit_list) / len(test_logit_list) # Average of logits
 
     # Inference - Save the result as json file
@@ -138,12 +123,10 @@ def inference(args: argparse.Namespace) -> None:
         json.dump({'result_list': result_list}, f, indent=4, ensure_ascii=False)
 
     # Final - End of inference
-    write_log(logger, f"Done! - TEST - Acc: {test_acc_cls:.4f} - F1: {test_f1_cls:.4f} - Formality Logit: {test_average_logit:.4f}")
+    write_log(logger, f"Done! - TEST - Formality Logit: {test_average_logit:.4f}")
     if args.use_wandb:
         wandb_df = pd.DataFrame({
             'Dataset': [args.task_dataset],
-            'Acc': [test_acc_cls],
-            'F1': [test_f1_cls],
             'Average_Formality_Logit': [test_average_logit],
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
@@ -152,7 +135,7 @@ def inference(args: argparse.Namespace) -> None:
 
         wandb.finish()
 
-    return test_acc_cls, test_f1_cls
+    return test_average_logit
 
 def preprocess_generated_data(args: argparse.Namespace) -> None:
     # open the generated json file

@@ -27,7 +27,7 @@ class ClassificationDataset(Dataset):
             self.data_list.append({
                 'index': idx,
                 'text': text,
-                'label': torch.tensor(label, dtype=torch.long), # (1)
+                'label': torch.tensor(label, dtype=torch.long) if label != None else None,
                 'category': category,
             })
 
@@ -42,7 +42,10 @@ class ClassificationDataset(Dataset):
 def collate_fn(data):
     index = [d['index'] for d in data] # list of integers (batch_size)
     text = [d['text'] for d in data] # list of strings (batch_size)
-    label = torch.stack([d['label'] for d in data], dim=0) # (batch_size, 1)
+    if data[0]['label'] != None:
+        label = torch.stack([d['label'] for d in data], dim=0) # (batch_size, 1)
+    else:
+        label = [d['label'] for d in data] # list of None (batch_size)
     category = [d['category'] for d in data] # list of strings (batch_size)
 
     datas_dict = {

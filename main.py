@@ -78,6 +78,8 @@ def main(args: argparse.Namespace) -> None:
                 from task.style_classification.train import training as job
             elif args.job == 'testing':
                 from task.style_classification.test import testing as job
+            elif args.job == 'inference':
+                from task.style_classification.inference import inference as job
         else:
             raise ValueError(f'Invalid task: {args.task}')
 
