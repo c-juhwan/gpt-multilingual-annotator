@@ -59,6 +59,25 @@ def main(args: argparse.Namespace) -> None:
                     from task.annotating.translation_annotating_pl import translation_annotating_pl as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
+        elif args.task == 'text_style_transfer':
+            if args.job == 'preprocessing':
+                from task.text_style_transfer.preprocessing import preprocessing as job
+            elif args.job in ['training', 'resume_training']:
+                from task.text_style_transfer.train import training as job
+            elif args.job == 'testing':
+                from task.text_style_transfer.test import testing as job
+        elif args.task == 'annotating_tst':
+            if args.job == 'gpt_annotating':
+                from task.annotating_tst.gpt_annotating import gpt_annotating_multiprocess as job
+            elif args.job == 'translation_annotating':
+                from task.annotating_tst.translation_annotating import translation_annotating as job
+        elif args.task == 'style_classification':
+            if args.job == 'preprocessing':
+                from task.style_classification.preprocessing import preprocessing as job
+            elif args.job in ['training', 'resume_training']:
+                from task.style_classification.train import training as job
+            elif args.job == 'testing':
+                from task.style_classification.test import testing as job
         else:
             raise ValueError(f'Invalid task: {args.task}')
 
