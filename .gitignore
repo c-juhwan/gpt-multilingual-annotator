@@ -225,3 +225,7 @@ poetry.toml
 /task/text_style_transfer/GYAFC_Corpus/
 /task/text_style_transfer/XFORMAL/
 /task/style_classification/XFORMAL/
+/task/captioning/AIDe_ANNOTATED_DESCRIPTIONS/
+/task/captioning/UIT-ViIC/
+/task/captioning/new_lv_data/
+/task/captioning/new_et_data/

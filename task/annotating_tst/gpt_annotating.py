@@ -126,12 +126,12 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         gyafc_data = pickle.load(f)
 
     # We will use only half of the data
-    gyafc_data['informal_text'] = gyafc_data['informal_text'][:len(gyafc_data['informal_text'])//60]
-    gyafc_data['formal_text'] = gyafc_data['formal_text'][:len(gyafc_data['formal_text'])//60]
-    gyafc_data['all_references'] = gyafc_data['all_references'][:len(gyafc_data['all_references'])//60]
-    gyafc_data['text_number'] = gyafc_data['text_number'][:len(gyafc_data['text_number'])//60]
-    gyafc_data['category'] = gyafc_data['category'][:len(gyafc_data['category'])//60]
-    gyafc_data['model_input_ids'] = gyafc_data['model_input_ids'][:len(gyafc_data['model_input_ids'])//60]
+    gyafc_data['informal_text'] = gyafc_data['informal_text'][:len(gyafc_data['informal_text'])//2]
+    gyafc_data['formal_text'] = gyafc_data['formal_text'][:len(gyafc_data['formal_text'])//2]
+    gyafc_data['all_references'] = gyafc_data['all_references'][:len(gyafc_data['all_references'])//2]
+    gyafc_data['text_number'] = gyafc_data['text_number'][:len(gyafc_data['text_number'])//2]
+    gyafc_data['category'] = gyafc_data['category'][:len(gyafc_data['category'])//2]
+    gyafc_data['model_input_ids'] = gyafc_data['model_input_ids'][:len(gyafc_data['model_input_ids'])//2]
 
     save_data = {
         'informal_text': [],
@@ -179,6 +179,12 @@ def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
         save_data['text_number'] += result['text_number']
         save_data['category'] += result['category']
         save_data['model_input_ids'] += result['model_input_ids'] # Currently, we don't use model_input_ids
+
+    for idx in tqdm(range(len(save_data['informal_text'])), desc='Tokenizing...'):
+        tokenized = tokenizer(save_data['informal_text'][idx], text_target=save_data['formal_text'][idx],
+                              padding='max_length', truncation=True, max_length=100, return_tensors='pt')
+
+        save_data['model_input_ids'][idx] = tokenized['input_ids'].squeeze()
 
     # Save data as pickle file
     assert args.gpt_model_version == 'gpt-4' # we will only use gpt-4 here

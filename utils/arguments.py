@@ -18,7 +18,9 @@ class ArgParser():
                     'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating', 'onlyone_annotating', 'budget_annotating', 'translation_annotating'] # For annotating
         self.parser.add_argument('--job', type=str, choices=job_list, default='training',
                                  help='Job to do; Must be given.')
-        dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017', 'uit_viic', 'aide', 'gyafc_en', 'xformal_fr', 'xformal_pt', 'xformal_it']
+        dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017',
+                        'uit_viic', 'aide', 'new_lv', 'new_et',
+                        'gyafc_en', 'xformal_fr', 'xformal_pt', 'xformal_it']
         self.parser.add_argument('--task_dataset', type=str, choices=dataset_list, default='flickr8k',
                                  help='Dataset for the task; Must be given.')
         self.parser.add_argument('--description', type=str, default='default',
@@ -27,6 +29,7 @@ class ArgParser():
                                 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en', 'hrqvae_en', 'budget_en', # Main experiment
                                 'coco_en', 'original_vie', 'translated_vie', 'gpt_vie', # Vietnamese dataset UIT-ViIC
                                 'original_pl', 'translated_pl', 'gpt_pl', # Polish dataset AIDe
+                                'translated_lv', 'gpt_lv', 'translated_et', 'gpt_et', # Dataset construction: Latvian, Estonian
                                 'original_fr', 'translated_fr', 'gpt_fr', # French dataset XFormal
                                 'original_pt', 'translated_pt', 'gpt_pt', # Portuguese dataset XFormal
                                 'original_it', 'translated_it', 'gpt_it', # Italian dataset XFormal
