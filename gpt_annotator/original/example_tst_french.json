@@ -1,0 +1,480 @@
+{
+    "config": {
+        "gpt_model_version": "gpt-3.5-turbo",
+        "task": "text_style_transfer",
+        "source_lang": "en",
+        "target_lang": "fr",
+        "prompt": [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. You are fluent in French and English."
+            },
+            {
+                "role": "system",
+                "content": "You will generate paraphrases of formal and informal sentences and their translations into French."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence should be neutral expression."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence will be complete, natural and fluent."
+            },
+            {
+                "role": "system",
+                "content": "Each output sentence should have different expressions as much as possible."
+            },
+            {
+                "role": "system",
+                "content": "You will not generate the same sentence as the input sentence."
+            },
+            {
+                "role": "system",
+                "content": "You must not generate any biased, offensive, or inappropriate paraphrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'Sure! here's the output' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'I don't know' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will just generate the output paraphrases following the output example."
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nFormal 1: Then kiss her, brother; that works every time.\nInformal 1: Then kiss her;) works every time bro!!!!"
+            },
+            {
+                "role": "assistant",
+                "content": "[Paraphrase]\nFormal 2: Subsequently, kiss her, sibling; that method proves effective on each occasion.\nInformal 2: So, just give her a smooch, bro! It seriously works every single time ;)\n\n[Translation in French]\nFormal 1: Alors embrasse-la, mon frère. Cela fonctionne à chaque fois.\nInformal 1: Alors embrasse-la ;) ça marche à chaque fois frérot!!!!\nFormal 2: Ensuite, embrasse-la, frère ; cette méthode fonctionne à chaque fois.\nInformal 2: Alors, donne-lui un bisou, mec ! Ça marche à tous les coups ;)"
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nFormal 1: After that I never bought her another gift.\nInformal 1: and enver since then i never bought her another gift"
+            }
+        ]
+    },
+    "data": [
+        {
+            "idx": 0,
+            "split": "train",
+            "source_formal": "I prefer to let the guy ask me.",
+            "source_informal": "Sure, it's ok, but I always have let the guy ask me.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 1,
+            "split": "train",
+            "source_formal": "I suffer through verbal abuse from my wife.",
+            "source_informal": "Hmmm, I'm a guy suffering from verbal abuse from my wife.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 2,
+            "split": "train",
+            "source_formal": "You will have more friends than you want.",
+            "source_informal": "You will have more friends that you want... ;)",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 3,
+            "split": "train",
+            "source_formal": "It's nice that you get to see pictures of who you are talking to.",
+            "source_informal": "It's nice, you get to see pictures of who you are talking to!",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 4,
+            "split": "train",
+            "source_formal": "I need to know what to do.",
+            "source_informal": "I NEED TO KNOW WHAT 2 DO",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 5,
+            "split": "train",
+            "source_formal": "Love me, love me. Oh dear God love me!",
+            "source_informal": "LOVE ME LOVE ME OH DEAR GOD LOVE ME!",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 6,
+            "split": "train",
+            "source_formal": "It would not be a word. It would be a singing opera.",
+            "source_informal": "it wouldnt be a word, it would be me singing operah.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 7,
+            "split": "train",
+            "source_formal": "I like my life with the exception of her yelling and using swear words.",
+            "source_informal": "I like my life with the exception of her yelling and cussing.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 8,
+            "split": "train",
+            "source_formal": "I know how it is.",
+            "source_informal": "I know how that is .",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 9,
+            "split": "train",
+            "source_formal": "Does he have a favorite sports team?",
+            "source_informal": "does he have a fave sports team?",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 10,
+            "split": "train",
+            "source_formal": "While you are away, he will do it again and again.",
+            "source_informal": "no why he will just do it over and over some more while you are gone.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 11,
+            "split": "train",
+            "source_formal": "I suggest saying \"Look, this is not working out for me anymore\".",
+            "source_informal": "well the best way is to say look this isnt working out im not into this anymore.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 12,
+            "split": "train",
+            "source_formal": "No sister, I do not think so.",
+            "source_informal": "no sista, i don tink so.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 13,
+            "split": "train",
+            "source_formal": "Then kiss her, brother; that works every time.",
+            "source_informal": "Then kiss her;) works every time bro!!!!",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 14,
+            "split": "train",
+            "source_formal": "Women mature faster than men and some men never mature.",
+            "source_informal": "Women mature way faster than men and some men never mature.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 15,
+            "split": "train",
+            "source_formal": "After that I never bought her another gift.",
+            "source_informal": "and ever since then i never bought her another gift.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 16,
+            "split": "train",
+            "source_formal": "You can attend you class with her if you would like.",
+            "source_informal": "and if you really want you can attend her classes with her.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 17,
+            "split": "train",
+            "source_formal": "It will happen when you choose to be wealthy and powerful.",
+            "source_informal": "you wont until you pick to be wealthy and powerful.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 18,
+            "split": "train",
+            "source_formal": "Please don't beg for love, money or respect.",
+            "source_informal": "dont beg for love dont beg for money and dont beg for respect.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 19,
+            "split": "train",
+            "source_formal": "You will definitely know when you are in love.",
+            "source_informal": "But you will DEFINALTELY know when you are in love!",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 20,
+            "split": "train",
+            "source_formal": "Do not base your relationship on money or material items.",
+            "source_informal": "JUST DON'T BASE YOUR RELATIONSHIP ON MONEY OR MATERIAL THINGS.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 21,
+            "split": "train",
+            "source_formal": "What if someone asked this question: \"How can I get my boyfriend to notice me?\"",
+            "source_informal": "If someone asked this:How can I get my boyfriend to notice me?",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 22,
+            "split": "train",
+            "source_formal": "I am unable to sign in at the chat room.",
+            "source_informal": "i can't sign in at the chatroom",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 23,
+            "split": "train",
+            "source_formal": "If you just live with a friend, I call that friend with rights.",
+            "source_informal": "you just live with a friend,and i call that friend with rights.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 24,
+            "split": "train",
+            "source_formal": "It is hard to tell from this question, but it seems like you are trying to change yourself, and that is a bad idea.",
+            "source_informal": "that trying to change yourself...unless you're really screwed up...but the question doesn't really give us much to go on",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 25,
+            "split": "train",
+            "source_formal": "I don't know what he is thinking, sometimes we just sit and watch.",
+            "source_informal": "i cant read his mind but sometime we just like to watch.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 26,
+            "split": "train",
+            "source_formal": "Go France and see for yourself.",
+            "source_informal": "go to france and hear for yourself.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 27,
+            "split": "train",
+            "source_formal": "She was aware I was previously dating someone that was married.",
+            "source_informal": "She knew my ex was married.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 28,
+            "split": "train",
+            "source_formal": "You should not let what other people say bother you.",
+            "source_informal": "Don't care about what people say.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 29,
+            "split": "train",
+            "source_formal": "I wish you good fortune no matter what course you take.",
+            "source_informal": "well good luck whatever you do.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 30,
+            "split": "train",
+            "source_formal": "The caveat is that you and I are not married, and this is acceptable to me.",
+            "source_informal": "As long as your not my wife ... it's fine with me ...lol ...",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 31,
+            "split": "train",
+            "source_formal": "I recommend that high school students do not date anyone who is still in middle school.",
+            "source_informal": "because you are still in middle school i do not suggest dating someone in high school.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 32,
+            "split": "train",
+            "source_formal": "If this tactic is not successful with one person, then just keep trying with others.",
+            "source_informal": "If that doesn't work try someone else.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 33,
+            "split": "train",
+            "source_formal": "You may want to inform this man that if he makes one more phone call to you, it will result in the loss of his job.",
+            "source_informal": "tell him you are getting fired if he calls one more time",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 34,
+            "split": "train",
+            "source_formal": "After that, a gentleman got involved who changed everything!",
+            "source_informal": "then a guy got involoved and changed everything!",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 35,
+            "split": "train",
+            "source_formal": "I am willing to do so, as long as the four of you are as well!",
+            "source_informal": "There's just one of me, but I'm willing if the 4 of you are!",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 36,
+            "split": "train",
+            "source_formal": "Contrary to what other say, they are not born that way.",
+            "source_informal": "First, they are not BORN that way, no matter what anyone tries to say.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 37,
+            "split": "train",
+            "source_formal": "I think you should try a different kind of female.",
+            "source_informal": "try a different kind of girl.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 38,
+            "split": "train",
+            "source_formal": "She and tend to cross paths every now and then.",
+            "source_informal": "this girl and i cross a few lines here and there.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 39,
+            "split": "train",
+            "source_formal": "You should say yes, if you love him.",
+            "source_informal": "If you really love him then yes.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 40,
+            "split": "train",
+            "source_formal": "It would be wise to separate from him as soon as possible.",
+            "source_informal": "dump him as soon as possible its the only thing you  can do dont be stupid and keep him",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 41,
+            "split": "train",
+            "source_formal": "I have learned to love myself which is something I was unable to do in the past.",
+            "source_informal": "i learned to love myself something i had never done before.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 42,
+            "split": "train",
+            "source_formal": "I have trouble meeting girls because I attend a school with only boys.",
+            "source_informal": "i go to an all guys school and i have been having trouble meeting girls.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 43,
+            "split": "train",
+            "source_formal": "Please talk and do not rush your words",
+            "source_informal": "3_again don't rush and use words...talk...",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 44,
+            "split": "train",
+            "source_formal": "You should go and play with your dolls",
+            "source_informal": "you should be playing with dolls",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 45,
+            "split": "train",
+            "source_formal": "do you talk to that person often?",
+            "source_informal": "Well... Do you talk to that someone much?",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 46,
+            "split": "train",
+            "source_formal": "With no level of committment, is that concidered double dating?",
+            "source_informal": "is that considered double dating?even though no level of commitment with the platonic girl fried",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 47,
+            "split": "train",
+            "source_formal": "It is not the size of the breast that is attractive, but how well one carries herself.",
+            "source_informal": "its not the size of the boob but rather how well one can carry her boobs thats attractive.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 48,
+            "split": "train",
+            "source_formal": "You simply have to do that which makes her happy.",
+            "source_informal": "all you got to do is ring her bell !!!",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 49,
+            "split": "train",
+            "source_formal": "Yes, though I suppose it depends on the vows.",
+            "source_informal": "yes, well i guess it depends on the vows.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 50,
+            "split": "train",
+            "source_formal": "Perhaps you should be asking where the sexually transmitted diseases are in Kay's.",
+            "source_informal": "maybe you `should be asking where are the stds in Ks.",
+            "target_formal": null,
+            "target_informal": null
+        },
+        {
+            "idx": 51,
+            "split": "train",
+            "source_formal": "That means you do not have to antagonize her any longer.",
+            "source_informal": "meaning that you do not need to make her as your enemy any more.",
+            "target_formal": null,
+            "target_informal": null
+        }
+    ]
+}

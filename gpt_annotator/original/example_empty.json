@@ -1,0 +1,39 @@
+{
+    "config": {
+        "gpt_model_version": "gpt-4",
+        "task": "image_captioning",
+        "source_lang": "en",
+        "target_lang": "vie",
+        "prompt": [
+
+        ]
+    },
+    "data": [
+        {
+            "idx": 0,
+            "file_name": "train1.jpg",
+            "split": "train",
+            "source_captions": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "target_gold_captions": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "target_silver_captions": [
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
+        }
+    ]
+}

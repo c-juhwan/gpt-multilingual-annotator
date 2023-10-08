@@ -1,0 +1,896 @@
+{
+    "config": {
+        "gpt_model_version": "gpt-3.5-turbo",
+        "task": "text_style_transfer",
+        "source_lang": "en",
+        "target_lang": "fr",
+        "prompt": [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. You are fluent in French and English."
+            },
+            {
+                "role": "system",
+                "content": "You will generate paraphrases of formal and informal sentences and their translations into French."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence should be neutral expression."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence will be complete, natural and fluent."
+            },
+            {
+                "role": "system",
+                "content": "Each output sentence should have different expressions as much as possible."
+            },
+            {
+                "role": "system",
+                "content": "You will not generate the same sentence as the input sentence."
+            },
+            {
+                "role": "system",
+                "content": "You must not generate any biased, offensive, or inappropriate paraphrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'Sure! here's the output' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'I don't know' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will just generate the output paraphrases following the output example."
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nFormal 1: Then kiss her, brother; that works every time.\nInformal 1: Then kiss her;) works every time bro!!!!"
+            },
+            {
+                "role": "assistant",
+                "content": "[Paraphrase]\nFormal 2: Subsequently, kiss her, sibling; that method proves effective on each occasion.\nInformal 2: So, just give her a smooch, bro! It seriously works every single time ;)\n\n[Translation in French]\nFormal 1: Alors embrasse-la, mon frère. Cela fonctionne à chaque fois.\nInformal 1: Alors embrasse-la ;) ça marche à chaque fois frérot!!!!\nFormal 2: Ensuite, embrasse-la, frère ; cette méthode fonctionne à chaque fois.\nInformal 2: Alors, donne-lui un bisou, mec ! Ça marche à tous les coups ;)"
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nFormal 1: After that I never bought her another gift.\nInformal 1: and enver since then i never bought her another gift"
+            }
+        ]
+    },
+    "data": [
+        {
+            "idx": 0,
+            "split": "train",
+            "source_formal": "I prefer to let the guy ask me.",
+            "source_informal": "Sure, it's ok, but I always have let the guy ask me.",
+            "target_formal": "Je préfère laisser l'homme me poser la question.",
+            "target_informal": "Ouais, c'est ok, mais j'ai toujours laissé l'homme me demander."
+        },
+        {
+            "idx": 1,
+            "split": "train",
+            "source_formal": "I prefer to let the guy ask me.",
+            "source_informal": "Sure, it's ok, but I always have let the guy ask me.",
+            "target_formal": "Ma préférence penche en faveur de laisser le monsieur m'interroger.",
+            "target_informal": "Ouais, c'est cool et tout, mais jusqu'à présent, c'est toujours moi qui ai laissé le mec me demander."
+        },
+        {
+            "idx": 2,
+            "split": "train",
+            "source_formal": "I suffer through verbal abuse from my wife.",
+            "source_informal": "Hmmm, I'm a guy suffering from verbal abuse from my wife.",
+            "target_formal": "Je subis des insultes verbales de la part de ma femme.",
+            "target_informal": "Ouais, je suis un mec et ma femme ne cesse de me lancer des insultes verbales."
+        },
+        {
+            "idx": 3,
+            "split": "train",
+            "source_formal": "I suffer through verbal abuse from my wife.",
+            "source_informal": "Hmmm, I'm a guy suffering from verbal abuse from my wife.",
+            "target_formal": "Je supporte le tourment des mauvais traitements verbaux de la part de mon conjoint.",
+            "target_informal": "Bah, je suis un gars et ma femme ne fait que me lancer des insultes à tout bout de champ."
+        },
+        {
+            "idx": 4,
+            "split": "train",
+            "source_formal": "You will have more friends than you want.",
+            "source_informal": "You will have more friends that you want... ;)",
+            "target_formal": "You will have more friends than you want.",
+            "target_informal": "You will have more friends that you want... ;)"
+        },
+        {
+            "idx": 5,
+            "split": "train",
+            "source_formal": "You will have more friends than you want.",
+            "source_informal": "You will have more friends that you want... ;)",
+            "target_formal": "You will end up with a surplus of friends.",
+            "target_informal": "Tu auras plus d'amis que tu ne pourras gérer... ;)"
+        },
+        {
+            "idx": 6,
+            "split": "train",
+            "source_formal": "It's nice that you get to see pictures of who you are talking to.",
+            "source_informal": "It's nice, you get to see pictures of who you are talking to!",
+            "target_formal": "C'est agréable de pouvoir voir des photos de ceux à qui vous parlez.",
+            "target_informal": "C'est super, tu peux voir des photos de ceux à qui tu parles !"
+        },
+        {
+            "idx": 7,
+            "split": "train",
+            "source_formal": "It's nice that you get to see pictures of who you are talking to.",
+            "source_informal": "It's nice, you get to see pictures of who you are talking to!",
+            "target_formal": "Il est agréable que vous ayez la possibilité de visualiser des images des personnes avec qui vous engagez une conversation.",
+            "target_informal": "C'est cool, tu peux en fait voir des photos des personnes avec qui tu parles !"
+        },
+        {
+            "idx": 8,
+            "split": "train",
+            "source_formal": "I need to know what to do.",
+            "source_informal": "I NEED TO KNOW WHAT 2 DO",
+            "target_formal": "J'ai besoin de savoir quoi faire.",
+            "target_informal": "I NEED TO KNOW WHAT 2 DO"
+        },
+        {
+            "idx": 9,
+            "split": "train",
+            "source_formal": "I need to know what to do.",
+            "source_informal": "I NEED TO KNOW WHAT 2 DO",
+            "target_formal": "J'ai besoin de connaître la marche à suivre.",
+            "target_informal": "Faut vraiment que je sache quoi faire, là, tout de suite !"
+        },
+        {
+            "idx": 10,
+            "split": "train",
+            "source_formal": "Love me, love me. Oh dear God love me!",
+            "source_informal": "LOVE ME LOVE ME OH DEAR GOD LOVE ME!",
+            "target_formal": "Aime-moi, aime-moi. Ô mon Dieu, aime-moi !",
+            "target_informal": "AIME-MOI, AIME-MOI ! OH MON DIEU, AIME-MOI !"
+        },
+        {
+            "idx": 11,
+            "split": "train",
+            "source_formal": "Love me, love me. Oh dear God love me!",
+            "source_informal": "LOVE ME LOVE ME OH DEAR GOD LOVE ME!",
+            "target_formal": "Montre-moi ton amour, montre-moi ton amour. Ô mon Dieu, exprime ton amour pour moi !",
+            "target_informal": "MONTRE-MOI DE L'AMOUR, MONTRE-MOI DE L'AMOUR ! OH MON DIEU, AIME-MOI SIMPLEMENT !"
+        },
+        {
+            "idx": 12,
+            "split": "train",
+            "source_formal": "It would not be a word. It would be a singing opera.",
+            "source_informal": "it wouldnt be a word, it would be me singing operah.",
+            "target_formal": "Ce ne serait pas qu'un simple mot. Ce serait un opéra chanté.",
+            "target_informal": "Ce serait pas juste un mot, ça serait moi qui chante de l'opéra."
+        },
+        {
+            "idx": 13,
+            "split": "train",
+            "source_formal": "It would not be a word. It would be a singing opera.",
+            "source_informal": "it wouldnt be a word, it would be me singing operah.",
+            "target_formal": "Ce ne constituerait pas un simple mot, mais plutôt un opéra grandiose chanté par moi.",
+            "target_informal": "Ce ne serait pas seulement un mot, ce serait moi en train de m'éclater en chantant de l'opéra !"
+        },
+        {
+            "idx": 14,
+            "split": "train",
+            "source_formal": "I like my life with the exception of her yelling and using swear words.",
+            "source_informal": "I like my life with the exception of her yelling and cussing.",
+            "target_formal": "J'apprécie ma vie à l'exception de ses cris et de l'utilisation de jurons.",
+            "target_informal": "J'aime ma vie, sauf quand elle crie et jure."
+        },
+        {
+            "idx": 15,
+            "split": "train",
+            "source_formal": "I like my life with the exception of her yelling and using swear words.",
+            "source_informal": "I like my life with the exception of her yelling and cussing.",
+            "target_formal": "J'aime ma vie, à l'exception des moments où elle élève la voix et utilise des mots grossiers.",
+            "target_informal": "Ma vie est super, sauf quand elle se met à crier et à balancer des jurons."
+        },
+        {
+            "idx": 16,
+            "split": "train",
+            "source_formal": "I know how it is.",
+            "source_informal": "I know how that is .",
+            "target_formal": "Je sais comment ça se passe.",
+            "target_informal": "Je sais comment c'est."
+        },
+        {
+            "idx": 17,
+            "split": "train",
+            "source_formal": "I know how it is.",
+            "source_informal": "I know how that is .",
+            "target_formal": "Je comprends la situation.",
+            "target_informal": "Oh, je comprends totalement."
+        },
+        {
+            "idx": 18,
+            "split": "train",
+            "source_formal": "Does he have a favorite sports team?",
+            "source_informal": "does he have a fave sports team?",
+            "target_formal": "A-t-il une équipe de sport préférée ?",
+            "target_informal": "Est-ce qu'il a une équipe de sport préférée ?"
+        },
+        {
+            "idx": 19,
+            "split": "train",
+            "source_formal": "Does he have a favorite sports team?",
+            "source_informal": "does he have a fave sports team?",
+            "target_formal": "Existe-t-il une équipe de sport qu'il préfère particulièrement ?",
+            "target_informal": "Est-ce qu'il a une équipe dont il est fan ?"
+        },
+        {
+            "idx": 20,
+            "split": "train",
+            "source_formal": "While you are away, he will do it again and again.",
+            "source_informal": "no why he will just do it over and over some more while you are gone.",
+            "target_formal": "Pendant que vous êtes absent, il le refera encore et encore.",
+            "target_informal": "Non, pourquoi il va juste le refaire encore et encore pendant que tu es parti."
+        },
+        {
+            "idx": 21,
+            "split": "train",
+            "source_formal": "While you are away, he will do it again and again.",
+            "source_informal": "no why he will just do it over and over some more while you are gone.",
+            "target_formal": "Durant votre absence, il s'adonnera régulièrement à ce comportement.",
+            "target_informal": "Bah, il va continuer à le faire encore et encore tant que t'es pas là, pas de soucis."
+        },
+        {
+            "idx": 22,
+            "split": "train",
+            "source_formal": "I suggest saying \"Look, this is not working out for me anymore\".",
+            "source_informal": "well the best way is to say look this isnt working out im not into this anymore.",
+            "target_formal": "Je suggère de dire \"Regarde, cela ne fonctionne plus pour moi\".",
+            "target_informal": "Eh bien, le meilleure moyen est de dire \"Regarde, ça ne marche plus, je ne suis plus intéressé(e) par ça\"."
+        },
+        {
+            "idx": 23,
+            "split": "train",
+            "source_formal": "I suggest saying \"Look, this is not working out for me anymore\".",
+            "source_informal": "well the best way is to say look this isnt working out im not into this anymore.",
+            "target_formal": "Ma recommandation serait de l'exprimer comme suit : \"Considère ceci, la situation actuelle n'est plus viable pour moi\".",
+            "target_informal": "Honnêtement, tu devrais juste dire \"Regarde, ça ne fonctionne plus pour moi. Je ne ressens plus rien, tu vois ?\""
+        },
+        {
+            "idx": 24,
+            "split": "train",
+            "source_formal": "No sister, I do not think so.",
+            "source_informal": "no sista, i don tink so.",
+            "target_formal": "Non, ma sœur, je ne pense pas.",
+            "target_informal": "non sista, i don tink so."
+        },
+        {
+            "idx": 25,
+            "split": "train",
+            "source_formal": "No sister, I do not think so.",
+            "source_informal": "no sista, i don tink so.",
+            "target_formal": "Non, ma sœur, je ne pense pas ainsi.",
+            "target_informal": "Nah, sis, je pense vraiment pas ça."
+        },
+        {
+            "idx": 26,
+            "split": "train",
+            "source_formal": "Then kiss her, brother; that works every time.",
+            "source_informal": "Then kiss her;) works every time bro!!!!",
+            "target_formal": "Ensuite, embrasse-la, mon frère ; cela fonctionne à chaque fois.",
+            "target_informal": "Alors embrasse-la ;) ça marche à chaque fois frérot!!!!"
+        },
+        {
+            "idx": 27,
+            "split": "train",
+            "source_formal": "Then kiss her, brother; that works every time.",
+            "source_informal": "Then kiss her;) works every time bro!!!!",
+            "target_formal": "Par la suite, donne-lui un baiser, mon frère ; cette stratégie produit des résultats positifs de manière constante.",
+            "target_informal": "Il suffit de lui en donner un, fréro ! Ça ne rate jamais ;)"
+        },
+        {
+            "idx": 28,
+            "split": "train",
+            "source_formal": "Women mature faster than men and some men never mature.",
+            "source_informal": "Women mature way faster than men and some men never mature.",
+            "target_formal": "Les femmes mûrissent plus rapidement que les hommes et certains hommes ne mûrissent jamais.",
+            "target_informal": "Les femmes mûrissent beaucoup plus vite que les mecs, et certains mecs ne grandissent jamais."
+        },
+        {
+            "idx": 29,
+            "split": "train",
+            "source_formal": "Women mature faster than men and some men never mature.",
+            "source_informal": "Women mature way faster than men and some men never mature.",
+            "target_formal": "Le taux de maturation est généralement plus rapide chez les femmes par rapport aux hommes, et il arrive parfois que certains hommes ne parviennent pas à maturer du tout.",
+            "target_informal": "Les filles grandissent tellement plus vite que les mecs, et il y a des mecs qui ne grandissent tout simplement jamais."
+        },
+        {
+            "idx": 30,
+            "split": "train",
+            "source_formal": "After that I never bought her another gift.",
+            "source_informal": "and ever since then i never bought her another gift.",
+            "target_formal": "Après ça, je ne lui ai plus jamais acheté de cadeau.",
+            "target_informal": "Et depuis ce jour-là, je ne lui ai plus jamais acheté de cadeau."
+        },
+        {
+            "idx": 31,
+            "split": "train",
+            "source_formal": "After that I never bought her another gift.",
+            "source_informal": "and ever since then i never bought her another gift.",
+            "target_formal": "Par la suite, je n'ai jamais acheté un autre cadeau pour elle.",
+            "target_informal": "Donc ouais, je ne lui ai jamais acheté un autre cadeau après ça."
+        },
+        {
+            "idx": 32,
+            "split": "train",
+            "source_formal": "You can attend you class with her if you would like.",
+            "source_informal": "and if you really want you can attend her classes with her.",
+            "target_formal": "Vous pouvez assister à votre cours avec elle si vous le souhaitez.",
+            "target_informal": "Et si tu veux vraiment, tu peux même l'accompagner à ses cours."
+        },
+        {
+            "idx": 33,
+            "split": "train",
+            "source_formal": "You can attend you class with her if you would like.",
+            "source_informal": "and if you really want you can attend her classes with her.",
+            "target_formal": "Si vous le souhaitez, vous avez la possibilité de l'accompagner en cours.",
+            "target_informal": "Et si tu es vraiment motivé, tu peux même te joindre à ses cours avec elle !"
+        },
+        {
+            "idx": 34,
+            "split": "train",
+            "source_formal": "It will happen when you choose to be wealthy and powerful.",
+            "source_informal": "you wont until you pick to be wealthy and powerful.",
+            "target_formal": "Ça se produira lorsque vous choisirez d'être riche et puissant.",
+            "target_informal": "Tu n'y arriveras pas tant que tu ne décideras pas de devenir riche et puissant."
+        },
+        {
+            "idx": 35,
+            "split": "train",
+            "source_formal": "It will happen when you choose to be wealthy and powerful.",
+            "source_informal": "you wont until you pick to be wealthy and powerful.",
+            "target_formal": "L'événement se produira lorsque vous déciderez d'être fortuné et influent.",
+            "target_informal": "Tu n'y parviendras pas tant que tu ne choisiras pas de devenir riche et puissant."
+        },
+        {
+            "idx": 36,
+            "split": "train",
+            "source_formal": "Please don't beg for love, money or respect.",
+            "source_informal": "dont beg for love dont beg for money and dont beg for respect.",
+            "target_formal": "Je vous prie de ne pas quémander l'amour, l'argent ou le respect.",
+            "target_informal": "N'implore pas l'amour, ne mendie pas d'argent et ne réclame pas le respect."
+        },
+        {
+            "idx": 37,
+            "split": "train",
+            "source_formal": "Please don't beg for love, money or respect.",
+            "source_informal": "dont beg for love dont beg for money and dont beg for respect.",
+            "target_formal": "Veuillez ne pas supplier pour de l'affection, de l'aide financière ou de l'admiration.",
+            "target_informal": "Ne te mets pas à mendier l'amour, l'argent ou le respect, d'accord ?"
+        },
+        {
+            "idx": 38,
+            "split": "train",
+            "source_formal": "You will definitely know when you are in love.",
+            "source_informal": "But you will DEFINALTELY know when you are in love!",
+            "target_formal": "Vous saurez certainement quand vous êtes amoureux.",
+            "target_informal": "Mais vous saurez VRAIMENT quand vous serez amoureux !"
+        },
+        {
+            "idx": 39,
+            "split": "train",
+            "source_formal": "You will definitely know when you are in love.",
+            "source_informal": "But you will DEFINALTELY know when you are in love!",
+            "target_formal": "Vous réaliserez sans aucun doute lorsque l'amour vous aura saisi.",
+            "target_informal": "Mais crois-moi, tu sauras DÉFINITIVEMENT quand tu seras amoureux !"
+        },
+        {
+            "idx": 40,
+            "split": "train",
+            "source_formal": "Do not base your relationship on money or material items.",
+            "source_informal": "JUST DON'T BASE YOUR RELATIONSHIP ON MONEY OR MATERIAL THINGS.",
+            "target_formal": "Ne fondez pas votre relation sur l'argent ou les biens matériels.",
+            "target_informal": "NE BASE PAS TA RELATION SUR L'ARGENT OU LES OBJETS MATÉRIELS."
+        },
+        {
+            "idx": 41,
+            "split": "train",
+            "source_formal": "Do not base your relationship on money or material items.",
+            "source_informal": "JUST DON'T BASE YOUR RELATIONSHIP ON MONEY OR MATERIAL THINGS.",
+            "target_formal": "Il est conseillé de ne pas baser votre relation uniquement sur des considérations financières ou matérielles.",
+            "target_informal": "Sérieusement, ne construisez pas votre relation autour de l'argent ou des possessions matérielles."
+        },
+        {
+            "idx": 42,
+            "split": "train",
+            "source_formal": "What if someone asked this question: \"How can I get my boyfriend to notice me?\"",
+            "source_informal": "If someone asked this:How can I get my boyfriend to notice me?",
+            "target_formal": "Que se passerait-il si quelqu'un posait cette question : \"Comment puis-je faire en sorte que mon petit ami me remarque ?\"",
+            "target_informal": "Si quelqu'un posait cette question : Comment puis-je faire pour que mon copain me remarque ?"
+        },
+        {
+            "idx": 43,
+            "split": "train",
+            "source_formal": "What if someone asked this question: \"How can I get my boyfriend to notice me?\"",
+            "source_informal": "If someone asked this:How can I get my boyfriend to notice me?",
+            "target_formal": "Dans le cas où une personne poserait une telle question : \"Que puis-je faire pour attirer l'attention de mon petit ami ?\"",
+            "target_informal": "Si quelqu'un posait cette question : Comment faire pour que mon copain me remarque ?"
+        },
+        {
+            "idx": 44,
+            "split": "train",
+            "source_formal": "I am unable to sign in at the chat room.",
+            "source_informal": "i can't sign in at the chatroom",
+            "target_formal": "Je ne parviens pas à me connecter à la salle de discussion.",
+            "target_informal": "Je ne peux pas me connecter à la salle de chat."
+        },
+        {
+            "idx": 45,
+            "split": "train",
+            "source_formal": "I am unable to sign in at the chat room.",
+            "source_informal": "i can't sign in at the chatroom",
+            "target_formal": "Je rencontre des problèmes pour accéder à la salle de discussion.",
+            "target_informal": "Je n'arrive pas à rentrer dans cette fichue salle de chat."
+        },
+        {
+            "idx": 46,
+            "split": "train",
+            "source_formal": "If you just live with a friend, I call that friend with rights.",
+            "source_informal": "you just live with a friend,and i call that friend with rights.",
+            "target_formal": "Si vous vivez simplement avec un ami, j'appelle cela une amitié avec des privilèges.",
+            "target_informal": "Si tu vis simplement avec un ami, je considère ça comme un ami avec des avantages."
+        },
+        {
+            "idx": 47,
+            "split": "train",
+            "source_formal": "If you just live with a friend, I call that friend with rights.",
+            "source_informal": "you just live with a friend,and i call that friend with rights.",
+            "target_formal": "Si vous cohabitez avec un ami, je qualifie cela d'amitié avec des privilèges.",
+            "target_informal": "Si tu habites avec un ami, moi j'appelle ça un ami avec des bénéfices."
+        },
+        {
+            "idx": 48,
+            "split": "train",
+            "source_formal": "It is hard to tell from this question, but it seems like you are trying to change yourself, and that is a bad idea.",
+            "source_informal": "that trying to change yourself...unless you're really screwed up...but the question doesn't really give us much to go on",
+            "target_formal": "Il est difficile de déterminer à partir de cette question, mais il semble que vous cherchez à vous changer, et c'est une mauvaise idée.",
+            "target_informal": "Ça essaie de se changer... à moins d'être vraiment dans la merde... mais bon, la question ne nous donne pas beaucoup d'indications."
+        },
+        {
+            "idx": 49,
+            "split": "train",
+            "source_formal": "It is hard to tell from this question, but it seems like you are trying to change yourself, and that is a bad idea.",
+            "source_informal": "that trying to change yourself...unless you're really screwed up...but the question doesn't really give us much to go on",
+            "target_formal": "Il est difficile de discerner à partir de cette demande, cependant, il semble que vous cherchiez à vous changer, ce qui est déconseillé.",
+            "target_informal": "C'est un peu difficile à dire juste avec cette question, mais on dirait que tu essaies de te changer... sauf si t'es vraiment dans la merde quoi... mais bon, la question nous donne pas beaucoup de matière à réflexion."
+        },
+        {
+            "idx": 50,
+            "split": "train",
+            "source_formal": "I don't know what he is thinking, sometimes we just sit and watch.",
+            "source_informal": "i cant read his mind but sometime we just like to watch.",
+            "target_formal": "Je ne sais pas à quoi il pense, parfois nous nous contentons de nous asseoir et d'observer.",
+            "target_informal": "Je ne peux pas lire dans ses pensées, mais parfois on aime juste regarder."
+        },
+        {
+            "idx": 51,
+            "split": "train",
+            "source_formal": "I don't know what he is thinking, sometimes we just sit and watch.",
+            "source_informal": "i cant read his mind but sometime we just like to watch.",
+            "target_formal": "Je suis incertain de ses pensées ; de temps en temps, nous nous asseyons simplement et observons.",
+            "target_informal": "Je ne sais pas ce qui se passe dans sa tête, mais parfois on aime juste regarder."
+        },
+        {
+            "idx": 52,
+            "split": "train",
+            "source_formal": "Go France and see for yourself.",
+            "source_informal": "go to france and hear for yourself.",
+            "target_formal": "Allez en France et voyez par vous-même.",
+            "target_informal": "Va en France et écoute par toi-même."
+        },
+        {
+            "idx": 53,
+            "split": "train",
+            "source_formal": "Go France and see for yourself.",
+            "source_informal": "go to france and hear for yourself.",
+            "target_formal": "Rendez-vous en France et expérimentez par vous-même.",
+            "target_informal": "Vas en France et constate-le de tes propres oreilles !"
+        },
+        {
+            "idx": 54,
+            "split": "train",
+            "source_formal": "She was aware I was previously dating someone that was married.",
+            "source_informal": "She knew my ex was married.",
+            "target_formal": "Elle était consciente que j'étais autrefois en couple avec une personne mariée.",
+            "target_informal": "Elle savait que mon ex était marié."
+        },
+        {
+            "idx": 55,
+            "split": "train",
+            "source_formal": "She was aware I was previously dating someone that was married.",
+            "source_informal": "She knew my ex was married.",
+            "target_formal": "Elle avait connaissance du fait que j'étais auparavant en relation avec une personne mariée.",
+            "target_informal": "Elle savait que mon ex était marié à quelqu'un d'autre."
+        },
+        {
+            "idx": 56,
+            "split": "train",
+            "source_formal": "You should not let what other people say bother you.",
+            "source_informal": "Don't care about what people say.",
+            "target_formal": "Vous ne devriez pas laisser ce que les autres disent vous ennuyer.",
+            "target_informal": "Fichez-vous de ce que les gens disent."
+        },
+        {
+            "idx": 57,
+            "split": "train",
+            "source_formal": "You should not let what other people say bother you.",
+            "source_informal": "Don't care about what people say.",
+            "target_formal": "Il est important de ne pas se laisser déranger par les opinions d'autrui.",
+            "target_informal": "On s'en fout de ce que les gens disent, non ?"
+        },
+        {
+            "idx": 58,
+            "split": "train",
+            "source_formal": "I wish you good fortune no matter what course you take.",
+            "source_informal": "well good luck whatever you do.",
+            "target_formal": "Je vous souhaite bonne fortune, peu importe la voie que vous empruntez.",
+            "target_informal": "Eh bien, bonne chance dans tout ce que tu fais."
+        },
+        {
+            "idx": 59,
+            "split": "train",
+            "source_formal": "I wish you good fortune no matter what course you take.",
+            "source_informal": "well good luck whatever you do.",
+            "target_formal": "Je vous souhaite de connaître de bons résultats quelle que soit votre décision.",
+            "target_informal": "Hey, bonne chance pour tout ce que tu décides de faire !"
+        },
+        {
+            "idx": 60,
+            "split": "train",
+            "source_formal": "The caveat is that you and I are not married, and this is acceptable to me.",
+            "source_informal": "As long as your not my wife ... it's fine with me ...lol ...",
+            "target_formal": "La condition est que vous et moi ne sommes pas mariés, et cela me convient.",
+            "target_informal": "Du moment que tu n'es pas ma femme... ça me va... haha..."
+        },
+        {
+            "idx": 61,
+            "split": "train",
+            "source_formal": "The caveat is that you and I are not married, and this is acceptable to me.",
+            "source_informal": "As long as your not my wife ... it's fine with me ...lol ...",
+            "target_formal": "La condition est que ni vous ni moi ne sommes mariés, et je trouve cela satisfaisant.",
+            "target_informal": "Donc, tant que tu n'es pas ma femme, tout va bien pour moi... haha..."
+        },
+        {
+            "idx": 62,
+            "split": "train",
+            "source_formal": "I recommend that high school students do not date anyone who is still in middle school.",
+            "source_informal": "because you are still in middle school i do not suggest dating someone in high school.",
+            "target_formal": "Je recommande aux lycéens de ne pas sortir avec quelqu'un qui est encore au collège.",
+            "target_informal": "Parce que tu es encore au collège, je ne recommande pas de sortir avec quelqu'un au lycée."
+        },
+        {
+            "idx": 63,
+            "split": "train",
+            "source_formal": "I recommend that high school students do not date anyone who is still in middle school.",
+            "source_informal": "because you are still in middle school i do not suggest dating someone in high school.",
+            "target_formal": "Je recommande aux lycéens de s'abstenir de sortir avec des personnes encore au collège.",
+            "target_informal": "Je ne te conseillerais pas de sortir avec quelqu'un au lycée parce que tu es encore au collège."
+        },
+        {
+            "idx": 64,
+            "split": "train",
+            "source_formal": "If this tactic is not successful with one person, then just keep trying with others.",
+            "source_informal": "If that doesn't work try someone else.",
+            "target_formal": "Si cette tactique n'est pas couronnée de succès avec une personne, alors persistez et essayez avec d'autres.",
+            "target_informal": "Si ça ne marche pas, essaye avec quelqu'un d'autre."
+        },
+        {
+            "idx": 65,
+            "split": "train",
+            "source_formal": "If this tactic is not successful with one person, then just keep trying with others.",
+            "source_informal": "If that doesn't work try someone else.",
+            "target_formal": "Dans le cas où cette stratégie échoue avec une personne, persévérez et essayez-la avec d'autres.",
+            "target_informal": "Si ça marche pas, passe à autre chose et essaye avec quelqu'un d'autre."
+        },
+        {
+            "idx": 66,
+            "split": "train",
+            "source_formal": "You may want to inform this man that if he makes one more phone call to you, it will result in the loss of his job.",
+            "source_informal": "tell him you are getting fired if he calls one more time",
+            "target_formal": "Vous voudrez peut-être informer cet homme que s'il effectue un autre appel téléphonique vers vous, cela entraînera la perte de son emploi.",
+            "target_informal": "Dis-lui que tu vas te faire virer s'il rappelle encore une fois."
+        },
+        {
+            "idx": 67,
+            "split": "train",
+            "source_formal": "You may want to inform this man that if he makes one more phone call to you, it will result in the loss of his job.",
+            "source_informal": "tell him you are getting fired if he calls one more time",
+            "target_formal": "Il serait judicieux d'informer cet homme que tout appel téléphonique supplémentaire de sa part pourrait entraîner la résiliation de son contrat de travail.",
+            "target_informal": "Fais-lui comprendre que s'il rappelle une fois de plus, il va se faire virer !"
+        },
+        {
+            "idx": 68,
+            "split": "train",
+            "source_formal": "After that, a gentleman got involved who changed everything!",
+            "source_informal": "then a guy got involoved and changed everything!",
+            "target_formal": "Après cela, un gentleman s'est impliqué et a tout changé !",
+            "target_informal": "Ensuite, un mec s'est impliqué et a tout changé !"
+        },
+        {
+            "idx": 69,
+            "split": "train",
+            "source_formal": "After that, a gentleman got involved who changed everything!",
+            "source_informal": "then a guy got involoved and changed everything!",
+            "target_formal": "À la suite de cela, un individu de haute moralité s'est impliqué et a modifié considérablement les événements.",
+            "target_informal": "Alors ouais, ce type est apparu de nulle part et a complètement changé la donne !"
+        },
+        {
+            "idx": 70,
+            "split": "train",
+            "source_formal": "I am willing to do so, as long as the four of you are as well!",
+            "source_informal": "There's just one of me, but I'm willing if the 4 of you are!",
+            "target_formal": "Je suis prêt à le faire, à condition que vous soyez aussi tous les quatre !",
+            "target_informal": "C'est juste moi ici, mais je suis partant si les quatre d'entre vous le sont !"
+        },
+        {
+            "idx": 71,
+            "split": "train",
+            "source_formal": "I am willing to do so, as long as the four of you are as well!",
+            "source_informal": "There's just one of me, but I'm willing if the 4 of you are!",
+            "target_formal": "Je suis disposé à le faire à condition que vous soyez tous les quatre également prêts !",
+            "target_informal": "Bon, c'est juste moi ici, mais je suis totalement partant si vous êtes tous les quatre !"
+        },
+        {
+            "idx": 72,
+            "split": "train",
+            "source_formal": "Contrary to what other say, they are not born that way.",
+            "source_informal": "First, they are not BORN that way, no matter what anyone tries to say.",
+            "target_formal": "Contrairement à ce que disent les autres, ils ne naissent pas ainsi.",
+            "target_informal": "D'abord, ils ne naissent pas comme ça, peu importe ce que les gens essaient de dire."
+        },
+        {
+            "idx": 73,
+            "split": "train",
+            "source_formal": "Contrary to what other say, they are not born that way.",
+            "source_informal": "First, they are not BORN that way, no matter what anyone tries to say.",
+            "target_formal": "Contrairement à ce que d'autres disent, ils ne sont pas nés de cette manière naturellement.",
+            "target_informal": "Oublie ce que les autres disent, mais ils ne viennent certainement pas au monde comme ça."
+        },
+        {
+            "idx": 74,
+            "split": "train",
+            "source_formal": "I think you should try a different kind of female.",
+            "source_informal": "try a different kind of girl.",
+            "target_formal": "Je pense que tu devrais essayer un type de femme différent.",
+            "target_informal": "Essaye une fille différente."
+        },
+        {
+            "idx": 75,
+            "split": "train",
+            "source_formal": "I think you should try a different kind of female.",
+            "source_informal": "try a different kind of girl.",
+            "target_formal": "À mon avis, il serait judicieux d'explorer un autre genre de femme.",
+            "target_informal": "Tu devrais carrément essayer un autre genre de nana !"
+        },
+        {
+            "idx": 76,
+            "split": "train",
+            "source_formal": "She and tend to cross paths every now and then.",
+            "source_informal": "this girl and i cross a few lines here and there.",
+            "target_formal": "Elle et tendent à se croiser de temps en temps.",
+            "target_informal": "Cette fille et moi, on se croise de temps en temps, tu vois."
+        },
+        {
+            "idx": 77,
+            "split": "train",
+            "source_formal": "She and tend to cross paths every now and then.",
+            "source_informal": "this girl and i cross a few lines here and there.",
+            "target_formal": "Elle et se croisent occasionnellement leurs chemins de temps en temps.",
+            "target_informal": "Moi et cette fille, on se croise souvent et tout, tu sais ? ;)"
+        },
+        {
+            "idx": 78,
+            "split": "train",
+            "source_formal": "You should say yes, if you love him.",
+            "source_informal": "If you really love him then yes.",
+            "target_formal": "Si tu l'aimes vraiment, tu devrais dire oui.",
+            "target_informal": "Si tu l'aimes vraiment, alors oui."
+        },
+        {
+            "idx": 79,
+            "split": "train",
+            "source_formal": "You should say yes, if you love him.",
+            "source_informal": "If you really love him then yes.",
+            "target_formal": "Si vos sentiments à son égard sont sincères, il est conseillé de répondre affirmativement.",
+            "target_informal": "Si tu l'aimes vraiment, alors vas-y et dis oui !"
+        },
+        {
+            "idx": 80,
+            "split": "train",
+            "source_formal": "It would be wise to separate from him as soon as possible.",
+            "source_informal": "dump him as soon as possible its the only thing you  can do dont be stupid and keep him",
+            "target_formal": "Il serait judicieux de vous séparer de lui le plus rapidement possible.",
+            "target_informal": "Largue-le dès que possible, c'est la seule chose que tu peux faire ne sois pas stupide et garde-le !"
+        },
+        {
+            "idx": 81,
+            "split": "train",
+            "source_formal": "It would be wise to separate from him as soon as possible.",
+            "source_informal": "dump him as soon as possible its the only thing you  can do dont be stupid and keep him",
+            "target_formal": "Il est sage de vous séparer de lui au plus tôt.",
+            "target_informal": "Fous-lui une bonne claque et largue-le dès que possible ! C'est la seule chose intelligente à faire ! Ne sois pas bête et garde-le."
+        },
+        {
+            "idx": 82,
+            "split": "train",
+            "source_formal": "I have learned to love myself which is something I was unable to do in the past.",
+            "source_informal": "i learned to love myself something i had never done before.",
+            "target_formal": "J'ai appris à m'aimer moi-même, ce qui est quelque chose que je n'arrivais pas à faire par le passé.",
+            "target_informal": "J'ai appris à m'aimer, quelque chose que je n'avais jamais fait auparavant."
+        },
+        {
+            "idx": 83,
+            "split": "train",
+            "source_formal": "I have learned to love myself which is something I was unable to do in the past.",
+            "source_informal": "i learned to love myself something i had never done before.",
+            "target_formal": "J'ai acquis la capacité d'embrasser l'amour de soi, un concept qui m'échappait dans le passé.",
+            "target_informal": "En fait, j'ai appris à m'aimer, ce n'est pas quelque chose que j'ai vraiment fait avant."
+        },
+        {
+            "idx": 84,
+            "split": "train",
+            "source_formal": "I have trouble meeting girls because I attend a school with only boys.",
+            "source_informal": "i go to an all guys school and i have been having trouble meeting girls.",
+            "target_formal": "J'ai du mal à rencontrer des filles car je fréquente une école exclusivement pour les garçons.",
+            "target_informal": "J'ai du mal à rencontrer des filles car je suis inscrit dans une école réservée aux garçons."
+        },
+        {
+            "idx": 85,
+            "split": "train",
+            "source_formal": "I have trouble meeting girls because I attend a school with only boys.",
+            "source_informal": "i go to an all guys school and i have been having trouble meeting girls.",
+            "target_formal": "Rencontrer des filles représente un défi pour moi car je suis inscrit dans une école exclusivement masculine.",
+            "target_informal": "C'est un peu difficile de rencontrer des filles parce que je vais dans une école avec que des mecs."
+        },
+        {
+            "idx": 86,
+            "split": "train",
+            "source_formal": "Please talk and do not rush your words",
+            "source_informal": "3_again don't rush and use words...talk...",
+            "target_formal": "Veuillez parler sans hâte et choisir vos mots.",
+            "target_informal": "Ne te précipite pas et utilise des mots... Parle..."
+        },
+        {
+            "idx": 87,
+            "split": "train",
+            "source_formal": "Please talk and do not rush your words",
+            "source_informal": "3_again don't rush and use words...talk...",
+            "target_formal": "Je vous prie de prendre la parole sans vous presser.",
+            "target_informal": "Prends ton temps et utilise tes mots, pas besoin de se presser... On discute..."
+        },
+        {
+            "idx": 88,
+            "split": "train",
+            "source_formal": "You should go and play with your dolls",
+            "source_informal": "you should be playing with dolls",
+            "target_formal": "Tu devrais aller jouer avec tes poupées.",
+            "target_informal": "Tu devrais en fait jouer avec des poupées."
+        },
+        {
+            "idx": 89,
+            "split": "train",
+            "source_formal": "You should go and play with your dolls",
+            "source_informal": "you should be playing with dolls",
+            "target_formal": "Il serait conseillé que tu ailles jouer avec tes poupées.",
+            "target_informal": "Tu devrais carrément aller jouer avec tes poupées !"
+        },
+        {
+            "idx": 90,
+            "split": "train",
+            "source_formal": "do you talk to that person often?",
+            "source_informal": "Well... Do you talk to that someone much?",
+            "target_formal": "Parlez-vous souvent à cette personne ?",
+            "target_informal": "Eh bien... Tu parles souvent à ce quelqu'un-là ?"
+        },
+        {
+            "idx": 91,
+            "split": "train",
+            "source_formal": "do you talk to that person often?",
+            "source_informal": "Well... Do you talk to that someone much?",
+            "target_formal": "À quelle fréquence discutez-vous avec cette personne ?",
+            "target_informal": "Alors, est-ce que tu parles beaucoup avec cette personne ?"
+        },
+        {
+            "idx": 92,
+            "split": "train",
+            "source_formal": "With no level of committment, is that concidered double dating?",
+            "source_informal": "is that considered double dating?even though no level of commitment with the platonic girl fried",
+            "target_formal": "Sans aucun niveau d'engagement, est-ce considéré comme un double rendez-vous ?",
+            "target_informal": "Est-ce considéré comme un double rendez-vous alors qu'il n'y a pas d'engagement avec cette amie platonique ?"
+        },
+        {
+            "idx": 93,
+            "split": "train",
+            "source_formal": "With no level of committment, is that concidered double dating?",
+            "source_informal": "is that considered double dating?even though no level of commitment with the platonic girl fried",
+            "target_formal": "Est-ce considéré comme un double rendez-vous même en l'absence de tout niveau d'engagement ?",
+            "target_informal": "Est-ce toujours considéré comme un double rendez-vous même s'il n'y a pas d'engagement avec cette amie platonique ?"
+        },
+        {
+            "idx": 94,
+            "split": "train",
+            "source_formal": "It is not the size of the breast that is attractive, but how well one carries herself.",
+            "source_informal": "its not the size of the boob but rather how well one can carry her boobs thats attractive.",
+            "target_formal": "Ce n'est pas la taille de la poitrine qui est attractive, mais la façon dont on se comporte.",
+            "target_informal": "Ce n'est pas la taille des seins qui compte, mais plutôt comment on les porte. C'est ça qui est attirant."
+        },
+        {
+            "idx": 95,
+            "split": "train",
+            "source_formal": "It is not the size of the breast that is attractive, but how well one carries herself.",
+            "source_informal": "its not the size of the boob but rather how well one can carry her boobs thats attractive.",
+            "target_formal": "L'attractivité ne dépend pas de la taille des seins, mais plutôt de la manière dont on se présente.",
+            "target_informal": "Ce n'est pas la taille des boobs qui compte, mais plutôt comment on les porte. C'est ça qui est attirant, tu vois ?"
+        },
+        {
+            "idx": 96,
+            "split": "train",
+            "source_formal": "You simply have to do that which makes her happy.",
+            "source_informal": "all you got to do is ring her bell !!!",
+            "target_formal": "Vous devez simplement faire ce qui la rend heureuse.",
+            "target_informal": "Tout ce que tu as à faire c'est sonner à sa porte !!!"
+        },
+        {
+            "idx": 97,
+            "split": "train",
+            "source_formal": "You simply have to do that which makes her happy.",
+            "source_informal": "all you got to do is ring her bell !!!",
+            "target_formal": "Il vous suffit de faire ce qui lui apporte de la joie.",
+            "target_informal": "Il te suffit juste de faire ce qui la rend heureuse ! ;)"
+        },
+        {
+            "idx": 98,
+            "split": "train",
+            "source_formal": "Yes, though I suppose it depends on the vows.",
+            "source_informal": "yes, well i guess it depends on the vows.",
+            "target_formal": "Oui, bien que je suppose que cela dépende des vœux.",
+            "target_informal": "Oui, enfin je suppose que cela dépend des vœux."
+        },
+        {
+            "idx": 99,
+            "split": "train",
+            "source_formal": "Yes, though I suppose it depends on the vows.",
+            "source_informal": "yes, well i guess it depends on the vows.",
+            "target_formal": "En effet, bien que je suppose que cela dépende des vœux.",
+            "target_informal": "Ouais, enfin je suppose que ça dépend des promesses."
+        },
+        {
+            "idx": 100,
+            "split": "train",
+            "source_formal": "Perhaps you should be asking where the sexually transmitted diseases are in Kay's.",
+            "source_informal": "maybe you `should be asking where are the stds in Ks.",
+            "target_formal": "Il serait peut-être judicieux de demander où se trouvent les maladies sexuellement transmissibles chez Kay's.",
+            "target_informal": "Peut-être que tu devrais demander où sont les MST à Ks."
+        },
+        {
+            "idx": 101,
+            "split": "train",
+            "source_formal": "Perhaps you should be asking where the sexually transmitted diseases are in Kay's.",
+            "source_informal": "maybe you `should be asking where are the stds in Ks.",
+            "target_formal": "Il peut être conseillé de vous renseigner sur l'emplacement des maladies sexuellement transmissibles à Kay's.",
+            "target_informal": "Tu devrais peut-être demander où exactement se trouvent les MST à Ks ;)"
+        },
+        {
+            "idx": 102,
+            "split": "train",
+            "source_formal": "That means you do not have to antagonize her any longer.",
+            "source_informal": "meaning that you do not need to make her as your enemy any more.",
+            "target_formal": "Cela signifie que vous n'avez plus besoin de l'antagoniser.",
+            "target_informal": "Ce qui veut dire que tu n'as plus besoin de la prendre pour ton ennemie. Plus besoin de ça, sérieusement."
+        },
+        {
+            "idx": 103,
+            "split": "train",
+            "source_formal": "That means you do not have to antagonize her any longer.",
+            "source_informal": "meaning that you do not need to make her as your enemy any more.",
+            "target_formal": "Par conséquent, vous n'avez plus besoin de la provoquer.",
+            "target_informal": "Donc, tu n'as plus besoin de la considérer comme ton ennemie. Pas besoin vraiment."
+        }
+    ]
+}

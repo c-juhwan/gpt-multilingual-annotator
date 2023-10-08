@@ -1,0 +1,2676 @@
+{
+    "config": {
+        "gpt_model_version": "gpt-3.5-turbo",
+        "task": "image_captioning",
+        "source_lang": "en",
+        "target_lang": "vie",
+        "prompt": [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant."
+            },
+            {
+                "role": "system",
+                "content": "User will ask you to generate paraphrases of a sentence."
+            },
+            {
+                "role": "system",
+                "content": "You will generate paraphrases of the sentence and its translation in Vietnamese language."
+            },
+            {
+                "role": "system",
+                "content": "You will generate a translation of input sentence in Vietnamese, and also generate 4 paraphrases and its translaton in Vietnamese."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence should be neutral expression. You should not generate phrases like 'You will see' or 'You will find'."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence will be complete, natural and fluent."
+            },
+            {
+                "role": "system",
+                "content": "Each output sentence should have different expressions as much as possible."
+            },
+            {
+                "role": "system",
+                "content": "You will not generate the same sentence as the input sentence."
+            },
+            {
+                "role": "system",
+                "content": "You must not generate any biased, offensive, or inappropriate paraphrases."
+            },
+            {
+                "role": "system",
+                "content": "User input example: The men at bat readies to swing at the pitch while the umpire looks on.\n"
+            },
+            {
+                "role": "system",
+                "content": "Your output example: \n"
+            },
+            {
+                "role": "system",
+                "content": "Translation: Những người đàn ông cầm gậy sẵn sàng vung vợt trên sân trong khi trọng tài quan sát.\nParaphrase 1: The male players at the bat ready to hit the ball as the umpire watches attentively. / Các cầu thủ nam sẵn sàng đánh bóng trong khi trọng tài chăm chú theo dõi.\nParaphrase 2: The male batters at the bat prepare to hit the pitch as the umpire stands watch. / Các nam đánh bóng chuẩn bị ra sân khi trọng tài đứng quan sát.\nParaphrase 3: The batters at the plate are poised to swing as the umpire keeps an eye on them. / Những người đánh bóng trên đĩa sẵn sàng xoay người khi trọng tài để mắt đến họ.\nParaphrase 4: The hitters at the plate wait for themselves to take their swings at the ball while the umpire looks on. / Những người đứng trên đĩa chờ đợi họ thực hiện cú vung bóng trong khi trọng tài quan sát.\n"
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'Sure! here's the output' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'I don't know' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will just generate the output paraphrases following the output example."
+            },
+            {
+                "role": "user",
+                "content": "Input: Living room with furniture with garage door at one end."
+            }
+        ]
+    },
+    "data": [
+        {
+            "idx": 0,
+            "file_name": "000000000368.jpg",
+            "split": "train",
+            "source_captions": [
+                "A young boy playing soccer on a grassy field",
+                "A group of kids playing soccer on a field.",
+                "Small child in soccer uniform kicking at yellow ball. ",
+                "A young man kicking a soccer ball around a field.",
+                "There are several young boys practicing soccer, some with their dads."
+            ],
+            "target_gold_captions": [
+                "Trên sân cỏ , một cậu bé đang giơ chân lên để đá quả bóng.",
+                "Một cậu bé đang đá quả bóng trong khi một cậu bé khác đang đứng ở phía sau.",
+                "Một nhóm người đang chơi đùa trên sân cỏ.",
+                "Trên sân cỏ , hai cầu thủ bóng đá đang luyện tập.",
+                "Trên sân cỏ , một cầu thủ đang giơ chân lên để đá quả bóng."
+            ],
+            "target_silver_captions": [
+                "Một cậu bé đang chơi bóng đá trên một sân cỏ.",
+                "Một đứa trẻ nhỏ đá bóng trên một sân cỏ xanh mượt.",
+                "Một cậu bé nhỏ thích thú đang chơi bóng đá trên sân cỏ.",
+                "Một cậu bé nhỏ đang tham gia một trận đấu bóng đá trên một sân cỏ xanh.",
+                "Một đứa trẻ trẻ tham gia một trận đấu bóng đá trên một sân cỏ xanh tươi."
+            ]
+        },
+        {
+            "idx": 1,
+            "file_name": "000000000419.jpg",
+            "split": "train",
+            "source_captions": [
+                "Two people playing tennis in a neighborhood park. ",
+                "Two people on the tennis court playing tennis",
+                "Two people at a public tennis court; one serves the ball.",
+                "A tennis player taking  a swing at  a ball",
+                "two people playing tennis on a tennis court."
+            ],
+            "target_gold_captions": [
+                "Người đàn ông áo đang chuẩn bị phát bóng ở trên sân tennis.",
+                "Hai vận động viên tennis đang luyện tập trên sân.",
+                "Một người đàn ông và một người khác đang chơi tennis ở trên sân.",
+                "Người áo đen đang quan sát động tác phát bóng của người đàn ông áo đỏ.",
+                "Một người đàn ông đang tung quả bóng tennis lên cao để chuẩn bị phát bóng."
+            ],
+            "target_silver_captions": [
+                "Hai người đang chơi tennis trong một công viên khu vực.",
+                "Một cặp người tham gia trò chơi tennis tại một công viên địa phương.",
+                "Hai người thưởng thức một trận tennis tại một công viên trong khu phố.",
+                "Một cặp người tham gia một trận tennis tại một công viên gần đây.",
+                "Hai người chơi một trận tennis thân thiện tại một công viên địa phương."
+            ]
+        },
+        {
+            "idx": 2,
+            "file_name": "000000000431.jpg",
+            "split": "train",
+            "source_captions": [
+                "A tennis player in action on the court.",
+                "a male in a white shirt is playing tennis",
+                "a man that is playing tennis on a court",
+                "A male tennis player hits the ball on a grass court.",
+                "A man in motion hitting a tennis ball with a tennis racket on a tennis court."
+            ],
+            "target_gold_captions": [
+                "Trên sân , một vận động viên tennis đang thi đấu.",
+                "Một người đàn ông đang vung vợt để đánh quả bóng tennis.",
+                "Một vận động viên tennis đang vung vợt để đánh quả bóng.",
+                "Trên sân , một vận động viên tennis đang luyện tập.",
+                "Trên sân , một người đàn ông đang luyện tập tennis."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên quần vợt trong tác động trên sân.",
+                "Một vận động viên quần vợt đang chơi trên sân.",
+                "Một vận động viên hoạt động một cách tích cực khi chơi quần vợt trên sân.",
+                "Một vận động viên quần vợt thể hiện kỹ năng của mình trên sân.",
+                "Một vận động viên tham gia trận đấu quần vợt trên sân."
+            ]
+        },
+        {
+            "idx": 3,
+            "file_name": "000000000488.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man getting ready to bunt the baseball",
+                "A person getting ready to bunt the ball in a baseball game.",
+                "Batter gets into a crouch for a possible ball bunt.",
+                "A batter goes to hit the ball just thrown to him from the pitcher. ",
+                "A baseball player is stepping up to bat."
+            ],
+            "target_gold_captions": [
+                "Những người đàn ông đang chơi bóng chày ở ngoài trời.",
+                "Một người đàn ông đang giơ gậy lên cao để chuẩn bị đánh quả bóng chày.",
+                "Những người đàn ông khác đang theo dõi đường bay của quả bóng.",
+                "Các cầu thủ bóng chày đang thi đấu ở ngoài trời.",
+                "Cầu thủ đánh bóng đang giơ gậy lên cao để chuẩn bị đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông chuẩn bị đẩy bóng chày.",
+                "Một người đàn ông chuẩn bị đẩy bóng chày bằng gậy của mình.",
+                "Một người đàn ông sẵn sàng để đẩy bóng chày.",
+                "Người đàn ông sắp thực hiện một cú đẩy bóng chày.",
+                "Chuẩn bị, một người đàn ông sẵn sàng đẩy bóng chày."
+            ]
+        },
+        {
+            "idx": 4,
+            "file_name": "000000000531.jpg",
+            "split": "train",
+            "source_captions": [
+                "People playing tennis on the court on a sunny day",
+                "Wide shot o group playing tennis on a court.",
+                "A group of people playing double's tennis outdoors",
+                "Two tennis courts both have doubles games playing on them.",
+                "a group of people on a tennis court playing tennis "
+            ],
+            "target_gold_captions": [
+                "Một nhóm gồm các vận động viên đang luyện tập tennis ở ngoài trời.",
+                "Một nhóm người đang luyện tập tennis trên sân.",
+                "Các vận động viên tennis đang thi đấu trên sân.",
+                "Một nhóm người đang chơi tennis trên sân.",
+                "Một nhóm các vận động viên đang luyện tập tennis trên sân."
+            ],
+            "target_silver_captions": [
+                "Mọi người đang chơi tennis trên sân trong một ngày nắng.",
+                "Cá nhân tham gia vào trò chơi tennis trên sân trong ngày nắng.",
+                "Cá nhân thưởng thức trò chơi tennis trên sân dưới ánh nắng chói chang.",
+                "Mọi người tham gia vào trận tennis trên sân trong khi mặt trời tỏa sáng rực rỡ.",
+                "Cá nhân tham gia vào một ván tennis trên sân giữa thời tiết nắng nóng."
+            ]
+        },
+        {
+            "idx": 5,
+            "file_name": "000000000544.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball game is going on for the crowd. ",
+                "A baseball player holding a bat over the top of a base.",
+                "The stands are packed as a baseball player in a gray uniform holds a bat as a catcher holds out his mitt.",
+                "A man that has a baseball bat standing in the dirt.",
+                "A man swinging a bat at a baseball on a field."
+            ],
+            "target_gold_captions": [
+                "Cầu thủ bắt bóng và trọng tài đang theo dõi động tác của cầu thủ đánh bóng ,",
+                "Các cầu thủ bóng chày đang thi đấu ở trên sân.",
+                "Những người đàn ông đang chơi bóng chày ở trên sân.",
+                "Cầu thủ đánh bóng đang xoay người để đánh bóng.",
+                "Khán giả đang theo dõi diễn biến của trận thi đấu bóng chày nam ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Trận đấu bóng chày đang diễn ra với sự tham gia của đám đông.",
+                "Đám đông đang được giải trí bởi trận đấu bóng chày đang diễn ra.",
+                "Một trận đấu bóng chày đang diễn ra trước ánh mắt của khán giả.",
+                "Một trận đấu bóng chày sôi động đang diễn ra, thu hút một đám đông đông đảo.",
+                "Khán giả đang thích thú với trận đấu bóng chày đang diễn ra hiện tại."
+            ]
+        },
+        {
+            "idx": 6,
+            "file_name": "000000000962.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man prepares to serve a tennis ball.",
+                "a person is holding a ball and tennis racket",
+                "A man is preparing to serve his ball.",
+                "A man with long hair is about to hit a tennis ball.",
+                "A guy holding a tennis ball in one hand with a tennis racket in his other hand. "
+            ],
+            "target_gold_captions": [
+                "Một nam vận động viên tennis đang quan sát để chuẩn bị phát bóng.",
+                "Một người đàn ông đang chuẩn bị phát bóng ở trên sân tennis.",
+                "Hình ảnh mô tả một vận động viên tennis đang chuẩn bị phát bóng.",
+                "Một vận động viên tennis đang chuẩn bị phát bóng.",
+                "Trên sân tennis , một người đàn ông đang cầm vợt và quả bóng."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông sẵn sàng giao bóng quần vợt.",
+                "Một cá nhân nam sẵn sàng thực hiện cú giao bóng quần vợt.",
+                "Một người đàn ông chuẩn bị giao một quả bóng quần vợt.",
+                "Người đàn ông đang chuẩn bị để giao một quả bóng quần vợt.",
+                "Trong quá trình chuẩn bị giao bóng, người đàn ông sẵn sàng để đánh một quả bóng quần vợt."
+            ]
+        },
+        {
+            "idx": 7,
+            "file_name": "000000000969.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man and a boy are playing catch in a yard.",
+                "a man and a boy are playing catch with a ball",
+                "Man and a boy playing ball in the grass.",
+                "Man and boy playing catch in the back yard",
+                "a man catching a ball with a young boy"
+            ],
+            "target_gold_captions": [
+                "Ông già đang quan sát để chuẩn bị bắt quả bóng chày.",
+                "Hình ảnh hai người đang đứng trong vườn để luyện tập bóng chày.",
+                "Một người đàn ông và một đứa trẻ đang chơi bóng chày ở trong vườn.",
+                "Cậu bé đang ném quả bóng chày về phía ông già ở trong vườn.",
+                "Một ông già và một đứa trẻ đang chơi bóng chày ở trong vườn."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông và một cậu bé đang chơi bắt bóng trong sân.",
+                "Một người đàn ông trưởng thành và một cậu bé trẻ đang tham gia vào một trò chơi ném bóng qua lại trong sân.",
+                "Một người đàn ông và một đứa trẻ đang thưởng thức một trò chơi bắt bóng trong một khu vực ngoài trời.",
+                "Có một người đàn ông lịch sự và một chàng trai trẻ đang ném bóng qua lại trong sân để giải trí.",
+                "Trong một sân, một người đàn ông và một cậu bé đang tham gia vào trò chơi bắt bóng bằng cách ném bóng cho nhau."
+            ]
+        },
+        {
+            "idx": 8,
+            "file_name": "000000001014.jpg",
+            "split": "train",
+            "source_captions": [
+                "Two men pose while having a photograph taken.",
+                "Three male tennis players in a tree lined area.",
+                "two men standing by each other for a photo",
+                "A man with his arm around another man.",
+                "Two men posing for a picture in a lot."
+            ],
+            "target_gold_captions": [
+                "Ba vận động viên tennis đang đứng trên sân lúc trời nắng.",
+                "Một vận động viên tennis đang chụp ảnh cùng người hâm mộ.",
+                "Hai người đàn ông đứng cạnh nhau , một người đàn ông khác đang đi về phía bên trái.",
+                "Ba người đàn ông đang đứng trên sân tennis.",
+                "Hình ảnh ba vận động viên tennis vừa kết thúc trận đấu."
+            ],
+            "target_silver_captions": [
+                "Hai người đàn ông tạo dáng trong khi chụp ảnh.",
+                "Hai người đứng ở vị trí chuẩn bị chụp ảnh.",
+                "Một cặp đôi nam đặt dáng khi họ được chụp hình.",
+                "Hai người đàn ông ngừng lại ở vị trí của họ trong khi chụp ảnh.",
+                "Trong khi chụp ảnh, hai người đàn ông đứng ở tư thế đặc biệt."
+            ]
+        },
+        {
+            "idx": 9,
+            "file_name": "000000001596.jpg",
+            "split": "train",
+            "source_captions": [
+                "A person swing a tennis racket at a tennis ball.",
+                "A tennis racket that is near the net.",
+                "A person holds a racket close to a flying tennis ball.",
+                "A tennis player with a racket hits the ball over the net",
+                "A tennis ball flying in the air towards a tennis racket."
+            ],
+            "target_gold_captions": [
+                "Một vận động viên tennis đang đưa vợt ra để chuẩn bị đánh bóng.",
+                "Một vận động viên tennis đang đánh trả bóng cho đối thủ.",
+                "Một người đang cầm vợt để đánh quả bóng tennis.",
+                "Một người đang chuẩn bị đánh quả bóng tennis.",
+                "Một vận động viên tennis đang chuẩn bị đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một người vung vợt quần vợt vào quả bóng quần vợt.",
+                "Một người nào đó vung vợt quần vợt vào một quả bóng quần vợt.",
+                "Một cá nhân đang vung vợt quần vợt để đánh vào một quả bóng quần vợt.",
+                "Một người đang đánh một quả bóng quần vợt bằng cách vung vợt quần vợt.",
+                "Một người nào đó đang sử dụng một cây vợt quần vợt để tiếp xúc với một quả bóng quần vợt."
+            ]
+        },
+        {
+            "idx": 10,
+            "file_name": "000000001599.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man taking a swing at a ball on the court.",
+                "A tennis game is being played on a brown court.",
+                "A woman on a tennis court swinging her racquet.",
+                "A man on a tennis court hitting the ball.",
+                "A guy playing tennis while being photographed. "
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu tennis đang diễn ra ở trên sân đất nện.",
+                "Trên sân đất nện , một người đang nghiêng người để đánh bóng.",
+                "Một vận động viên tennis đang gập người để đánh bóng.",
+                "Trên sân đất nện , một vận động viên tennis đang nghiêng người để đánh bóng.",
+                "Trên sân đất nện , một người đang luyện tập tennis."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông nắm gậy đánh vào quả bóng trên sân.",
+                "Một người đàn ông đang vung gậy đánh vào quả bóng trên sân.",
+                "Một người đàn ông cố gắng đánh vào quả bóng thông qua một cú vung trên sân.",
+                "Người đàn ông đang đánh quả bóng bằng một cú vung trên sân.",
+                "Một người đang tiếp xúc với quả bóng bằng cách vung gậy trên sân chơi."
+            ]
+        },
+        {
+            "idx": 11,
+            "file_name": "000000001682.jpg",
+            "split": "train",
+            "source_captions": [
+                "A boat sailing on top of a body of water.",
+                "A sailboat is in the distance with a buoy ball nearby.",
+                "an ocean with a sail boat sitting out in it",
+                "ocean showing a boat sailing on the waters",
+                "A boat in the distance on a clear lake."
+            ],
+            "target_gold_captions": [
+                "Hình ảnh phong cảnh có con thuyền , quả bóng và ngọn núi.",
+                "Phía bên phải của con thuyền và quả bóng là một ngọn núi.",
+                "Một quả bóng đang nổi trên mặt nước , phía sau có một con thuyền.",
+                "Trên mặt biển , có một quả bóng và một con thuyền đang nổi.",
+                "Trên mặt hồ , có một quả bóng và một con thuyền đang nổi."
+            ],
+            "target_silver_captions": [
+                "Một con thuyền đi trên mặt nước.",
+                "Một tàu điều khiển qua bề mặt của một hồ nước.",
+                "Một chiếc thuyền lướt trên mặt nước.",
+                "Một phương tiện nước nổi trên mặt nước.",
+                "Một tàu đi nhẹ nhàng trên một thân thủy tinh."
+            ]
+        },
+        {
+            "idx": 12,
+            "file_name": "000000001785.jpg",
+            "split": "train",
+            "source_captions": [
+                "A massive crowd of people standing on top of a sandy beach.",
+                "Many people are outside celebrating on a sunny day. ",
+                "A bunch of people on a beach flying colorful kites.",
+                "The far away panorama of a beach resort, includes bordering streets and buildings, kites overhead, grass and cement border areas, and a vast sandy expanse, and throngs of people throughout all areas. ",
+                "Many people on the beach with large colorful kites flying in the air."
+            ],
+            "target_gold_captions": [
+                "Lễ hội thả diều đang diễn ra trên bãi biển.",
+                "Những con diều rực rỡ đang bay trên những toà nhà.",
+                "Lễ hội thả diều đang diễn ra trong một khu nghỉ dưỡng ven biển.",
+                "Những con diều rực rỡ đang bay trên bầu trời.",
+                "Trên cánh đồng , những con diều đang bay lơ lửng."
+            ],
+            "target_silver_captions": [
+                "Một đám đông lớn người đứng trên một bãi biển cát.",
+                "Một sự tập trung lớn người đứng trên bờ biển cát.",
+                "Một đám đông đông đảo người tập trung trên bãi biển cát.",
+                "Một đám đông rộng lớn người đứng trên bờ biển cát.",
+                "Một sự tụ họp to lớn người đứng trên đỉnh bãi biển cát."
+            ]
+        },
+        {
+            "idx": 13,
+            "file_name": "000000001966.jpg",
+            "split": "train",
+            "source_captions": [
+                "a man leaning over as he gets ready to serve a ball ",
+                "A man using a tennis racket on a court.",
+                "a man with a tennis racket and ball getting ready to hit it ",
+                "Player preparing to serve ball during tennis match.",
+                "The young man tennis player is ready to serve the ball."
+            ],
+            "target_gold_captions": [
+                "Ở trên sân , một vận động viên tennis đang chuẩn bị phát bóng.",
+                "Khán giả đang theo dõi động tác phát bóng của nam vận động viên tennis.",
+                "Một người đàn ông đang đưa vợt tennis ra trước để chuẩn bị phát bóng.",
+                "Một nam vận động viên tennis đang cầm vợt và quả bóng ở trên sân.",
+                "Ở trên sân , một người đàn ông đang chuẩn bị phát bóng."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông chống lên để sẵn sàng giao bóng.",
+                "Một người đàn ông nghiêng về phía trước để chuẩn bị giao bóng.",
+                "Một người đàn ông khom gọn trong sự chờ đợi để giao bóng.",
+                "Khi chuẩn bị giao bóng, một người đàn ông nghiêng về phía trước.",
+                "Chuẩn bị giao bóng, một người đàn ông cúi người."
+            ]
+        },
+        {
+            "idx": 14,
+            "file_name": "000000002007.jpg",
+            "split": "train",
+            "source_captions": [
+                "A woman is getting ready to hit a ball with a tennis racket.",
+                "A woman swinging a tennis racquet on top of a tennis court.",
+                "A woman in white dress playing a game of tennis.",
+                "a tennis player hitting a serve on the court",
+                "A lady swinging the tennis racket over her head at the ball."
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang vung vợt để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một nữ vận động viên tennis đang nhảy lên để đánh bóng.",
+                "Một nữ vận động viên tennis đang dùng vợt để đánh bóng.",
+                "Một người phụ nữ đang nhảy lên để đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đang sẵn sàng đánh một quả bóng với vợt tennis.",
+                "Người phụ nữ đang chuẩn bị đánh một quả bóng bằng vợt tennis.",
+                "Người phụ nữ đang chuẩn bị vung vợt tennis để đánh bóng.",
+                "Cầu thủ nữ đang sẵn sàng đánh một quả bóng bằng vợt tennis.",
+                "Người phụ nữ đang chuẩn bị để đánh một quả bóng bằng vợt tennis."
+            ]
+        },
+        {
+            "idx": 15,
+            "file_name": "000000002184.jpg",
+            "split": "train",
+            "source_captions": [
+                "small children learning tennis on a modifgied court",
+                "A man teaches children to play on a tennis court.",
+                "Several children with tennis racquets and one adult standing on a tennis court.",
+                "A number of children with rackets on a tennis court.",
+                "A young boy standing on a tennis court during a game of tennis."
+            ],
+            "target_gold_captions": [
+                "Một nhóm người đang đứng trên sân tennis.",
+                "Các cậu bé đang xếp hàng để chờ tới lượt đánh bóng.",
+                "Các cậu bé đang tập luyện chơi tennis dưới sự hướng dẫn của huấn luyện viên.",
+                "Huấn luyện viên đang hướng dẫn cách chơi tennis cho các cậu bé.",
+                "Các học sinh đang luyện tập để chơi tennis ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Trẻ nhỏ học quần vợt trên một sân bóng được thay đổi.",
+                "Các em nhỏ đang được dạy chơi quần vợt trên một sân quần vợt tùy chỉnh.",
+                "Trẻ nhỏ tham gia bài học quần vợt trên một khu vực chơi được chỉnh sửa.",
+                "Những đứa trẻ nhỏ đang học cách chơi quần vợt trên một sân đã được thay đổi.",
+                "Các em bé đang được dạy chơi quần vợt trên một sân đã được chỉnh sửa."
+            ]
+        },
+        {
+            "idx": 16,
+            "file_name": "000000002239.jpg",
+            "split": "train",
+            "source_captions": [
+                " a little girl holding onto a tennis racket with both hands ",
+                "A girl with racket on a tennis court.",
+                "A little girl is at a tennis court holding her racket.",
+                "A little girl that is on a tennis court with a racquet.",
+                "a small girl in a white shirt  is playing tennis"
+            ],
+            "target_gold_captions": [
+                "Một cô bé đang đưa vợt ra sau để chuẩn bị đánh quả bóng tennis.",
+                "Một cô bé đang giơ vợt tennis lên cao để chuẩn bị đánh bóng.",
+                "Một cô bé đang luyện tập tennis ở trên sân.",
+                "Một cô bé đang cầm vợt tennis và đứng ở trên sân.",
+                "Một cô bé đang đứng ở trên sân và giơ vợt lên cao."
+            ],
+            "target_silver_captions": [
+                "Một cô bé nhỏ nắm chặt vợt quần cầu bằng cả hai tay.",
+                "Một cô bé trẻ nắm chặt vợt quần cầu bằng cả hai tay.",
+                "Với cả hai tay, cô bé nhỏ nắm chặt lấy vợt quần cầu.",
+                "Cô bé nhỏ nắm chặt vợt quần cầu bằng cả hai tay.",
+                "Cô bé trẻ nắm chặt vợt quần cầu, giữ nó bằng cả hai tay."
+            ]
+        },
+        {
+            "idx": 17,
+            "file_name": "000000002560.jpg",
+            "split": "train",
+            "source_captions": [
+                "A tennis player getting ready to serve the ball.",
+                "A woman taking a swing at a tennis ball",
+                "A girl dressed all in orange hitting a tennis ball.",
+                "A woman swinging a tennis racquet at a tennis ball.",
+                "Young woman in orange dress about to serve in tennis game, on blue court with green sides."
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang tung quả bóng tennis để chuẩn bị phát bóng.",
+                "Một nữ vận động viên tennis đang chuẩn bị phát bóng.",
+                "Khán giả đang theo dõi động tác phát bóng của nữ vận động viên tennis.",
+                "Một nữ vận động viên tennis đang tung quả bóng lên cao để phát bong.",
+                "Một nữ vận động viên tennis đang nghiêng người để chuẩn bị phát bóng."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên quần vợt sẵn sàng phát bóng.",
+                "Một vận động viên quần vợt chuẩn bị phát bóng.",
+                "Vận động viên quần vợt sẵn sàng phát bóng.",
+                "Vận động viên quần vợt chuẩn bị đánh bóng qua mạng.",
+                "Đang sẵn sàng, vận động viên quần vợt chuẩn bị phát bóng."
+            ]
+        },
+        {
+            "idx": 18,
+            "file_name": "000000002562.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man hitting a tennis ball with a racquet.",
+                "champion tennis player swats at the ball hoping to win",
+                "A man is hitting his tennis ball with a recket on the court.",
+                "a tennis player on a court with a racket",
+                "A professional tennis player hits a ball as fans watch."
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang dùng vợt tennis để đỡ bóng.",
+                "Một nam vận động viên tennis đang dùng vợt để đỡ bóng.",
+                "Một nam vận động viên tennis đang chuẩn bị đánh bóng.",
+                "Khán giả đang theo dõi cú đánh bóng của nam vận động viên tennis.",
+                "Một người đàn ông đang chuẩn bị đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông đánh quả bóng tennis bằng vợt.",
+                "Một cá nhân nam đang đánh một quả bóng tennis bằng cây vợt.",
+                "Một người đàn ông đang đánh một quả bóng tennis sử dụng vợt.",
+                "Một người nam đang đánh một quả bóng trong trò chơi tennis bằng cây vợt.",
+                "Một người, là một người đàn ông, đang đánh một quả bóng tennis bằng cây vợt."
+            ]
+        },
+        {
+            "idx": 19,
+            "file_name": "000000002575.jpg",
+            "split": "train",
+            "source_captions": [
+                "A woman standing on a tennis court holding a racquet.",
+                "A woman playing tennis on a tennis court.",
+                "A female tennis player hitting the ball with her racket.",
+                "A female professional tennis player returning a ball.",
+                "A woman hitting a tennis ball on the court. "
+            ],
+            "target_gold_captions": [
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một người phụ nữ đang chuẩn bị đánh bóng ở trên sân tennis.",
+                "Một người phụ nữ đang dùng vợt để đánh bóng ở trên sân tennis.",
+                "Một nữ vận động viên tennis đang dùng vợt để đánh bóng.",
+                "Một nữ vận động viên tennis đang xoay người để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đang đứng trên sân tennis nắm vợt.",
+                "Một người phụ nữ đứng trên sân tennis cầm chặt vợt.",
+                "Trên sân tennis, có một người phụ nữ đang nắm một cây vợt.",
+                "Một phụ nữ đang đứng trên sân tennis, nắm một cây vợt.",
+                "Với một cây vợt trong tay, một người phụ nữ đang đứng trên sân tennis."
+            ]
+        },
+        {
+            "idx": 20,
+            "file_name": "000000002842.jpg",
+            "split": "train",
+            "source_captions": [
+                "Two tennis players are on a team in a match.",
+                "there are two tennis players that are on the court",
+                "A tennis player reaches out to another one.",
+                "A team standing on a tennis court with racquets",
+                "Two men play tennis in front of a sparse audience"
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông và một người phụ nữ đang chơi tennis.",
+                "Khán giả đang theo dõi một trận thi đấu tennis đôi nam nữ.",
+                "Hình ảnh một trận thi đấu tennis của một cặp vận động viên nam nữ.",
+                "Một vận động viên nam và một vận động viên nữ đang thi đấu tennis.",
+                "Một trận thi đấu tennis đôi nam nữ đang diễn ra ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Hai vận động viên tennis thuộc một đội trong một trận đấu.",
+                "Một đội trong trận đấu tennis bao gồm hai vận động viên.",
+                "Có hai vận động viên là đồng đội trong một trận đấu tennis.",
+                "Trong một trận đấu tennis, một đội bao gồm hai vận động viên.",
+                "Hai vận động viên tennis tạo thành một đội để thi đấu trong một trận đấu."
+            ]
+        },
+        {
+            "idx": 21,
+            "file_name": "000000003375.jpg",
+            "split": "train",
+            "source_captions": [
+                "A goalie standing in front of a soccer goal.",
+                "A bunch of kids that are standing in the grass.",
+                "A soccer player trying to shoot past the goalie. ",
+                "A soccer goalie guards the goal and watches the ball. ",
+                "Girls are playing soccer and the ball is going in the goal."
+            ],
+            "target_gold_captions": [
+                "Một cô gái vừa đá quả bóng vào khung thành của đối thủ.",
+                "Hai cô gái đang quan sát quả bóng ở trước khung thành.",
+                "Những cô gái đang chơi bóng đá ở trên sân.",
+                "Các nữ cầu thủ đang thi đấu bóng đá ở trên sân.",
+                "Nữ cầu thủ số 16 và thủ môn đang nhìn quả bóng lăn vào khung thành."
+            ],
+            "target_silver_captions": [
+                "Một thủ môn đứng trước khung thành bóng đá.",
+                "Một thủ môn đặt chân trước lưới bóng đá.",
+                "Một người bảo vệ đứng chống lại khung thành trong trận đấu bóng đá.",
+                "Thủ môn xác định vị trí mình trước khung thành bóng đá.",
+                "Thủ môn đứng như là tường cuối cùng trước khung thành bóng đá."
+            ]
+        },
+        {
+            "idx": 22,
+            "file_name": "000000003488.jpg",
+            "split": "train",
+            "source_captions": [
+                "A teenager in a soccer uniform kicking a soccer ball.",
+                "The soccer player is running to kick the ball.",
+                "A man in white shirt with soccer ball on a field.",
+                "A soccer player getting ready to kick a ball.",
+                "a soccer player in the process of kicking the ball"
+            ],
+            "target_gold_captions": [
+                "Một cầu thủ bóng đá đang dùng chân phải để sút bóng.",
+                "Một người đàn ông đang dùng chân phải để sút bóng.",
+                "Một cầu thủ bóng đá đang chuẩn bị sút quả bóng.",
+                "Một cầu thủ bóng đá đang chuẩn bị sút quả bóng bằng chân phải.",
+                "Một người đàn ông đang chuẩn bị sút quả bóng."
+            ],
+            "target_silver_captions": [
+                "Một thiếu niên trong bộ đồ bóng đá đá bóng.",
+                "Một người trẻ tuổi mặc trang phục bóng đá vung chân đá bóng.",
+                "Một bạn trẻ trong trang phục bóng đá đá một quả bóng đá.",
+                "Một quả bóng đá đang được đá bởi một thanh thiếu niên mặc trang phục bóng đá.",
+                "Một người trẻ đá quả bóng đá trong khi mặc trang phục bóng đá."
+            ]
+        },
+        {
+            "idx": 23,
+            "file_name": "000000003770.jpg",
+            "split": "train",
+            "source_captions": [
+                "A girl playing tennis while hitting a serve",
+                "The girl is wearing a red and white tennis dress and has her racquet ready to hit. ",
+                "A girl in a red and white tennis outfit is hitting a tennis ball.",
+                "A woman has just hit the tennis ball with her racket.",
+                "A tennis player leaps to hit the ball."
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang nghiêng người để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một người phụ nữ đang vung vợt để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang nghiêng người để đánh bóng.",
+                "Một người phụ nữ đang nhón chân để đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một cô gái đang chơi tennis và giao bóng.",
+                "Một phụ nữ trẻ tham gia trận đấu tennis và giao bóng.",
+                "Trong lúc tham gia trận đấu, một nữ vận động viên giao bóng trong một trận đấu tennis.",
+                "Một cô gái đang chơi tennis và giao bóng để bắt đầu điểm.",
+                "Một nữ vận động viên trẻ đang thi đấu trên sân tennis và giao bóng."
+            ]
+        },
+        {
+            "idx": 24,
+            "file_name": "000000003870.jpg",
+            "split": "train",
+            "source_captions": [
+                "Three woman and a man at a restaurant.",
+                "Two girls and an older woman serving food at a patriotic event.",
+                "A party  with American flags and women serving hotdogs and bagels.",
+                "A woman is holding a tray of hotdogs. ",
+                "A girl holding a tray of hot dogs at a party."
+            ],
+            "target_gold_captions": [
+                "Người phụ nữ đang cầm quả bóng trên tay và đứng giữa hai cô gái.",
+                "Một bữa tiệc ở trong nhà có ba người phụ nữ và một người đàn ông.",
+                "Người phụ nữ đang cầm quả bóng trên tay và đứng giữa hai cô gái đang bưng khay đựng bánh.",
+                "Ở chính giữa hai cô gái , một người phụ nữ đang cầm quả bóng trên tay.",
+                "Hình ảnh một bữa tiệc trong nhà của một nhóm người."
+            ],
+            "target_silver_captions": [
+                "Ba người phụ nữ và một người đàn ông ở một nhà hàng.",
+                "Ba người phụ nữ và một người đàn ông đang ăn tại một nhà hàng.",
+                "Có ba người phụ nữ và một người đàn ông thưởng thức bữa ăn tại một nhà hàng.",
+                "Một nhóm ba người phụ nữ và một người đàn ông đang cùng nhau dùng bữa ở một nhà hàng.",
+                "Tại một nhà hàng, có ba người phụ nữ và một người đàn ông ngồi để ăn."
+            ]
+        },
+        {
+            "idx": 25,
+            "file_name": "000000004020.jpg",
+            "split": "train",
+            "source_captions": [
+                "a woman tennis player hits a tennis ball ",
+                "A tennis player hits a tennis ball during a match.",
+                "A woman holding her racket up to hit a tennis ball. ",
+                "A girl is stretching to hit a tennis ball.",
+                "Female tennis player stretching to hit a high ball."
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang nhón chân để đánh quả bóng tennis ở ngoài trời.",
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis ở ngoài trời.",
+                "Một người phụ nữ đang dùng vợt để đánh quả bóng tennis ở ngoài trời.",
+                "Một nữ vận động viên tennis đang đưa vợt lên cao để đánh bóng.",
+                "Một người phụ nữ đang đưa vợt lên cao để đánh quả bóng tennis ở ngoài trời."
+            ],
+            "target_silver_captions": [
+                "Một nữ vận động viên quần vợt đánh quả bóng quần vợt.",
+                "Một nữ vận động viên quần vợt đánh bóng với vợt của mình.",
+                "Quả bóng quần vợt được đánh bởi một người chơi nữ.",
+                "Quả bóng quần vợt bị đánh bởi một vận động viên nữ.",
+                "Nữ vận động viên quần vợt thực hiện cú đánh đối với quả bóng quần vợt."
+            ]
+        },
+        {
+            "idx": 26,
+            "file_name": "000000004021.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball field full of baseball players standing on a field.",
+                "a baseball player sliding in to home base",
+                "baseball players playing on a baseball field making a home run.",
+                "An Arizona Diamondbacks sliding to homebase in an MLB professional baseball game.",
+                "some professional baseball players playing a game for a large crowd "
+            ],
+            "target_gold_captions": [
+                "Các cầu thủ đang thi đấu bóng chày ở trên sân.",
+                "Một cầu thủ chạy gôn đang trượt trên sân để chạm vào gôn.",
+                "Hai dội bóng chày đang thi đấu với nhau ở trên sân.",
+                "Các cầu thủ bóng chày đang theo dõi động tác của cầu thủ chạy gôn.",
+                "Một cầu thủ bắt bóng đang chạy để bắt bóng ỏ trên sân."
+            ],
+            "target_silver_captions": [
+                "Một sân bóng chày đầy cầu thủ đang đứng trên sân.",
+                "Sân bóng chày đông đúc với những người chơi đứng trên sân.",
+                "Một sân bóng chày với những cầu thủ đang đứng trên sân.",
+                "Các cầu thủ bóng chày lấp đầy sân, sẵn sàng thi đấu.",
+                "Các cầu thủ bóng chày đứng trên sân thi đấu, lấp đầy sân bóng chày."
+            ]
+        },
+        {
+            "idx": 27,
+            "file_name": "000000004139.jpg",
+            "split": "train",
+            "source_captions": [
+                "A woman hitting a tennis ball on a tennis court.",
+                "A tennis player preparing to hit a ball with a racket.",
+                "A woman in pink is serving a tennis ball.",
+                "A female tennis player is making a gesture with her arms as she swings the racket.",
+                "A tennis player at the match is returning a volley."
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang chuẩn bị đánh bóng.",
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một người phụ nữ đang vung vợt để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang dùng vợt để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đánh quả bóng tennis trên sân.",
+                "Một vận động viên tennis nữ đang đánh một quả bóng tennis trên sân.",
+                "Một phụ nữ đánh một quả bóng tennis trong khi thi đấu trên sân tennis.",
+                "Người phụ nữ nhấp mạnh vào quả bóng tennis trên sân tennis.",
+                "Trên sân tennis, một người phụ nữ đánh một quả bóng tennis với sự chính xác."
+            ]
+        },
+        {
+            "idx": 28,
+            "file_name": "000000004172.jpg",
+            "split": "train",
+            "source_captions": [
+                "Mid-air shot of men playing sports indoors in front of an audience.",
+                "A group of men are on a court playing volleyball.",
+                "A player in green is mid toss and leaping in the air.",
+                "A man is in the air with a ball at a game.",
+                "Several players with a ball in front of a crowd."
+            ],
+            "target_gold_captions": [
+                "Khán giả đang theo dõi một trận thi đấu bóng ném.",
+                "Hai đội tuyển bóng ném nam đang thi đấu với nhau.",
+                "Hai cầu thủ mặc đồng phục màu đỏ , một cầu thủ mặc đồng phục xanh trắng và một người mặc đồng phục đen cam.",
+                "Hình ảnh một trận thi đấu bóng ném giữa hai đội.",
+                "Một cầu thủ đang nhảy lên để ném bóng trong khi hai cầu thủ khác đang đứng."
+            ],
+            "target_silver_captions": [
+                "Một tấm hình chụp những người đàn ông đang chơi thể thao trong nhà trước một khán giả.",
+                "Một bức ảnh về những người đàn ông tham gia môn thể thao trong nhà với sự hiện diện của khán giả.",
+                "Một hình ảnh về những người đàn ông tham gia các hoạt động thể thao trong nhà trong khi bị người xem quan sát.",
+                "Một bức ảnh chụp trong không trung ghi lại những người đàn ông đang chơi thể thao trong nhà trước sự hiện diện của khán giả.",
+                "Một tấm hình của những người đàn ông tham gia môn thể thao trong nhà giữa một khán giả."
+            ]
+        },
+        {
+            "idx": 29,
+            "file_name": "000000004175.jpg",
+            "split": "train",
+            "source_captions": [
+                "A tennis player winds up to hit a serve to her opponent.",
+                "This is an aerial view of a tennis match.",
+                "A scene of something that is quite attractive. \n",
+                "A woman that is standing on a blue tennis court.",
+                "a tennis match is being played on a blue court "
+            ],
+            "target_gold_captions": [
+                "Khán giả đang theo dõi một trận thi đấu tennis nữ ở trên sân.",
+                "Một nữ vận động viên tennis đang quan sát động tác phát bóng của đối thủ.",
+                "Một nữ vận động viên tennis đang chuẩn bị phát bóng về phía đối thủ.",
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis về phía đối thủ.",
+                "Quang cảnh một trận thi đấu tennis nữ từ trên cao."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên quần vợt sẵn sàng giao bóng cho đối thủ của mình.",
+                "Vận động viên quần vợt chuẩn bị tung cú giao bóng vào đối thủ của cô.",
+                "Vận động viên quần vợt chuẩn bị đánh một cú giao bóng đối với đối thủ của mình.",
+                "Vận động viên quần vợt vung tay để đánh một cú giao bóng nhắm vào đối thủ của cô.",
+                "Với vợt được giương lên cao, vận động viên quần vợt sắp đánh một cú giao bóng vào đối thủ của mình."
+            ]
+        },
+        {
+            "idx": 30,
+            "file_name": "000000004187.jpg",
+            "split": "train",
+            "source_captions": [
+                "A tennis player prepares to hit the tennis ball",
+                "A man holding a tennis racquet in front of a tennis ball.",
+                "A picture of a tennis player about to hit a ball. ",
+                "A tennis player is swinging at a tennis ball.",
+                "a man is playing tennis and has a funny face while trying to hit the the ball"
+            ],
+            "target_gold_captions": [
+                "Một vận động viên tennis đang nghiêng người để đánh bóng.",
+                "Một người đàn ông đang nghiêng người để đánh quả bóng tennis.",
+                "Một nam vận động viên tennis đang xoay người để đánh bóng.",
+                "Một người đàn ông đang vung vợt để đánh quả bóng tennis.",
+                "Một nam vận động viên tennis đang vung vợt để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên tennis chuẩn bị đánh quả bóng tennis.",
+                "Một vận động viên tennis sẵn sàng để đánh quả bóng tennis.",
+                "Vận động viên tennis sẵn sàng để đánh quả bóng tennis.",
+                "Vận động viên tennis chuẩn bị để tiếp xúc với quả bóng tennis.",
+                "Vận động viên tennis chuẩn bị đánh quả bóng tennis."
+            ]
+        },
+        {
+            "idx": 31,
+            "file_name": "000000004227.jpg",
+            "split": "train",
+            "source_captions": [
+                "There is a tennis player about to hit a ball",
+                "Boy reaching up above his head to reach a tennis ball with his racket. ",
+                "A man reaching high to hit a tennis ball with a racket",
+                "Young man playing tennis reaching upward to hit ball.",
+                "A boy serves a tennis ball on the court."
+            ],
+            "target_gold_captions": [
+                "Một nam vận động viên tennis đang chuẩn bị đánh bóng.",
+                "Một người đàn ông đang chuẩn bị đánh quả bóng tennis.",
+                "Một nam vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một người đàn ông đang vung vợt để đánh quả bóng tennis.",
+                "Một người đàn ông đang đưa vợt lên cao để đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Có một vận động viên quần vợt chuẩn bị đánh bóng.",
+                "Một vận động viên quần vợt đang sẵn sàng đánh bóng.",
+                "Vận động viên quần vợt đang chuẩn bị tiếp xúc với quả bóng.",
+                "Có một vận động viên trên sân quần vợt sẵn sàng đánh bóng.",
+                "Khi chúng ta nói, một vận động viên quần vợt đang chuẩn bị đánh bóng."
+            ]
+        },
+        {
+            "idx": 32,
+            "file_name": "000000004377.jpg",
+            "split": "train",
+            "source_captions": [
+                "A group of people playing a game of croquet.",
+                "A game of croquet is being played in a back yard.",
+                "Two guys and a girl playing croquet in the yard.",
+                "A group of four people playing croquet on a lawn.",
+                "A group of friends enjoy a game of croquet on a grassy fenced in field."
+            ],
+            "target_gold_captions": [
+                "Hai người đàn ông và một người phụ nữ đang chơi bóng vồ ở trên sân.",
+                "Một nhóm người đang chơi bóng vồ ở ngoài trời.",
+                "Một người đàn ông đang chuẩn bị đánh quả bóng ở trên sân.",
+                "Một nhóm người đang chơi bóng vồ ở trên sân.",
+                "Hai người đàn ông và một người phụ nữ đang chơi bóng vồ ở ngoài trời."
+            ],
+            "target_silver_captions": [
+                "Một nhóm người đang chơi một trò chơi bóng gậy.",
+                "Một vài cá nhân tham gia một trò chơi bóng gậy.",
+                "Một nhóm người tham gia một trận thi đấu bóng gậy.",
+                "Một đám đông người đang thưởng thức một trò chơi bóng gậy.",
+                "Một sự tụ họp của những cá nhân đang chơi một trò chơi bóng gậy cùng nhau."
+            ]
+        },
+        {
+            "idx": 33,
+            "file_name": "000000004592.jpg",
+            "split": "train",
+            "source_captions": [
+                "a woman with a hat swinging a tennis racquet",
+                "A tennis player leaps in the air as fans observe. ",
+                "A tennis player jumping and swinging a racket.",
+                "The woman is playing tennis on the court. ",
+                "Fans watch as a female tennis player hits a ball during a game"
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang vung vợt để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis nữ đang vung vợt để đánh bóng.",
+                "Khán giả đang theo dõi động tác đánh bóng của nữ vận động viên tennis.",
+                "Một người phụ nữ đang nhảy lên để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis nữ đang nhảy lên để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đội mũ đang vung vợt quần vợt.",
+                "Một cô gái đang đội mũ sử dụng vợt quần vợt để đánh bóng.",
+                "Một người phụ nữ đang vung vợt quần vợt với một chiếc mũ trên đầu.",
+                "Cô gái đội mũ đang đánh một quả quần vợt bằng vợt quần vợt.",
+                "Một người phụ nữ đội mũ đang vung vợt quần vợt để đánh vào quả bóng."
+            ]
+        },
+        {
+            "idx": 34,
+            "file_name": "000000004700.jpg",
+            "split": "train",
+            "source_captions": [
+                "A group of boys playing soccer on a field.",
+                "a group of little kids playing soccer on a field ",
+                "kids playing football in the field with a red ball",
+                "Children on beright sunny day playing soccer who appear to be about 5 years old. ",
+                "Many young children play soccer on a field. "
+            ],
+            "target_gold_captions": [
+                "Các cậu bé đang thi đấu bóng đá với nhau ở trên sân.",
+                "Các cậu bé đang tranh chấp bóng với nhau ở trên sân.",
+                "Các cậu bé đang luyện tập đá bóng ở trên sân.",
+                "Các cầu thủ của hai đội bóng đá đang tranh bóng ở trên sân.",
+                "Các cầu thủ nhí của hai đội đang thi đấu bóng đá với nhau."
+            ],
+            "target_silver_captions": [
+                "Một nhóm các cậu bé đang chơi bóng đá trên sân.",
+                "Một số cậu bé đang tham gia trò chơi bóng đá trên sân.",
+                "Một đám trẻ em đang tham gia một trận đấu bóng đá trên sân.",
+                "Một nhóm các bé trai đang thưởng thức trò chơi bóng đá trên sân.",
+                "Một đội các cậu bé đang chơi một trận đá bóng trên sân."
+            ]
+        },
+        {
+            "idx": 35,
+            "file_name": "000000004702.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man using his head to hit a soccer ball while playing soccer with other men.",
+                "A man hitting a soccer ball with his head while others try to stop him.",
+                "One man with soccer ball touching his head while another stands near.",
+                "Three athletes jostling for position to gain control of the ball.",
+                "A soccer player is getting hit in the head by the ball"
+            ],
+            "target_gold_captions": [
+                "Một cầu thủ dùng đầu để đỡ bóng trong pha tranh chấp bóng với đối thủ.",
+                "Cầu thủ áo cam đang nhảy lên để tranh bóng với cầu thủ áo xanh.",
+                "Một cầu thủ áo xanh đang dùng đầu để đánh bóng.",
+                "Những người đàn ông đang nhảy lên để tranh chấp bóng.",
+                "Các cầu thủ bóng đá đang nhảy lên để tranh bóng với nhau."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông sử dụng đầu để đánh một quả bóng đá trong khi chơi bóng đá với những người khác.",
+                "Một người chơi nam dùng trán để đá một quả bóng đá trong khi tham gia trò chơi bóng đá cùng với những người khác.",
+                "Một người nam sử dụng đầu để tiếp xúc với một quả bóng đá trong khi chơi bóng đá với những người khác.",
+                "Một người đàn ông dùng xương sọ đánh quả bóng đá trong khi tham gia trận đấu bóng đá với những cầu thủ nam khác.",
+                "Một người đàn ông sử dụng đầu để đấm một quả bóng đá trong khi tham gia trận đấu bóng đá cùng với những người khác."
+            ]
+        },
+        {
+            "idx": 36,
+            "file_name": "000000004736.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player holding a bat next to home base.",
+                "The championship series of a minor league baseball league",
+                "Baseball game with batter starting to swing at a pitch.",
+                "A baseball pitcher pitches a ball to the baseball batter.",
+                "A baseball game in progress with the pitcher up to plate."
+            ],
+            "target_gold_captions": [
+                "Cầu thủ ném bóng đang xoay người để ném bóng về phía gôn.",
+                "Những người đàn ông đang chơi bóng chày ở ngoài trời.",
+                "Cầu thủ ném bóng đang ném quả bóng về phía gôn.",
+                "Các cầu thủ bóng chày và trọng tài đang theo dõi đường bay của quả bóng.",
+                "Cầu thủ đánh bóng đang giơ gậy lên cao để chuẩn bị đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một cầu thủ bóng chày cầm gậy bên cạnh cơ sở nhà.",
+                "Một người đánh bóng chụp gậy gần cơ sở nhà.",
+                "Một vận động viên bóng chày cầm gậy đứng bên cạnh đĩa nhà.",
+                "Một người đánh bóng sẵn sàng, cầm gậy bên cạnh cơ sở nhà.",
+                "Một vận động viên ở vị trí đánh bóng, nắm gậy bên cạnh đĩa nhà."
+            ]
+        },
+        {
+            "idx": 37,
+            "file_name": "000000005105.jpg",
+            "split": "train",
+            "source_captions": [
+                "a man paddling in the lake with a dog nearby",
+                "A man on a paddle board with a black dog swimming behind him. ",
+                "A man riding a paddle board on top of a body of water.",
+                "A man rows standing on a surfboard near a dog fetching a ball in a body of water near a shoreline.",
+                "A man on a standup paddle board in a lake with a dog swimming nearby."
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang đứng trên tấm ván để chèo.",
+                "Một người đang đứng trên tấm ván ở trên mặt nước.",
+                "Một vận động viên lướt ván đang chèo trên mặt nước.",
+                "Vận động viên lướt ván đang đứng trên tấm ván và tay cầm mái chèo.",
+                "Hình ảnh một vận động viên lướt ván đang đứng trên tấm ván."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông chèo thuyền trên hồ với một con chó gần đó.",
+                "Một chàng trai chèo thuyền trên hồ trong khi có một con chó đứng bên cạnh.",
+                "Có một người đàn ông đang chèo thuyền trên hồ và có một con chó ở gần đó.",
+                "Trên hồ có một người đang sử dụng mái chèo để di chuyển chiếc thuyền trong khi có một con chó ở gần đó.",
+                "Bên cạnh hồ, bạn có thể thấy một người đàn ông đang chèo thuyền và có một con chó gần anh ta."
+            ]
+        },
+        {
+            "idx": 38,
+            "file_name": "000000005124.jpg",
+            "split": "train",
+            "source_captions": [
+                "A soccer player trying to score a goal.",
+                "A soccer player is running while the ball is in the air.",
+                "A soccer player jumping to hit a soccer ball.",
+                "a group of people playing soccer on a field",
+                "Soccer player wearing green and orange hitting soccer ball. "
+            ],
+            "target_gold_captions": [
+                "Hình ảnh một buổi luyện tập của các cầu thủ bóng đá.",
+                "Một cầu thủ bóng đá đang nhảy lên để thực hiện độngt ác đánh đầu.",
+                "Các cầu thủ bóng đá đang luyện tập ở trên sân.",
+                "Quả bóng bay lơ lửng trên đầu của một cầu thủ.",
+                "Một cầu thủ đá bóng dùng đầu để đánh bóng vào khung thành."
+            ],
+            "target_silver_captions": [
+                "Một cầu thủ bóng đá cố gắng ghi bàn.",
+                "Một vận động viên trên sân bóng đá cố gắng tìm cách đưa bóng vào lưới.",
+                "Một cầu thủ bóng đá đang cố gắng hết sức để đưa bóng vào lưới.",
+                "Một vận động viên bóng đá cố gắng ghi bàn cho đội của mình.",
+                "Một người chơi trên sân cố gắng đưa bóng qua thủ môn và ghi bàn."
+            ]
+        },
+        {
+            "idx": 39,
+            "file_name": "000000005614.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player holding a bat next to home plate.",
+                "A referee, a catcher and batter at home plate.",
+                "The umpire, catcher and batter during a baseball game",
+                "A group of people on a field playing baseball.",
+                "A couple of men are playing baseball in a field"
+            ],
+            "target_gold_captions": [
+                "Trọng tài đang theo dõi động tác của các cầu thủ bóng chày.",
+                "Một người đàn ông đang chuẩn bị bắt quả bóng chày bằng găng tay.",
+                "Một cầu thủ đánh bóng đang theo dõi cú bắt bóng của cầu thủ bắt bóng.",
+                "Một người đàn ông đang cầm gậy và đứng ở trên sân.",
+                "Ba người đàn ông đang luyện tập bóng chày trong công viên."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên bóng chày cầm gậy bên cạnh đĩa chân sân nhà.",
+                "Một vận động viên trên sân bóng chày nắm chặt gậy gần đĩa chân sân nhà.",
+                "Bên cạnh đĩa chân, một vận động viên bóng chày cầm gậy, sẵn sàng cho cú ném tiếp theo.",
+                "Đứng bên cạnh đĩa chân sân nhà, một vận động viên bóng chày nắm gậy, sẵn sàng để vung gậy.",
+                "Được đặt gần đĩa chân sân nhà, một vận động viên bóng chày sử dụng gậy, chờ đợi cú ném."
+            ]
+        },
+        {
+            "idx": 40,
+            "file_name": "000000005699.jpg",
+            "split": "train",
+            "source_captions": [
+                "a baseball player stretching while holding a baseball bat on a baseball field.",
+                "A small town baseball game in progress. ",
+                "Batter on deck warms up for the plate at this girls' softball game.",
+                "A player practicing batting near a group of people on a ball field.",
+                "A group of people standing on a baseball field"
+            ],
+            "target_gold_captions": [
+                "Các cầu thủ bóng chày đang đứng trên sân vận động.",
+                "Hình ảnh một nhóm người đang đứng ở trên sân , phía sau tấm lưới.",
+                "Tám người đang đứng trên sân , phía sau tấm lưới.",
+                "Một nhóm người đang đứng ở trên sân , phía sau tấm lưới.",
+                "Một người đang cầm gậy đánh bóng chày và bảy người khác đang đứng phía bên phải."
+            ],
+            "target_silver_captions": [
+                "Một cầu thủ bóng chày đang duỗi cơ trong khi cầm gậy bóng chày trên sân bóng chày.",
+                "Một vận động viên bóng chày đang làm nóng, duỗi cơ cơ thể, trong khi nắm chặt một cây gậy bóng chày trên sân bóng chày.",
+                "Trên sân bóng chày, một vận động viên bóng chày đang chuẩn bị cho trận đấu bằng cách tập duỗi cơ và nắm giữ một cây gậy bóng chày.",
+                "Một vận động viên bóng chày đang chuẩn bị cho lượt của mình trên sân bóng chày, duỗi cơ và nắm chặt một cây gậy bóng chày.",
+                "Trên sân bóng chày, một cầu thủ đang làm nóng bằng cách duỗi cơ và cầm gậy bóng chày."
+            ]
+        },
+        {
+            "idx": 41,
+            "file_name": "000000005934.jpg",
+            "split": "train",
+            "source_captions": [
+                "a close up of a baseball and a glove ",
+                "a baseball sits inside of a glove on a bench ",
+                "A baseball and a glove are sitting on a aluminum bench.",
+                "a baseball mitt holding a baseball in it ",
+                "A used baseball sits in a baseball glove."
+            ],
+            "target_gold_captions": [
+                "Trên bàn , có một quả bóng chày và một cái găng tay.",
+                "Hình ảnh quả bóng nằm trong cái găng tay và được đặt trên bàn.",
+                "Bên trong cái găng tay có một quả bóng chày.",
+                "Quả bóng chày đang được đặt ở trong cái găng tay.",
+                "Quả bóng chày đang nằm ở phía trong cái găng tay."
+            ],
+            "target_silver_captions": [
+                "Một góc chụp cận cảnh về một quả bóng chày và một găng tay.",
+                "Một góc chụp chi tiết về một quả bóng chày và một găng tay.",
+                "Một tầm nhìn gần về một quả bóng chày và một găng tay.",
+                "Một góc chụp phóng to về một quả bóng chày kèm theo một găng tay.",
+                "Một bức ảnh tập trung về một quả bóng chày và một găng tay gần nhau."
+            ]
+        },
+        {
+            "idx": 42,
+            "file_name": "000000006531.jpg",
+            "split": "train",
+            "source_captions": [
+                "A young man swinging a bat at a baseball in a park.",
+                "A person in a stance to hit a ball with a bat",
+                "A young person prepares to swing at a pitch on a grassy playing field.",
+                "A young boy holding a baseball bat on a field.",
+                "A kid with a baseball bat on a field."
+            ],
+            "target_gold_captions": [
+                "Cậu bé đang luyện tập bóng chày ở trong công viên.",
+                "Cậu bé đang nghiêng người và vung gậy bóng chày ở trên sân cỏ.",
+                "Cậu bé đang luyện tập bóng chày ở trong khuôn viên của khu dân cư.",
+                "Cậu bé đang luyện tập bóng chày ở trong khuôn viên trường học.",
+                "Một cậu bé đang cầm gậy bóng chày bằng hai ở trên sân cỏ."
+            ],
+            "target_silver_captions": [
+                "Một chàng trai trẻ vung gậy đánh bóng chày trong công viên.",
+                "Một chàng trai trẻ vung gậy đánh bóng chày trong một công viên.",
+                "Một chàng trai trẻ vung gậy, đánh bóng chày trong một công viên.",
+                "Trong một công viên, một chàng trai trẻ đang vung gậy để đánh bóng chày.",
+                "Trong một công viên, một chàng trai trẻ vung gậy và đánh trúng một quả bóng chày."
+            ]
+        },
+        {
+            "idx": 43,
+            "file_name": "000000006712.jpg",
+            "split": "train",
+            "source_captions": [
+                "A father throwing a baseball to his child holding a bat.",
+                "A man toss a ball to a little kid.",
+                "A man teaching a small child to play baseball.",
+                "A man is playing baseball with a toddler in the grass.",
+                "A man kneeling in the grass pitches a ball at a small child swinging a bat"
+            ],
+            "target_gold_captions": [
+                "Người đàn ông đang ném quả bóng chày về phía cô bé.",
+                "Người cha và đứa con đang tập chơi bóng chày ở trong vườn.",
+                "Cô bé đang giơ gậy để chuẩn bị đánh quả bóng được ném bởi người đàn ông.",
+                "Cậu bé đang giơ gậy để chuẩn bị đánh quả bóng được ném bởi người đàn ông.",
+                "Người đàn ông đang ném quả bóng chày về phía cậu bé."
+            ],
+            "target_silver_captions": [
+                "Một người cha ném một quả bóng chày đến con trẻ cầm gậy.",
+                "Một người cha tung một quả bóng chày cho đứa trẻ của mình đang nắm gậy.",
+                "Một người cha ném một quả bóng chày về phía đứa trẻ của mình đang nắm chặt gậy.",
+                "Một người cha tung một quả bóng chày cho đứa trẻ của mình đang nắm gắt gậy.",
+                "Một người cha phóng một quả bóng chày về phía người con của mình đang nắm chặt gậy."
+            ]
+        },
+        {
+            "idx": 44,
+            "file_name": "000000006973.jpg",
+            "split": "train",
+            "source_captions": [
+                "A picture of a man swinging a racket at a tennis ball. ",
+                "a tennis player on a court swinging a racket",
+                "a man gets ready to hit a tennis ball",
+                "A player wearing yellow and green is swinging his racket.",
+                "A man hitting a tennis ball during a game on a clay court."
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang dùng vợt để đánh quả bóng tennis.",
+                "Một người đàn ông đang nhảy lên để đánh quả bóng tennis.",
+                "Một nam vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một người đàn ông đang vung vợt để đánh quả bóng tennis.",
+                "Một nam vận động viên tennis đang chuẩn bị đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một bức tranh của một người đàn ông vung vợt đánh một quả bóng quần vợt.",
+                "Người đàn ông trong bức tranh đang vung vợt để đánh một quả bóng quần vợt.",
+                "Trong hình ảnh, một người đàn ông đang đánh một quả bóng quần vợt bằng vợt của mình.",
+                "Bức ảnh ghi lại một người đàn ông đang tạo cú swing với vợt để đánh vào quả bóng quần vợt.",
+                "Bức ảnh miêu tả một người đàn ông đang thực hiện cú vung vợt để đánh một quả bóng quần vợt."
+            ]
+        },
+        {
+            "idx": 45,
+            "file_name": "000000007023.jpg",
+            "split": "train",
+            "source_captions": [
+                "A couple of people on a court with tennis rackets.",
+                "Some players in action on the tennis court.",
+                "A couple of men are playing a tennis game together",
+                "The two people are playing tennis on a multi purpose court.",
+                "People playing a tennis match at an outdoor court."
+            ],
+            "target_gold_captions": [
+                "Một người đang dùng vợt để đỡ quả bóng từ phía người còn lại.",
+                "Một người đang dùng vợt để đánh quả bóng tennis về phía người còn lại.",
+                "Hai người đang luyện tập tennis ở trên sân cạnh bờ sông.",
+                "Hình ảnh hai người đang luyện tập tennis ở trên sân nằm cạnh bờ sông.",
+                "Hai vận động viên tennis đang luyện tập ở trên sân nằm cạnh bờ sông."
+            ],
+            "target_silver_captions": [
+                "Một đôi người trên sân với vợt quần cầu.",
+                "Hai người chơi trên sân quần cầu, mỗi người cầm một vợt.",
+                "Hai người tham gia trò chơi trên sân quần cầu, trang bị vợt.",
+                "Có hai người trên sân quần cầu, cả hai cầm vợt.",
+                "Hai người cầm vợt quần cầu có thể nhìn thấy trên sân."
+            ]
+        },
+        {
+            "idx": 46,
+            "file_name": "000000007260.jpg",
+            "split": "train",
+            "source_captions": [
+                "women on a tennis court playing a game of tennis ",
+                "Four people compete in a doubles tennis match.",
+                "four people on the tennis court playng a doubles match ",
+                "There are people playing a game of tennis.",
+                "Four people playing tennis on a tennis court with onlookers."
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu tennis đôi nữ đang diễn ra.",
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Khán giả đang theo dõi một trận thi đấu tennis ở nội dung đôi nữ.",
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một nữ vận động viên tennis đang nghiêng người để đánh bóng về phía đối thủ."
+            ],
+            "target_silver_captions": [
+                "Những phụ nữ trên sân tennis đang chơi một trận đấu tennis.",
+                "Các vận động viên nữ trên sân tennis đang tham gia vào một trận đấu tennis.",
+                "Phụ nữ đang tích cực tham gia một trận đấu tennis trên sân.",
+                "Một nhóm phụ nữ hiện đang chơi một trận đấu tennis trên sân tennis.",
+                "Có thể nhìn thấy phụ nữ đang chơi tennis trên sân."
+            ]
+        },
+        {
+            "idx": 47,
+            "file_name": "000000007298.jpg",
+            "split": "train",
+            "source_captions": [
+                "A person that is playing in a baseball game.",
+                "A man catching a baseball with a catchers mitt on a field.",
+                "A young man in a blue shirt and tan shorts watches a baseball player catch a ball.",
+                "Baseball catching a baseball while keeping foot on base.",
+                "A young baseball player is catching the ball while another gentleman looks on. "
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang theo dõi động tác bắt bóng của cầu thủ bắt bóng.",
+                "Một cầu thủ bắt bóng đang nghiêng người để bắt bóng.",
+                "Một người đàn ông đang chuẩn bị bắt quả bóng chày bằng găng tay.",
+                "Một cầu thủ bắt bóng đang luyện tập dưới sự theo dõi của huấn luyện viên.",
+                "Một cầu thủ bắt bóng đang chuẩn bị bắt bóng."
+            ],
+            "target_silver_captions": [
+                "Một người đang chơi trong một trận đấu bóng chày.",
+                "Một cá nhân tham gia vào một trận đấu bóng chày.",
+                "Một vận động viên tham gia vào trò chơi bóng chày.",
+                "Ai đó tích cực tham gia vào một trận đấu bóng chày.",
+                "Một người tham gia vào một trận đấu bóng chày."
+            ]
+        },
+        {
+            "idx": 48,
+            "file_name": "000000007304.jpg",
+            "split": "train",
+            "source_captions": [
+                "a little in a pink shirt and khaki skirt playing tennis ",
+                "A young girl playing with her friend in a game of tennis.",
+                "A girl is hitting a ball with a tennis racket",
+                "A small girl in action on a court with a racket.",
+                "Young female child playing tennis on outdoor court."
+            ],
+            "target_gold_captions": [
+                "Một cô bé đang bước tới trước để đỡ bóng ở trên sân.",
+                "Nữ vận động viên tennis nhí đang luyện tập ở trên sân.",
+                "Một cô bé đang luyện tập chơi tennis ở trên sân.",
+                "Cô bé đang cầm vợt bằng một tay để đánh quả bóng tennis.",
+                "Cô bé đang cầm vợt bằng một tay để đỡ quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một cô bé mặc áo hồng và váy khaki đang chơi tennis.",
+                "Một cô bé nhỏ toàn diện áo hồng và váy khaki đang chơi môn tennis.",
+                "Một cô bé đáng yêu mặc áo hồng và váy khaki đang thưởng thức trò chơi tennis.",
+                "Một cô bé trẻ tuổi, mặc áo hồng và váy khaki, tích cực tham gia trò chơi tennis.",
+                "Có một cô bé nhỏ mặc áo hồng và váy khaki đang chơi tennis."
+            ]
+        },
+        {
+            "idx": 49,
+            "file_name": "000000007809.jpg",
+            "split": "train",
+            "source_captions": [
+                "A female tennis player is swinging her tennis racquet to hit the ball. ",
+                "A lady swinging tennis racket at approaching ball.",
+                "A woman is poised, ready to strike a ball with her tennis racket.",
+                "A woman standing in front of tennis ball in the air.",
+                "A pretty tennis player in action on the court."
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang quan sát quả bóng tennis.",
+                "Một nữ vận động viên tennis đang đưa vợt ra sau để chuẩn bị đánh bóng.",
+                "Một nữ vận động viên tennis đang chuẩn bị đánh bóng.",
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Một người phụ nữ đang đưa vợt ra sau để chuẩn bị đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một nữ vận động viên tennis đang đánh cú đập với vợt tennis của mình để đánh bóng.",
+                "Vận động viên tennis nữ đang đánh trái bóng tennis bằng vợt của mình.",
+                "Nữ vận động viên tennis đang vẫy vợt tennis của mình để tiếp xúc với quả bóng.",
+                "Sử dụng vợt tennis, nữ vận động viên nhắm mục tiêu để đánh bóng trong lúc đánh.",
+                "Vận động viên tennis nữ đang cố gắng đánh một cú đập bằng cách vẫy vợt của mình."
+            ]
+        },
+        {
+            "idx": 50,
+            "file_name": "000000008065.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player swinging a baseball bat during a game.",
+                "A man swinging a bat while playing baseball.",
+                "A man in a baseball uniform swinging his bat.",
+                "Baseball player in the motion of swinging at a baseball coming towards him. ",
+                "A batter swings a baseball bat as the catcher prepares to catch the ball."
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu bóng chày đang diễn ra ở trên sân.",
+                "Cầu thủ đánh bóng và cầu thủ bắt bóng đang tập trung ở gôn.",
+                "Một cầu thủ đánh bóng đang nghiêng người để đánh bóng.",
+                "Cầu thủ bắt bóng đang theo dõi cú đánh bóng của cầu thủ đánh bóng.",
+                "Một cầu thủ đánh bóng đang vung gậy để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên bóng chày vung gậy trong một trận đấu.",
+                "Một vận động viên bóng chày đang vung gậy trong một trận đấu bóng chày.",
+                "Trong một trận đấu bóng chày, một vận động viên đang vung gậy bóng chày.",
+                "Giữa một trận đấu, một vận động viên bóng chày đang vung gậy để đánh trúng bóng.",
+                "Một vận động viên trong một trận đấu bóng chày đang vung gậy để đánh trúng bóng."
+            ]
+        },
+        {
+            "idx": 51,
+            "file_name": "000000008119.jpg",
+            "split": "train",
+            "source_captions": [
+                "A team of young men playing a game of baseball.",
+                "A baseball game in progress with the batter about to hit the ball.",
+                "Two baseball players playing ball while people watch behind them. ",
+                "A baseball game with the hitter attempting the bunt the ball and people watching from the lawn behind the third base line.",
+                "A little kid playing a game of baseball during the day."
+            ],
+            "target_gold_captions": [
+                "Cầu thủ đánh bóng đang chuẩn bi đánh bóng.",
+                "Các cậu bé đang luyện tập bóng chày ở ngoài trời.",
+                "Một trận thi đấu bóng chày đang diễn ra ở ngoài trời.",
+                "Cầu thủ bắt bóng đang theo dõi động tác của cầu thủ đánh bóng.",
+                "Cầu thủ đánh bóng đang vung gậy để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một đội nam thanh niên đang chơi một trò chơi bóng chày.",
+                "Một nhóm các chàng trai trẻ đang tham gia một trận đấu bóng chày.",
+                "Một đội ngũ các nam thanh niên tham gia một trò chơi bóng chày.",
+                "Một đám nam thanh niên tham gia một cuộc thi bóng chày.",
+                "Một đội nam thanh niên tham gia một sự kiện bóng chày."
+            ]
+        },
+        {
+            "idx": 52,
+            "file_name": "000000008297.jpg",
+            "split": "train",
+            "source_captions": [
+                "Female tennis player on a court swinging at a ball",
+                "Tennis ball in flight as a female player waits to hit it.",
+                "A female tennis player holding a racket  with a ball in the air.",
+                "A person with a tennis racket, watching a tennis ball.",
+                "A tennis player swings the racket back preparing to hit the ball."
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang chuẩn bị đánh bóng.",
+                "Một nữ vận động viên tennis đang giơ vợt lên cao để chuẩn bị đánh bóng.",
+                "Một người phụ nữ đang giơ vợt lên cao để chuẩn bị đánh quả bóng tennis.",
+                "Một người phụ nữ đang quan sát đường bay của quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Cầu thủ nữ quần vợt trên sân đánh bóng.",
+                "Một người phụ nữ chơi quần vợt trên sân đánh bóng.",
+                "Cầu thủ nữ quần vợt trên sân vung vợt để đánh bóng.",
+                "Với cán vợt trong tay, người phụ nữ trên sân quần vợt sẵn sàng đánh bóng.",
+                "Trên sân quần vợt, cầu thủ nữ vung vợt của mình một cách chính xác để đánh bóng."
+            ]
+        },
+        {
+            "idx": 53,
+            "file_name": "000000008571.jpg",
+            "split": "train",
+            "source_captions": [
+                "Some tennis players shaking hands at the net.",
+                "Women playing partners in tennis shake each others hands on the tennis court.",
+                "Tennis players shake each others' hands before a game. ",
+                "The people are shaking hands over the net.",
+                "Tennis players of opposing teams shake hands at the net on the court."
+            ],
+            "target_gold_captions": [
+                "Hình ảnh một nhóm người đang giao hữu sau khi kết thúc trận đấu tennis.",
+                "Ở trên sân , các vận động viên tennis đang bắt tay nhau.",
+                "Các vận động viên tennis đang giao hữu sau khi kết thúc trận đấu.",
+                "Một nhóm người đang bắt tay nhau ở trên sân.",
+                "Hình ảnh các vận động viên tennis đang giao hữu sau khi kết thúc trận đấu tennis."
+            ],
+            "target_silver_captions": [
+                "Một số tay vợt quần vợt bắt tay tại lưới.",
+                "Một vài tay vợt quần vợt trao đổi cái bắt tay tại lưới.",
+                "Một vài tay vợt quần vợt bắt tay với nhau tại lưới.",
+                "Nhiều tay vợt quần vợt thực hiện nghi thức bắt tay tại lưới.",
+                "Một số tay vợt quần vợt thực hiện một động tác bắt tay tại lưới."
+            ]
+        },
+        {
+            "idx": 54,
+            "file_name": "000000008746.jpg",
+            "split": "train",
+            "source_captions": [
+                "a man standing on stage while others watch him ",
+                "A man is standing on stage showcasing his basketball skills.",
+                "a person on a stage with a basketball",
+                "A man holding a basketball on a stage among several beach goers.",
+                "A man that is standing on a stage holding a ball."
+            ],
+            "target_gold_captions": [
+                "Trên bãi biển , một người đàn ông đang đứng cầm quả bóng rổ trên tay.",
+                "Trên bãi biển , một cầu thủ bóng rổ đang cầm quả bóng trên tay.",
+                "Khán giả đang theo dõi một vận động viên bóng rỗ.",
+                "Vận động viên bóng rổ đang tham gia lễ hội ở trên bãi biển.",
+                "Một cầu thủ bóng rổ đang biểu diễn kĩ thuật ở trên bãi biển."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông đứng trên sân khấu trong khi những người khác quan sát anh ta.",
+                "Một cá nhân đứng trên sân khấu trong khi những người còn lại quan sát anh ta.",
+                "Một người đàn ông đang đứng trên sân khấu, được người khác quan sát.",
+                "Có một người đàn ông đứng trên sân khấu, được những người xung quanh quan sát.",
+                "Trên sân khấu, một người đàn ông đứng trong khi những người khác chú ý đến anh ta."
+            ]
+        },
+        {
+            "idx": 55,
+            "file_name": "000000008807.jpg",
+            "split": "train",
+            "source_captions": [
+                "A tennis player trying to hit the ball. ",
+                "a man leaning back with his racket to hit a tennis ball ",
+                "A man standing on a tennis court holding a racquet.",
+                "A man rared back at a tennis ball with a racquet.",
+                "there is a male tennis player that is on the court"
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang chuẩn bị phát bóng ở trên sân tennis.",
+                "Một nam vận động viên tennis đang nghiêng người để phát bóng.",
+                "Một người đàn ông đang nghiêng người để đánh quả bóng tennis.",
+                "Một người đàn ông đang chuẩn bị đánh quả bóng tennis.",
+                "Một nam vận động viên tennis đang nghiêng người để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một tay vợt tennis cố gắng đánh quả bóng.",
+                "Một tay vợt tennis cố gắng đánh vào quả bóng.",
+                "Một vận động viên tennis đang cố gắng tiếp xúc với quả bóng.",
+                "Một vận động viên tennis nỗ lực đánh quả bóng bằng vợt của mình.",
+                "Một vận động viên tennis cố gắng để ghi điểm bằng cách đánh quả bóng."
+            ]
+        },
+        {
+            "idx": 56,
+            "file_name": "000000008979.jpg",
+            "split": "train",
+            "source_captions": [
+                "A tennis player about to hit the tennis ball.",
+                "A tennis player strains on a court as many look on.",
+                "A female tennis player swinging at a ball.",
+                "A tennis player reaching for a tennis ball with her racket..",
+                "Female tennis player lunges forward aiming to hit the ball. "
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang nghiêng người để đỡ bóng.",
+                "Một nữ vận động viên tennis đang bước qua trái để đánh bóng.",
+                "Khán giả đang theo dõi trận thi đấu tennis nữ ở trên sân.",
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang nghiêng người để đỡ bóng."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên tennis chuẩn bị đánh quả banh.",
+                "Một vận động viên tennis sẵn sàng đánh vào quả banh.",
+                "Vận động viên tennis đang chuẩn bị tiếp xúc với quả banh.",
+                "Một vận động viên tennis sắp vung vợt vào quả banh.",
+                "Vận động viên tennis đang sắp đánh vào quả banh."
+            ]
+        },
+        {
+            "idx": 57,
+            "file_name": "000000009317.jpg",
+            "split": "train",
+            "source_captions": [
+                "A young boy sitting on a field next to a soccer ball.",
+                "A boy kneeling in the grass near a soccer ball. ",
+                "A boy sitting next to a ball on the grass.",
+                "a child sitting on a field near a soccer ball",
+                "a kid is sitting out in the grass"
+            ],
+            "target_gold_captions": [
+                "Ở trên sân cỏ , cậu bé đang ngồi ở phía bên phải của quả bóng.",
+                "Một cậu bé đang ngồi cạnh quả bóng ở trên sân.",
+                "Hình ảnh một cậu bé đang theo dõi một trận đá bóng.",
+                "Cậu bé đang theo dõi một trận bóng đá.",
+                "Ở trên sân cỏ , bên trái quả bóng có một cậu bé."
+            ],
+            "target_silver_captions": [
+                "Một cậu bé đang ngồi trên sân cạnh một quả bóng đá.",
+                "Một cậu bé nhỏ đang ngồi trên cỏ gần một quả bóng đá.",
+                "Có một đứa trẻ đang ngồi trên sân bóng cùng một quả bóng đá.",
+                "Một chàng trai trẻ đang ngồi trên cỏ bên cạnh một quả bóng đá.",
+                "Sân cỏ được một cậu bé nhỏ chiếm giữ và cậu bé đứng bên cạnh một quả bóng đá."
+            ]
+        },
+        {
+            "idx": 58,
+            "file_name": "000000009395.jpg",
+            "split": "train",
+            "source_captions": [
+                "A pitcher getting ready to release a pitch",
+                "A baseball pitcher during a game abou tot throw the ball",
+                "a pitcher with a wide stance getting ready to throw a ball",
+                "a baseball player is on a green field",
+                "A man that is standing in the dirt with a glove."
+            ],
+            "target_gold_captions": [
+                "Một cầu thủ ném bóng đang thực hiện động tác ném bóng.",
+                "Một người đàn ông đang xoay người để ném quả bóng chày.",
+                "Một cầu thủ ném bóng đang chuẩn bị ném bóng.",
+                "Một người đàn ông đang chuẩn bị ném quả bóng chày.",
+                "Một cầu thủ ném bóng đang xoay người để ném bóng."
+            ],
+            "target_silver_captions": [
+                "Một người ném bóng sẵn sàng phóng bóng.",
+                "Một người ném bóng chuẩn bị ném bóng.",
+                "Người ném bóng sắp phóng bóng.",
+                "Người ném bóng đang sẵn sàng ném bóng.",
+                "Người ném bóng đang chuẩn bị phóng bóng."
+            ]
+        },
+        {
+            "idx": 59,
+            "file_name": "000000010123.jpg",
+            "split": "train",
+            "source_captions": [
+                "A woman swinging a tennis racket at a tennis ball.",
+                "A woman hitting a tennis ball with a racquet.",
+                "A girl is hitting a tennis ball with a racquet.",
+                "Professional photograph of a woman playing tennis indoors",
+                "a girl in black and white returning a tennis serve "
+            ],
+            "target_gold_captions": [
+                "Một nữ vận động viên tennis đang dùng vợt để đỡ bóng.",
+                "Một nữ vận động viên tennis đang dùng vợt để đánh trả bóng.",
+                "Một nữ vận động viên tennis đang vung vợt để đỡ bóng.",
+                "Một người phụ nữ đang dùng vợt để đỡ quả bóng tennis.",
+                "Một người phụ nữ đang vung vợt để đỡ quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đang vung vợt tennis vào quả bóng tennis.",
+                "Người chơi nữ vung vợt tennis vào quả bóng tennis.",
+                "Một người phụ nữ đánh vào quả bóng tennis bằng vợt tennis của mình.",
+                "Người phụ nữ vung vợt tennis để đánh vào quả bóng tennis.",
+                "Với quả bóng tennis trong tầm nhìn, một người phụ nữ tự tin vung vợt tennis của mình."
+            ]
+        },
+        {
+            "idx": 60,
+            "file_name": "000000010216.jpg",
+            "split": "train",
+            "source_captions": [
+                "A woman serving the tennis ball on the court",
+                "A tennis player who is leaping to hit the ball during a match.",
+                "A girl is swinging her tennis racquet at at the ball.",
+                "Woman playing tennis at a large tennis match.",
+                "A tennis player is jumping up to hit the ball."
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu tennis nữ đang diễn ra ở trên sân.",
+                "Một người phụ nữ đang vươn người để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang vươn người để đánh bóng.",
+                "Một nữ vận động viên tennis đang nhảy lên để đánh bóng.",
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đang giao bóng tennis trên sân.",
+                "Một cầu thủ nữ đang giao bóng tennis trên sân.",
+                "Người phụ nữ trên sân đã sẵn sàng giao bóng tennis.",
+                "Một quý cô sắp giao bóng tennis trong khi đang chơi trên sân.",
+                "Vận động viên tennis nữ sẽ bắt đầu trận đấu bằng cách giao bóng trên sân."
+            ]
+        },
+        {
+            "idx": 61,
+            "file_name": "000000010265.jpg",
+            "split": "train",
+            "source_captions": [
+                "A sports person stretches to reach a ball.",
+                "Tennis play, man on green border area of blue court appearing to be sweeping surface with tennis racket.",
+                "A person running across a tennis court with a tennis racquet.",
+                "Two people on a tennis court playing ball.",
+                "A man is playing a polo tournament on a court."
+            ],
+            "target_gold_captions": [
+                "Một nam vận động viên tennis đang bước qua phải để cứu bóng.",
+                "Trọng tài đang theo dõi diễn biến của trận thi đấu tennis nam.",
+                "Một nam vận động viên tennis vừa đánh hụt bóng.",
+                "Một người đàn ông đang bước qua phải để đỡ quả bóng tennis.",
+                "Một trận thi đấu tennis nam đang diễn ra ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên kéo dài cơ thể để chạm được vào quả bóng.",
+                "Một vận động viên kéo dài cơ thể để tiếp xúc với quả bóng.",
+                "Một người chơi thể thao kéo dài để vươn tới quả bóng.",
+                "Một người chơi thể thao cúi người để chạm vào quả bóng.",
+                "Một người vận động viên kéo dài cơ thể để nắm bắt quả bóng."
+            ]
+        },
+        {
+            "idx": 62,
+            "file_name": "000000010701.jpg",
+            "split": "train",
+            "source_captions": [
+                "A pitcher at a baseball game who is in mid pitch.",
+                "A baseball pitcher winds up to pitch the ball.",
+                "A pitcher throwing a ball during a baseball game.",
+                "A pitcher is getting ready to pitch during a baseball game.",
+                "A baseball pitcher in the middle of a pitch."
+            ],
+            "target_gold_captions": [
+                "Khán giả đang theo dõi diễn biến của trận thi đấu bóng chày.",
+                "Một cầu thủ ném bóng đang thực hiện động tác ném bóng.",
+                "Một cầu thủ ném bóng đang chuẩn bị ném bóng.",
+                "Các cầu thủ bóng chày đang theo dõi động tác ném bóng của cầu thủ ném bóng.",
+                "Một người đàn ông đang chuẩn bị ném quả bóng chày ở trong tay."
+            ],
+            "target_silver_captions": [
+                "Một người ném bóng trong trò chơi bóng chày đang ở giữa quả bóng.",
+                "Người ném bóng trong trò chơi bóng chày đang chuẩn bị ném bóng.",
+                "Người ném bóng trong trò chơi bóng chày đang thả quả bóng ra bằng tay.",
+                "Người ném bóng đang ở giữa quá trình ném quả bóng trong trò chơi bóng chày.",
+                "Người ném bóng đang thực hiện ném bóng trong trò chơi bóng chày."
+            ]
+        },
+        {
+            "idx": 63,
+            "file_name": "000000010837.jpg",
+            "split": "train",
+            "source_captions": [
+                "Soccor players approach a ball that is in the air.",
+                "Several young male soccer players play on a field as a ball sails overhead.",
+                "a group of people playing soccer in a field",
+                "Soccer players look on as the soccer ball flies in the air.",
+                "Several men playing with a soccer ball in a park."
+            ],
+            "target_gold_captions": [
+                "Quả bóng bay lơ lửng ở trên đầu các cầu thủ bóng đá.",
+                "Các cầu thủ bóng đá đang luyện tập ở trên sân.",
+                "Một trận thi đấu bóng đá đang diễn ra ở trên sân.",
+                "Những người bạn đang chơi đá bóng với nhau.",
+                "Các cầu thủ bóng đá đang thi đấu ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Các cầu thủ bóng đá tiếp cận một quả bóng đang lơ lửng trong không khí.",
+                "Các cầu thủ bóng đá di chuyển về phía một quả bóng đang bay trên không trung.",
+                "Các cầu thủ bóng đá tiếp cận một quả bóng đang bay trên không trung.",
+                "Các cầu thủ bóng đá tiếp cận một quả bóng đang lơ lửng trong không gian.",
+                "Các cầu thủ bóng đá di chuyển về phía một quả bóng đang bay cao trên bầu trời."
+            ]
+        },
+        {
+            "idx": 64,
+            "file_name": "000000011129.jpg",
+            "split": "train",
+            "source_captions": [
+                "A female tennis player in a action on the court.",
+                "A woman leans in to hit a tennis ball during a match.",
+                "A women who is holding a tennis racket playing tennis.",
+                "a woman running up to a tennis ball to hit it ",
+                "A female tennis player in action in the corner of the court. "
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang chơi tennis ở trên sân.",
+                "Một nữ vận động viên tennis đang thực hiện động tác đánh bóng.",
+                "Một nữ vận động viên tennis đang thi đấu ở trên sân.",
+                "Một người phụ nữ đang nhún người để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang bước tới trước để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một tay vợt nữ trong một trận đấu trên sân tennis.",
+                "Một nữ tay vợt tham gia vào trận đấu trên sân.",
+                "Một tay vợt nữ năng động tham gia vào trò chơi trên sân.",
+                "Một cầu thủ nữ đang chơi tennis trên sân.",
+                "Một tay vợt tennis là phụ nữ, đang thi đấu trên sân."
+            ]
+        },
+        {
+            "idx": 65,
+            "file_name": "000000011567.jpg",
+            "split": "train",
+            "source_captions": [
+                "a tennis player with a racket on a court",
+                "A man wearing his hat backward with a tennis racket and ball in his hand.",
+                "A man on a tennis court holding a racquet.",
+                "a man standing on a tennis court whil holding a ball and racket ",
+                "A man standing on top of a tennis court holding a racquet."
+            ],
+            "target_gold_captions": [
+                "Người đàn ông áo xanh đang cầm vợt và đứng trên sân tennis.",
+                "Một nam vận động viên tennis đang thi đấu ở trên sân.",
+                "Hình ảnh một vận động viên tennis đang thi đấu ở trên sân.",
+                "Một trận thi đấu tennis đang được diễn ra ở trên sân.",
+                "Một nam vận động viên tennis đang đứng ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên tennis cầm vợt trên sân",
+                "Một vận động viên đang chơi tennis cầm vợt trong khi đứng trên sân.",
+                "Trên sân, một vận động viên tennis cầm vợt.",
+                "Đứng trên sân, một vận động viên tennis cầm vợt.",
+                "Cầm vợt trong tay, một vận động viên tennis sẵn sàng thi đấu trên sân."
+            ]
+        },
+        {
+            "idx": 66,
+            "file_name": "000000011737.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball pitcher on the mound about to throw a pitch.",
+                "a baseball player attempting to throw a ball.",
+                "A pitcher is going to throw the baseball. ",
+                "A baseball player preparing to throw the ball.",
+                "A man in a baseball uniform throwing a ball."
+            ],
+            "target_gold_captions": [
+                "Cầu thủ ném bóng đang luyện tập ném bóng ở trên sân.",
+                "Một người đàn ông đang giơ quả bóng chày lên cao để ném.",
+                "Một người đàn ông đang chuẩn bị ném quả bóng chày.",
+                "Cầu thủ ném bóng đang chuẩn bị ném quả bóng.",
+                "Cầu thủ ném bóng đang cầm quả bóng trong tay."
+            ],
+            "target_silver_captions": [
+                "Một người ném bóng chày trên đồi sẵn sàng ném bóng.",
+                "Người ném bóng chày trên đồi chuẩn bị ném một cú ném.",
+                "Người đứng trên đồi ném bóng đang chuẩn bị tấn công.",
+                "Người chơi đứng trên đồi sắp ném bóng.",
+                "Người ném bóng chày chuẩn bị ném bóng từ đồi."
+            ]
+        },
+        {
+            "idx": 67,
+            "file_name": "000000012047.jpg",
+            "split": "train",
+            "source_captions": [
+                "A male baseball player swinging to hit a ball.",
+                "A baseball batter swinging at a pitch as another player runs past.",
+                "a professional baseball player taking a swing at a pitch",
+                "A batter at the plate hitting a baseball.",
+                "The baseball player swings the bat at the ball"
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu bóng chày đang diễn ra ở trên sân.",
+                "Một cầu thủ đánh bóng đang vung gậy để đánh quả bóng.",
+                "Cầu thủ bắt bóng và trọng tài đang theo dõi cú đánh bóng của cầu thủ đánh bóng.",
+                "Một cầu thủ đánh bóng đang xoay người để đánh bóng.",
+                "Một cầu thủ đánh bóng đang chuẩn bị đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một nam cầu thủ bóng chày đang vung gậy để đánh bóng.",
+                "Một người đàn ông tham gia vào trò chơi bóng chày, vung gậy nhằm mục đích tiếp xúc với quả bóng.",
+                "Một cầu thủ bóng chày nam đang vung gậy đánh bóng, hy vọng sẽ đạt được cú đánh chắc chắn.",
+                "Người đánh bóng, một người đàn ông tham gia vào một trận đấu bóng chày, đang trong quá trình vung gậy để đánh vào quả bóng.",
+                "Với ý định đánh vào quả bóng, một cầu thủ bóng chày nam đang vung gậy của mình."
+            ]
+        },
+        {
+            "idx": 68,
+            "file_name": "000000012069.jpg",
+            "split": "train",
+            "source_captions": [
+                "A Mariner's baseball player is going to get hit with the ball that was pitched.",
+                "A man standing next to home plate holding a bat.",
+                "A baseball player swinging his bat at home plate.",
+                "A player in action up to bat in a baseball game",
+                "there is a male baseball player swinging for the ball"
+            ],
+            "target_gold_captions": [
+                "Một cầu thủ đánh bóng đang nghiêng người để đánh bóng.",
+                "Cầu thủ đánh bóng đang chuẩn bị đánh quả bóng chày.",
+                "Một cầu thủ đánh bóng đang vung gậy để chuẩn bị đánh quả bóng.",
+                "Khán giả đang theo dõi động tác đánh bóng của cầu thủ đánh bóng.",
+                "Khán giả đang theo dõi trận thi đấu bóng chày ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Một cầu thủ bóng chày của đội Mariner sẽ bị bóng ném trúng.",
+                "Cầu thủ bóng chày của đội Mariner sắp bị bóng ném đánh trúng.",
+                "Cầu thủ bóng chày của đội Mariner sắp bị bóng ném đánh vào.",
+                "Bóng đã được ném sẽ đánh trúng một cầu thủ của đội bóng chày Mariner.",
+                "Một quả bóng đang tiến tới sẽ đánh trúng một cầu thủ trong đội bóng chày Mariner."
+            ]
+        },
+        {
+            "idx": 69,
+            "file_name": "000000012192.jpg",
+            "split": "train",
+            "source_captions": [
+                "A little boy plays with a racket and ball.",
+                "A little naked boy standing at the water's edge, holding a racket.",
+                "A young boy with no clothes on holding a tennis racket at the beach, with his feet in the water.",
+                "A small child plays with a racket near a body of water.",
+                "A small naked boy holding a tennis racquet on a beach."
+            ],
+            "target_gold_captions": [
+                "Cậu bé ra biển để chơi đùa vào buổi sáng sớm.",
+                "Cậu bé không mặc quần áo đang đứng và cầm vợt ở trên bãi biển.",
+                "Cậu bé cầm vợt để chơi ở trên bãi biển vào hoàng hôn.",
+                "Cậu bé cầm vợt để chơi ở trên bãi biển vào bình minh.",
+                "Trên bãi biển , một cậu bé đang cầm vợt bằng hai tay."
+            ],
+            "target_silver_captions": [
+                "Một cậu bé nhỏ chơi với vợt và quả bóng.",
+                "Một cậu bé trẻ đang sử dụng vợt và quả bóng để chơi.",
+                "Một em bé nhỏ đang vui chơi với một cái vợt và quả bóng.",
+                "Một cậu bé nhỏ đang thích thú khi sử dụng vợt và quả bóng.",
+                "Một cậu bé trẻ đang tham gia vào hoạt động chơi đùa với vợt và quả bóng."
+            ]
+        },
+        {
+            "idx": 70,
+            "file_name": "000000012552.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player swinging a bat at a ball.",
+                "a batter hitting a baseball with a at home plate ",
+                "A batter swings at an incoming fastball pitch.",
+                "A batter on a baseball field in mid-swing with a catcher and an umpire behind him.",
+                "A baseball player prepares to hit the baseball with his bat. "
+            ],
+            "target_gold_captions": [
+                "Cầu thủ đánh bóng đang vung gậy để đánh quả bóng chày.",
+                "Một người đàn ông đang vung gậy để đánh quả bóng chày.",
+                "Cầu thủ đánh bóng đang nghiêng người để đánh quả bóng chày.",
+                "Cầu thủ bắt bóng và trọng tài đang theo dõi cú đánh bóng của cầu thủ đánh bóng.",
+                "Một người đàn ông đang xoay người để đánh quả bóng chày."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên bóng chày quật ngã gậy vào quả bóng.",
+                "Một người đánh bóng chày trong bóng chày vung gậy hướng vào quả bóng.",
+                "Một vận động viên bóng chày tiến hành cú vung bóng bằng gậy của mình.",
+                "Vận động viên bóng chày đang cầm gậy vung vào quả bóng để cố gắng đánh trúng.",
+                "Với gậy trong tay, vận động viên bóng chày đánh vào quả bóng bằng một cú vung mạnh mẽ."
+            ]
+        },
+        {
+            "idx": 71,
+            "file_name": "000000012757.jpg",
+            "split": "train",
+            "source_captions": [
+                "Female tennis player engaged in swinging tennis racket during a match.",
+                "A tennis player serving the ball on the courts as spectators watch from the stands.",
+                "A tennis player is about to hit the ball",
+                "A woman is playing tennis while people watch.",
+                "A tennis player swings her racquet towards an incoming tennis ball"
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Một người phụ nữ đang vung vợt để đánh quả bóng tennis.",
+                "Khán giả đang theo dõi trận thi đấu tennis của vận động viên nữ.",
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một nữ vận động viên tennis đang chuẩn bị đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Cầu thủ quần vợt nữ đang tham gia vào việc vung vợt trong khi trận đấu diễn ra.",
+                "Vận động viên quần vợt nữ đang tích cực vung vợt trong khi trận đấu diễn ra.",
+                "Vận động viên quần vợt nữ đang có động thái đánh cầu với vợt trong khi trận đấu diễn ra.",
+                "Vận động viên quần vợt nữ đang thực hiện các cú đánh với vợt trong trận đấu đang diễn ra.",
+                "Trong trận đấu, vận động viên quần vợt nữ tích cực tham gia vào việc ghi điểm bằng vợt của mình."
+            ]
+        },
+        {
+            "idx": 72,
+            "file_name": "000000012764.jpg",
+            "split": "train",
+            "source_captions": [
+                "A cat and a dog or playing with a ball.",
+                "close up of a dog and a small cat with a white background",
+                "A brown dog and a  black and white kitten playing with a tennis ball.",
+                "a brown and white dog and a cat playing with a ball",
+                "A kitten plays with a colorful ball with a dog next to it."
+            ],
+            "target_gold_captions": [
+                "Quả bóng ở chính giữa con mèo và con chó.",
+                "Một con chó và một con mèo đang chơi đùa cùng quả bóng.",
+                "Bên phải con chó , một con mèo đang chơi đùa cùng quả bóng.",
+                "Bên trái con mèo và quả bóng , con chó đang ngoảnh mặt qua trái.",
+                "Hình ảnh của một con chó , một con mèo và một quả bóng."
+            ],
+            "target_silver_captions": [
+                "Một con mèo và một con chó đang chơi với một quả bóng.",
+                "Một loài mèo và một loài chó đang vui đùa với một quả bóng.",
+                "Một con mèo và con chó đáng yêu đang tham gia vào trò chơi bóng.",
+                "Một quả bóng đang được một con mèo và một con chó chơi.",
+                "Cả con mèo và con chó đều thích chơi với một quả bóng."
+            ]
+        },
+        {
+            "idx": 73,
+            "file_name": "000000013904.jpg",
+            "split": "train",
+            "source_captions": [
+                "Several shots of a man in various positions with a tennis racquet.",
+                "A group of action shots of tennis players on the court.",
+                "Man serving in tennis in a game with other people.",
+                "two different men playing tennis on a court",
+                "Photos show different moves and techniques in tennis."
+            ],
+            "target_gold_captions": [
+                "Sáu cầu thủ tennis nam thi đấu vào ban ngày.",
+                "Hai cầu thủ tennis nam đang thi đấu ở trên sân.",
+                "Hình ảnh về các tư thế khác nhau của vận động viên tennis nam trong trận đấu.",
+                "Sáu cầu thủ tennis nam thi đấu ở trên sân đất nện.",
+                "Một trận thi đấu tennis nam đang diễn ra ở trên sân đất nện."
+            ],
+            "target_silver_captions": [
+                "Một số bức ảnh của một người đàn ông ở các tư thế khác nhau với vợt tennis.",
+                "Nhiều hình ảnh của một người đàn ông ở các tư thế khác nhau kéo vợt tennis.",
+                "Những cảnh chụp khác nhau ghi lại một người đàn ông trong các tư thế khác nhau, mỗi tư thế đều có vợt tennis.",
+                "Những bức ảnh của một người đàn ông hiển thị ở các vị trí khác nhau trong lúc cầm vợt tennis.",
+                "Một số hình ảnh miêu tả một người đàn ông với vợt tennis trong nhiều tư thế khác nhau."
+            ]
+        },
+        {
+            "idx": 74,
+            "file_name": "000000013967.jpg",
+            "split": "train",
+            "source_captions": [
+                "The tennis player is about to pick up the ball to serve.",
+                "A person on a tennis court with a racquet and a ball.",
+                "there is a man standing next to the ball holding a racket",
+                "The lowers section of a tennis player leaning on his racket.",
+                "The man is playing a game of tennis on the court. "
+            ],
+            "target_gold_captions": [
+                "Một vận động viên tennis đang thi đấu vào ban ngày.",
+                "Một người đàn ông đang đứng ở trên sân cùng với cái vợt và quả bóng.",
+                "Một người đang đứng ở trên sân tennis cùng cái vợi và quả bóng.",
+                "Một vận động viên tennis đang đứng ở trên sân vào ban ngày.",
+                "Một vận động viên tennis đang đứng ở trên sân cùng cái vợt và quả bóng."
+            ],
+            "target_silver_captions": [
+                "Vận động viên quần vợt sắp nhặt bóng để giao bóng.",
+                "Vận động viên quần vợt đã sẵn sàng lấy bóng để giao bóng.",
+                "Vận động viên quần vợt đang chuẩn bị lấy bóng để phát giao bóng.",
+                "Vận động viên đang sắp nắm bắt bóng để bắt đầu giao bóng.",
+                "Vận động viên quần vợt chuẩn bị nhặt bóng để bắt đầu giao bóng."
+            ]
+        },
+        {
+            "idx": 75,
+            "file_name": "000000014070.jpg",
+            "split": "train",
+            "source_captions": [
+                "A boy in red shirt swinging a baseball bat.",
+                "a young baseball player swinging a bat at a ball",
+                "A little league player takes a practice swing.",
+                "A child holding a baseball bat at a game.",
+                "a baseball player is swinging a bat and some people watching"
+            ],
+            "target_gold_captions": [
+                "Cầu thủ đánh bóng đang giơ gậy lên để chuẩn bị đánh bóng.",
+                "Một trận thi đấu bóng chày đang diễn ra ở trên sân.",
+                "Cầu thủ đánh bóng nhí đang tập luyện ở trên sân.",
+                "Khán giả đang theo dõi trận thi đấu bóng chày ở trên sân.",
+                "Cầu thủ đánh bóng nhí đang vung gậy để đánh bóng ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Một cậu bé trong áo thun đỏ đang vung gậy bóng chày.",
+                "Một cậu bé trẻ tuổi mặc áo thun màu đỏ đang vung gậy bóng chày.",
+                "Cậu bé trong áo thun đỏ đang vung gậy bóng chày.",
+                "Một cậu bé mặc áo thun màu đỏ đang vung gậy bóng chày.",
+                "Cậu bé đang mặc áo thun màu đỏ đang vung gậy bóng chày."
+            ]
+        },
+        {
+            "idx": 76,
+            "file_name": "000000014083.jpg",
+            "split": "train",
+            "source_captions": [
+                "Children chase the ball during a game of soccer.",
+                "A soccer game between young boys at the park.",
+                "A group of boys play soccer in a game.",
+                "Three boys playing soccer together on a field.",
+                "A bunch of kids playing soccer together in grass"
+            ],
+            "target_gold_captions": [
+                "Hai đội bóng đá nam đang thi đấu vào ban ngày.",
+                "Các cậu bé đang chơi đá bóng với nhau ở trên sân vào ban ngày.",
+                "Các học sinh nam đang luyện tập bóng đá ở trên sân vào ban ngày.",
+                "Một trận thi đấu bóng đá nam đang diễn ra ở trên sân.",
+                "Các cầu thủ của hai đội đang tranh chấp bóng với nhau."
+            ],
+            "target_silver_captions": [
+                "Trẻ em đuổi theo quả bóng trong một trận đá bóng.",
+                "Trẻ em truy đuổi quả bóng trong khi chơi một trận đá bóng.",
+                "Trong một trận đá bóng, các em nhỏ chạy theo quả bóng.",
+                "Các em nhỏ tham gia một trận đá bóng và cố gắng bắt quả bóng.",
+                "Trong khi chơi bóng đá, các em nhỏ săn đuổi quả bóng."
+            ]
+        },
+        {
+            "idx": 77,
+            "file_name": "000000014502.jpg",
+            "split": "train",
+            "source_captions": [
+                "a man swinging a baseball bat at a baseball.",
+                "The man hits the ball with the bat as the other man watches.",
+                "Men playing baseball in a field while one attempts to strike the ball.",
+                "A man next to some trees swings a bat at a ball while another man prepares to catch it. ",
+                "A man in a field swinging a bat at a baseball."
+            ],
+            "target_gold_captions": [
+                "Người đàn ông với cái găng tay đang theo dõi cú đánh bóng của bạn mình.",
+                "Hai người đàn ông đang chơi bóng chày ở trong vườn.",
+                "Một người đàn ông đang vung gậy để đánh quả bóng chày.",
+                "Hai người đàn ông đang chơi bóng chày ở trong công viên.",
+                "Một người đàn ông đang vung gậy để đánh bóng trong khi một người đang cầm găng tay."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông vung que gậy bóng chày vào một trái bóng chày.",
+                "Một nam giới vung một que gậy bóng chày vào một quả bóng chày.",
+                "Một người đang sử dụng một que gậy bóng chày để đánh một quả bóng chày với một cử động vung vẩy.",
+                "Một người đàn ông đang ở trong quá trình đánh một quả bóng chày bằng cách vung một que gậy.",
+                "Hành động của một người đàn ông vung que gậy bóng chày để tiếp xúc với một quả bóng chày đang diễn ra."
+            ]
+        },
+        {
+            "idx": 78,
+            "file_name": "000000014795.jpg",
+            "split": "train",
+            "source_captions": [
+                "Four soccer players are walking on a soccer field. ",
+                "Several people stand on a soccer field on a rainy day.",
+                "Soccer players walking on a soccer field in front of the goal.",
+                "a man raising his arms during part of a soccer game ",
+                " On the soccer field, there are 4 soccer players in view of the camera"
+            ],
+            "target_gold_captions": [
+                "Hai cầu thủ áo trắng đang trao đổi với huấn luyện viên trong lúc tập luyện.",
+                "Hai đội bóng đang thi đấu với nhau ở trên sân vào ban ngày.",
+                "Bốn cầu thủ đá bóng đang đứng ở trước khung thành.",
+                "Hình ảnh về một buổi luyện tập bóng đá của các cầu thủ từ trên cao.",
+                "Các cầu thủ đang luyện tập bóng đá ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Bốn cầu thủ bóng đá đang đi trên sân cỏ.",
+                "Bốn cầu thủ bóng đá đang đi dạo trên một sân cỏ.",
+                "Một nhóm bốn cầu thủ bóng đá đang đi qua sân cỏ.",
+                "Bốn cầu thủ từ đội bóng đá đang đi dạo trên sân cỏ.",
+                "Bốn người đang đi trên sân cỏ và ngẫu nhiên chúng là cầu thủ bóng đá."
+            ]
+        },
+        {
+            "idx": 79,
+            "file_name": "000000015011.jpg",
+            "split": "train",
+            "source_captions": [
+                "A woman swinging a tennis racquet on a tennis court.",
+                "A female hitting a tennis ball on a tennis court.",
+                "A woman in yellow and white dress playing a game of tennis.",
+                "a woman jumping up while hitting a tennis ball ",
+                "A tennis player hopping into the air to return a ball."
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu tennis nữ đang diễn ra ở trên sân.",
+                "Một nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một người phụ nữ đang nhảy lên để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang nhảy lên để đánh bóng.",
+                "Một nữ vận động viên tennis đang nghiêng người để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đang vung vợt quần vợt trên sân quần vợt.",
+                "Một bà gìay đang vung vợt quần vợt lên xuống trên một sân quần vợt.",
+                "Trên một sân quần vợt, một nữ tay vợt đang vung mạnh một cây vợt quần vợt.",
+                "Một người phụ nữ đang vung mạnh một cây vợt quần vợt khi chơi trên sân quần vợt.",
+                "Với kỹ năng và sự chính xác, một người phụ nữ vung vợt quần vợt trên sân quần vợt."
+            ]
+        },
+        {
+            "idx": 80,
+            "file_name": "000000015017.jpg",
+            "split": "train",
+            "source_captions": [
+                "A tennis ball is coming toward a man",
+                "A man hits a tennis ball with his racket. ",
+                "A man standing on a tennis court holding a racquet.",
+                "A man stands on a tennis court hitting a ball with a racket.",
+                "A man is holding a tennis racket trying to hit the ball."
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu tennis nam đang diễn ra ở trên sân đất nện.",
+                "Một vận động viên nam đang nghiêng người để đỡ quả bóng tennis.",
+                "Một người đàn ông đang luyện tập chơi tennis ở trên sân đất nện.",
+                "Một trận thi đấu tennis ở trên sân đất nện đang diễn ra.",
+                "Một vận động viên nam cầm vợt bằng tay trái để đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một quả bóng quần tennis đang điều hướng tới một người đàn ông.",
+                "Một người đàn ông sẽ chịu đón một quả bóng quần tennis đang tới.",
+                "Một người đàn ông nhìn thấy một quả bóng tennis đang tiến tới.",
+                "Một người đàn ông đang chuẩn bị cho một quả bóng tennis đang tiến tới.",
+                "Một người đàn ông cố gắng tự nhẫn nại khi một quả bóng tennis tiến tới anh ta."
+            ]
+        },
+        {
+            "idx": 81,
+            "file_name": "000000015032.jpg",
+            "split": "train",
+            "source_captions": [
+                "Two boys with glove and helmet playing baseball",
+                "A man catching a baseball with a glove as another slides into the base.",
+                "A person wearing blue catching a ball and a person with a red helmet on the ground. ",
+                "A boy in a blue tries to catch a baseball while a boy with a red helmet slides to touch the base.",
+                "A man standing next to a base holding a catchers mitt."
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang trượt trên sân để chạm vào gôn trong khi một người khác đang cố gắng bắt quả bóng chày.",
+                "Cầu thủ chạy gôn đang vươn người để chạm vào gôn trong khi cầu thủ bắt bóng đang cố gắng bắt bóng.",
+                "Cầu thủ bắt bóng đang nghiêng người để bắt bóng bằng găng tay.",
+                "Một trận thi đấu bóng chày đang diễn ra ở trên sân.",
+                "Cầu thủ chạy gôn đang vươn người để chạm vào gôn."
+            ],
+            "target_silver_captions": [
+                "Hai cậu bé cầm găng tay và mũ bảo hiểm chơi bóng chày.",
+                "Hai cậu bé nhỏ, đội mũ bảo hiểm và cầm găng tay, tham gia vào trò chơi bóng chày.",
+                "Hai cậu bé, được trang bị găng tay và mũ bảo hiểm, tham gia vào trận đấu bóng chày.",
+                "Một cặp cậu bé, đặt găng tay và mũ bảo hiểm, thích thú chơi bóng chày cùng nhau.",
+                "Hai cậu bé được nhìn thấy đang chơi bóng chày, đội găng tay và mũ bảo hiểm."
+            ]
+        },
+        {
+            "idx": 82,
+            "file_name": "000000015122.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player standing on top of a field.",
+                "A man pitches a ball to another payer ont he field",
+                "Three athletes are playing on a sports field.",
+                "A man prepares to through a baseball while another player is running.",
+                "men with uniforms on the field playing baseball"
+            ],
+            "target_gold_captions": [
+                "Một cầu thủ chạy gôn đang chạy ở trên sân trong khi cầu thủ ném bóng đang chuẩn bị ném bóng.",
+                "Cầu thủ ném bóng đang chuẩn bị ném bóng trong khi cầu thủ chạy gôn đang chạy ở trên sân.",
+                "Một trận thi đấu bóng chày nam đang diễn ra ở trên sân.",
+                "Cầu thủ ném bóng đang chuẩn bị ném bóng về phía đồng đội.",
+                "Một cầu thủ ném bóng đang chuẩn bị ném bóng."
+            ],
+            "target_silver_captions": [
+                "Một cầu thủ bóng chày đang đứng trên một sân.",
+                "Một cầu thủ bóng chày đang đứng ở điểm cao nhất của một sân.",
+                "Trên sân, có một cầu thủ bóng chày đang đứng trên đỉnh.",
+                "Tại sân, có một cầu thủ bóng chày đang đứng trên cao.",
+                "Đứng trên sân là một cầu thủ bóng chày đang ở trên đỉnh."
+            ]
+        },
+        {
+            "idx": 83,
+            "file_name": "000000015382.jpg",
+            "split": "train",
+            "source_captions": [
+                "A young man holding a tennis racquet while wearing  a green bay shirt.",
+                "The young tennis player is active during a match.",
+                "A man swinging a tennis racquet inside a fence.",
+                "A man about to swing a tennis racket",
+                "A man with a tennis racket in his hand, right after swinging."
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang cầm vợt tennis trên tay.",
+                "Một người đàn ông đang nghiêng người để đánh quả bóng.",
+                "Một trận thi đấu tennis nam đang diễn ra ở trên sân.",
+                "Huấn luyện viên tennis đang theo dõi buổi tập luyện của học trò.",
+                "Một vận động viên tennis nam đang nghiêng người để đánh quả bóng."
+            ],
+            "target_silver_captions": [
+                "Một người trẻ tuổi cầm vợt tennis trong khi mặc áo Green Bay.",
+                "Một chàng trai trẻ nắm chặt vợt tennis khi mặc áo Green Bay.",
+                "Một người đàn ông trẻ mang theo vợt tennis trong tay và mặc áo Green Bay.",
+                "Một thiếu niên cầm vợt tennis và mặc áo có hình logo của Green Bay.",
+                "Một người trẻ tuổi nắm chặt một vợt tennis trong khi mặc áo đại diện cho đội Green Bay."
+            ]
+        },
+        {
+            "idx": 84,
+            "file_name": "000000015546.jpg",
+            "split": "train",
+            "source_captions": [
+                "The tennis player is watching the approaching tennis ball. ",
+                "Disheveled female tennis player making energetic attempt to hit the ball.",
+                "a women that is on a tennis court with her racket",
+                "A pretty young lady in a short skirt holding a tennis racquet.",
+                "A female tennis player is running to catch the ball."
+            ],
+            "target_gold_captions": [
+                "Nữ vận động viên tennis áo trắng đang thi đấu ở trên sân.",
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Một vận động viên tennis nữ đang bước sang phải để đánh bóng.",
+                "Nữ vận động viên tennis áo trắng đang vung vợt để đánh bóng.",
+                "Một trận thi đấu tennis nữ đang diễn ra ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Vận động viên tennis đang quan sát quả bóng tennis đang tiếp cận.",
+                "Vận động viên tennis đang theo dõi quả bóng tennis đang tới.",
+                "Vận động viên tennis đang chú ý theo dõi quả bóng tennis đang tiến đến gần.",
+                "Vận động viên tennis đang tập trung nhìn quả bóng tennis khi nó đến gần.",
+                "Vận động viên tennis đang quan sát quả bóng tennis đang ngày càng gần."
+            ]
+        },
+        {
+            "idx": 85,
+            "file_name": "000000015645.jpg",
+            "split": "train",
+            "source_captions": [
+                "A beautiful woman holding a tennis racquet on a court.",
+                "A woman in a white outfit playing tennis. ",
+                "a girl swinging a tennis racket at a ball.",
+                "A woman hitting a tennis ball with her tennis racket. ",
+                "A woman is swinging a racquet at a ball as she clinches her teeth."
+            ],
+            "target_gold_captions": [
+                "Nữ vận động viên tennis đang vung vợt để đánh bóng.",
+                "Nữ vận động viên tennis áo trắng đang chuẩn bị đánh bóng.",
+                "Một trận thi đấu tennis đang diễn ra ở trên sân đất nện.",
+                "Một người phụ nữ đang chuẩn bị đánh quả bóng tennis.",
+                "Nữ vận động viên tennis đang thi đấu ở trên sân đất nện."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ xinh đẹp nắm một cây vợt tennis trên sân.",
+                "Một cô gái hấp dẫn nắm chặt một cây vợt tennis khi đứng trên sân.",
+                "Một người phụ nữ tuyệt đẹp nắm một cây vợt tennis trong tay, đặt trên sân tennis.",
+                "Có một người phụ nữ dễ thương nắm chặt một cây vợt tennis khi đứng trên sân.",
+                "Một sân nơi một người phụ nữ, trông thật xinh đẹp, nắm một cây vợt tennis."
+            ]
+        },
+        {
+            "idx": 86,
+            "file_name": "000000015687.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man holding a tennis racquet as a tennis ball approaches him.",
+                "A tennis player about to hit a shot",
+                "A player chases a tennis ball while the umpire watches.",
+                "A man is playing tennis while another man watches.",
+                "Man serves tennis ball at high speed while other watches."
+            ],
+            "target_gold_captions": [
+                "Nam vận động viên tennis đang nhảy lên để đánh bóng.",
+                "Một người đàn ông đang nhảy lên để đánh quả bóng tennis.",
+                "Nam vận động viên tennis đang nghiêng người để đánh bóng.",
+                "Trọng tài đang theo dõi động tác đánh bóng của nam vận động viên tennis.",
+                "Một người đàn ông đang vung vợt để đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông cầm một cây vợt tennis trong khi một quả bóng tennis đến gần anh ta.",
+                "Một cá nhân nam giới nắm lấy cây vợt tennis trong khi một quả bóng tennis đến gần anh ta.",
+                "Một người đàn ông cầm một cây vợt tennis và nhìn thấy một quả bóng tennis đang tiến đến.",
+                "Có một người đàn ông với cây vợt tennis trong tay, và một quả bóng tennis đang tiến đến anh ta.",
+                "Khi một quả bóng tennis tiến đến, một người đàn ông chắc chắn cầm một cây vợt tennis trong tay."
+            ]
+        },
+        {
+            "idx": 87,
+            "file_name": "000000015738.jpg",
+            "split": "train",
+            "source_captions": [
+                "Male tennis player about to deliver hit to tennis ball.",
+                "A man swinging a tennis racquet towards a ball.",
+                "A man holding a racquet hits a tennis ball.",
+                "A tennis player swings his racket to hit a ball.",
+                "Male tennis player with tennis racquet in forehand position and tennis ball inches away"
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang dùng vợt để đánh quả bóng tennis.",
+                "Một người đàn ông đang nghiêng người để đánh quả bóng tennis.",
+                "Một nam vận động viên tennis đang xoay người để đánh bóng.",
+                "Một nam vận động viên tennis đang dùng vợt để đánh bóng.",
+                "Một người đàn ông đang xoay người để đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Vận động viên tennis nam sắp thực hiện cú đánh vào quả bóng tennis.",
+                "Vận động viên tennis nam đang chuẩn bị để đánh vào quả bóng tennis.",
+                "Vận động viên tennis nam đang chuẩn bị để tiếp xúc với quả bóng tennis.",
+                "Vận động viên tennis nam sắp đánh vào quả bóng tennis.",
+                "Vận động viên tennis nam sắp đánh vào quả bóng tennis."
+            ]
+        },
+        {
+            "idx": 88,
+            "file_name": "000000016290.jpg",
+            "split": "train",
+            "source_captions": [
+                "a little boy playing baseball with a grown up.",
+                "A cute little boy with a plastic bat and ball.",
+                "Two pictures of a toddler playing baseball outside.",
+                "a collage of photos with a child throwing a baseball",
+                "A boy swinging a toy bat at a ball then throwing it to a man."
+            ],
+            "target_gold_captions": [
+                "Cậu bé đang luyện tập bóng chày với cha ở sân sau.",
+                "Cậu bé đang luyện tập bóng chày với cha ở trong vườn.",
+                "Bức ảnh ghép về hai tư thế ném bóng và đánh bóng của một cậu bé.",
+                "Cậu bé thực hiện động tác đánh bóng và ném bóng trong một bức ảnh.",
+                "Người cha đang luyện tập cho con trai của mình chơi bóng chày."
+            ],
+            "target_silver_captions": [
+                "Một cậu bé nhỏ đang chơi bóng chày cùng một người lớn.",
+                "Một đứa trẻ nhỏ thích thú tham gia trò chơi bóng chày cùng một người lớn.",
+                "Một cậu bé nhỏ tham gia một trận đấu bóng chày với một người lớn.",
+                "Một đứa trẻ nhỏ đang chơi bóng chày cùng một người lớn.",
+                "Một cậu bé trẻ tham gia trò chơi bóng chày cùng một người lớn."
+            ]
+        },
+        {
+            "idx": 89,
+            "file_name": "000000016465.jpg",
+            "split": "train",
+            "source_captions": [
+                "Two players vie for control of the ball on a soccer field.",
+                "a couple of guys play a game of soccer ",
+                "two soccer players on a field with a ball",
+                "Two players run for the ball during a game of soccer.",
+                "Two men playing soccer on a field in front of a goal."
+            ],
+            "target_gold_captions": [
+                "Một trận thi đấu bóng đá nam đang diễn ra ở trên sân.",
+                "Hai cầu thủ đối thủ đang tranh chấp bóng trước khung thành.",
+                "Cầu thủ áo đen nhìn quả bóng bay vào mặt cầu thủ áo trắng.",
+                "Cầu thủ của hai đội đang tranh chấp bóng với nhau ở trên sân.",
+                "Quả bóng bay thẳng vào mặt của cầu thủ mặt áo trắng."
+            ],
+            "target_silver_captions": [
+                "Hai cầu thủ tranh giành quyền kiểm soát bóng trên sân bóng đá.",
+                "Hai vận động viên cạnh tranh để giành quyền sở hữu quả bóng trên sân bóng đá.",
+                "Hai cầu thủ đấu tranh để chiếm ưu thế trước quả bóng trên sân cỏ.",
+                "Hai đối thủ nỗ lực để kiểm soát quả bóng trên sân bóng.",
+                "Hai vận động viên tranh giành quyền sở hữu quả bóng trên sân cỏ."
+            ]
+        },
+        {
+            "idx": 90,
+            "file_name": "000000016547.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player holding a baseball bat during a game.",
+                "A baseball game in progress with the batter up to plate.",
+                "Three uniformed baseball players who are playing baseball.",
+                "An umpire is catching a baseball that was missed by the batter.",
+                "A referee holds onto the catcher as he catches a low ball."
+            ],
+            "target_gold_captions": [
+                "Quả bóng chày đang bay về phía cầu thủ bắt bóng.",
+                "Một trận thi đấu bóng chày nam đang diễn ra ở trên sân.",
+                "Cầu thủ bắt bóng đang chuẩn bị bắt quả bóng bằng găng tay.",
+                "Cầu thủ đánh bóng vừa đánh hụt bóng.",
+                "Cầu thủ đánh bóng đang vung gậy để đánh bóng."
+            ],
+            "target_silver_captions": [
+                "Một vận động viên bóng chày cầm gậy bóng chày trong một trận đấu.",
+                "Người chơi bóng chày nắm chặt gậy trong khi tham gia trận đấu.",
+                "Trong trận đấu, một vận động viên bóng chày nắm chặt gậy bóng chày.",
+                "Trong một trận đấu, có một vận động viên bóng chày cầm gậy bóng chày.",
+                "Một cảnh trò chơi trong đó một vận động viên bóng chày đang sử dụng gậy bóng chày."
+            ]
+        },
+        {
+            "idx": 91,
+            "file_name": "000000017181.jpg",
+            "split": "train",
+            "source_captions": [
+                "a man is playing tennis on the court",
+                "a man swinging a tennis racket at a tennis ball",
+                "A man hitting a tennis ball at a tournament.",
+                "A man in a swinging pose by a tennis ball and racquet.",
+                "A man swinging a tennis racquet at a ball on a court."
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông vung vợt tennis vào một quả bóng trên sân.",
+                "một người đàn ông vung vợt tennis vào một quả bóng tennis",
+                "một người đàn ông đang chơi tennis trên sân",
+                "Một người đàn ông trong tư thế đung đưa bởi một quả bóng tennis và vợt.",
+                "Một người đàn ông đánh một quả bóng tennis tại một giải đấu."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông đang chơi tennis trên sân",
+                "Một người đàn ông đang tham gia một trận đấu tennis trên sân",
+                "Có một người đàn ông tham gia tích cực vào việc chơi tennis trên sân",
+                "Trên sân, một người đàn ông đang tham gia một trận tennis",
+                "Sân đang được một người đàn ông chơi tennis sử dụng"
+            ]
+        },
+        {
+            "idx": 92,
+            "file_name": "000000017484.jpg",
+            "split": "train",
+            "source_captions": [
+                "A woman hitting a tennis ball with a racquet.",
+                "A woman watches the tennis ball she just hit.  ",
+                "A young lady holding a tennis racquet on top of a tennis court.",
+                "A tennis player follows through on a contact with the ball.",
+                "Females tennis player holding your racket up to a ball. "
+            ],
+            "target_gold_captions": [
+                "Một người phụ nữ đang đưa vợt ra trước để đánh quả bóng tennis.",
+                "Một nữ vận động viên tennis đang xoay người để đánh bóng.",
+                "Một vận động viên tennis đang vung vợt để đánh bóng.",
+                "Một người phụ nữ đang vung vợt để đánh quả bóng tennis.",
+                "Một người phụ nữ đang xoay người để đánh quả bóng tennis."
+            ],
+            "target_silver_captions": [
+                "Một người phụ nữ đánh quả bóng tennis bằng vợt.",
+                "Một cầu thủ nữ đánh một quả bóng tennis bằng cây vợt.",
+                "Một phụ nữ đánh một quả bóng tennis bằng vợt.",
+                "Một người phụ nữ đưa vợt để đánh một quả bóng tennis.",
+                "Một cầu thủ nữ đánh một cú đánh bằng vợt trong một trò chơi tennis."
+            ]
+        },
+        {
+            "idx": 93,
+            "file_name": "000000017927.jpg",
+            "split": "train",
+            "source_captions": [
+                "A group of five people holding tennis rackets with a tennis ball.",
+                "A few people with tennis raquets in front of the net.",
+                "Five people are standing with tennis rackets on a sandy tennis court.",
+                "Five people with rackets stand by a tennis net.",
+                "A group of five people holding racquets on a tennis court."
+            ],
+            "target_gold_captions": [
+                "Năm người bạn đang cầm vợt tennis và đứng phía sau tấm lưới.",
+                "Năm vận động viên tennis đang cầm vợt và đứng phía sau tấm lưới.",
+                "Hai nữ và ba nam đang cầm vợt và đứng ở trên sân.",
+                "Các vận động viên tennis đang đứng trên sân trước khi bắt đầu trận đấu.",
+                "Năm vận động viên tennis đang chụp ảnh phía sau tấm lưới."
+            ],
+            "target_silver_captions": [
+                "Một nhóm năm người cầm vợt quần vợt với một quả bóng quần vợt.",
+                "Năm cá nhân cầm vợt quần vợt đã tụ tập với một quả bóng quần vợt.",
+                "Một nhóm năm người nắm chặt vợt quần vợt, đi kèm với một quả bóng quần vợt.",
+                "Một nhóm gồm năm cá nhân, mỗi người nắm chặt vợt quần vợt và một quả bóng quần vợt.",
+                "Năm người nắm chặt vợt quần vợt trong khi cầm một quả bóng quần vợt như một nhóm."
+            ]
+        },
+        {
+            "idx": 94,
+            "file_name": "000000018041.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man standing on a tennis court holding a racquet.",
+                "A person is striking a tennis ball at a game",
+                "A person jumping into the air on a tennis court.",
+                "An overweight tennis player is serving a ball.",
+                "A person is playing tennis in an empty court."
+            ],
+            "target_gold_captions": [
+                "Một người đàn ông đang chuẩn bị phát bóng ở trên sân tennis.",
+                "Người chơi tennis được chụp ảnh từ phía xa.",
+                "Một người đang chơi tennis ở trên sân vào ban ngày.",
+                "Một người đang ngửa người để đánh bóng ở trên sân tennis.",
+                "Một người đang chuẩn bị phát bóng ở trên sân tennis."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông đang đứng trên sân tennis cầm vợt.",
+                "Một cá nhân nam giới cầm vợt tennis đứng trên sân.",
+                "Trên sân tennis, có một người đàn ông đang cầm vợt.",
+                "Một người đàn ông đang đứng trên sân tennis với vợt trong tay.",
+                "Đứng trên sân tennis, một người đàn ông đang nắm chặt vợt."
+            ]
+        },
+        {
+            "idx": 95,
+            "file_name": "000000018127.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player jumping next to another man.",
+                "A baseball player preparing to tag another player out.",
+                "One baseball player jumps in the air as another slides into the base.",
+                "A baseball player is in the air over the plate.",
+                "a runner sliding into a base in a game of baseball"
+            ],
+            "target_gold_captions": [
+                "Cầu thủ áo trắng đang trượt trên sân để chạm vào gôn.",
+                "Cầu thủ bắt bóng đang nhảy lên để né cầu thủ chạy gôn.",
+                "Một trận thi đấu bóng chày nam đang diễn ra ở trên sân.",
+                "Cầu thủ chạy gôn đang trượt ở trên sân để chạm bào gôn.",
+                "Cầu thủ bắt bóng đang cầm quả bóng và nhảy lên cao."
+            ],
+            "target_silver_captions": [
+                "Một cầu thủ bóng chày nhảy bên cạnh một người đàn ông khác.",
+                "Một cầu thủ bóng chày nhảy cùng với một người khác.",
+                "Cầu thủ bóng chày nhảy gần bên cạnh một người đàn ông khác.",
+                "Một người chơi bóng chày nhảy bên cạnh một người khác.",
+                "Với một cú nhảy, cầu thủ bóng chày đáp xuống bên cạnh một người đàn ông khác."
+            ]
+        },
+        {
+            "idx": 96,
+            "file_name": "000000018224.jpg",
+            "split": "train",
+            "source_captions": [
+                "A sexy young lady holding a tennis ball and tennis racquet.",
+                "a lady about to serve a tennis ball.",
+                "a girl in all white  getting ready to serve the tennis ball",
+                "A woman with a tennis ball and racket in her hand during a game.",
+                "A tennis player starts to hit the ball with the racket"
+            ],
+            "target_gold_captions": [
+                "Nữ vận động viên tennis đang sẵn sàng phát bóng về phía đối thủ.",
+                "Khán giả đang theo dõi diễn biến của trận thi đấu tennis.",
+                "Một nữ vận động viên tennis đang chuẩn bị phát bóng.",
+                "Một trận thi đấu tennis nữ đang diễn ra ở trên sân.",
+                "Một người phụ nữ đang chuẩn bị phát bóng ở trên sân tennis."
+            ],
+            "target_silver_captions": [
+                "Một cô gái trẻ gợi cảm cầm một quả bóng và vợt tennis.",
+                "Một người phụ nữ trẻ hấp dẫn cầm một quả bóng tennis và vợt tennis.",
+                "Một cô gái xinh đẹp, trẻ trung với một quả bóng tennis và vợt trong tay.",
+                "Một người phụ nữ trẻ đẹp nổi bật cầm một quả bóng tennis và nắm chắc vợt tennis.",
+                "Một cô gái quyến rũ sở hữu một quả bóng tennis và vợt tennis."
+            ]
+        },
+        {
+            "idx": 97,
+            "file_name": "000000018559.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man in a green shirt and white shirt playing a game of tennis",
+                "a man on a tennis court being watched by a crowd",
+                "A tennis game is being played before a crowd.",
+                "A person readies to hit a tennis ball across a court",
+                "this is a tennis player going to hit a ball"
+            ],
+            "target_gold_captions": [
+                "Nam vận động viên tennis đang giơ quả bóng lên để chuẩn bị phát bóng.",
+                "Một trận thi đấu tennis đang diễn ra ở trên sân đất nện.",
+                "Vận động viên áo xanh đang vươn người để đỡ bóng.",
+                "Nam vận động viên tennis đang chuẩn bị phát bóng.",
+                "Khán giả đang theo dõi trận thi đấu tennis ở trên sân đất nện."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông trong áo sơ mi màu xanh lá cây và áo sơ mi màu trắng đang chơi một trò chơi quần vợt.",
+                "Một người đàn ông mặc áo sơ mi màu xanh lá cây và áo sơ mi màu trắng tham gia một trò chơi quần vợt.",
+                "Một người đàn ông lịch lãm mặc áo sơ mi màu xanh lá cây và áo sơ mi màu trắng tham gia một trò chơi quần vợt.",
+                "Có một người đàn ông mặc áo sơ mi màu xanh lá cây và áo sơ mi màu trắng đang tích cực tham gia một trận đấu quần vợt.",
+                "Một cá nhân, được nhận diện bằng áo sơ mi màu xanh lá cây và áo sơ mi màu trắng, đang hoàn toàn tập trung vào trận đấu quần vợt."
+            ]
+        },
+        {
+            "idx": 98,
+            "file_name": "000000018688.jpg",
+            "split": "train",
+            "source_captions": [
+                "A baseball player holding a bat standing near home plate.",
+                "The baseball players are waiting for the ball to be in play.",
+                "some baseball players are playing baseball and fans",
+                "Pitcher, batter, catcher and umpire during a baseball game.",
+                "An pitcher prepares to throw a pitch to the batter."
+            ],
+            "target_gold_captions": [
+                "Cầu thủ ném bóng đang chuẩn bị để ném bóng cho đồng đội.",
+                "Trận thi đấu bóng chày giữa đội Indians và Red Sox đang diễn ra.",
+                "Một trận thi đấu bóng chày đang diễn ra ở trên sân.",
+                "Màn hình đang chiếu trận thi đấu bóng chày giữa hai đội Indians và Red Sox.",
+                "Khán giả đang theo dõi trận thi đấu bóng chày giữa hai đội Indians và Red Sox."
+            ],
+            "target_silver_captions": [
+                "Một cầu thủ bóng chày cầm gậy đứng gần đĩa chân.",
+                "Một cầu thủ bóng chày đứng gần đĩa chân và cầm gậy.",
+                "Một người đánh bóng đang đứng bên cạnh đĩa chân, cầm gậy bóng chày.",
+                "Bên cạnh đĩa chân, một cầu thủ bóng chày cầm gậy sẵn sàng vung.",
+                "Đứng gần đĩa chân, một cầu thủ bóng chày cầm gậy."
+            ]
+        },
+        {
+            "idx": 99,
+            "file_name": "000000018704.jpg",
+            "split": "train",
+            "source_captions": [
+                "A man with a baseball glove that is standing in the dirt.",
+                "A male baseball pitcher on the pitchers mound throwing a baseball.",
+                "A pitcher on the mound prepares to throw the ball during a baseball game.",
+                "A person throwing a ball on a field.",
+                "A baseball player pitches the ball to the catcher."
+            ],
+            "target_gold_captions": [
+                "Cầu thủ ném bóng đang luyện tập ném bóng ở trên sân.",
+                "Cầu thủ ném bóng cầm quả bóng bằng tay trái và đeo găng tay ở tay phải.",
+                "Cầu thủ ném bóng đang thực hiện động tác ném bóng.",
+                "Một cầu thủ ném bóng đang chuẩn bị ném bóng.",
+                "Một trận thi đấu bóng chày đang diễn ra ở trên sân."
+            ],
+            "target_silver_captions": [
+                "Một người đàn ông cầm găng chơi bóng chày đang đứng trên bãi đất.",
+                "Một người đàn ông cầm găng bóng chày, đứng trên mặt đất bụi bặm.",
+                "Có một người đàn ông đang đứng trên bãi đất, cầm một găng bóng chày.",
+                "Trên bãi đất, có một người đàn ông đang cầm găng bóng chày.",
+                "Đứng trên bãi đất là một người đàn ông cầm găng bóng chày."
+            ]
+        }
+    ]
+}
