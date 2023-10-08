@@ -7,7 +7,7 @@ from utils.utils import set_random_seed
 
 def main(args: argparse.Namespace) -> None:
     # Set random seed
-    if args.seed != None:
+    if args.seed not in [None, 'None']:
         set_random_seed(args.seed)
 
     start_time = time.time()

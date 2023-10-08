@@ -140,7 +140,7 @@ class ArgParser():
                                  help='Device to use for training; Default is cuda')
         self.parser.add_argument('--gpt_model_version', type=str, choices=['gpt-3.5-turbo', 'gpt-4'], default='gpt-3.5-turbo',
                                  help='GPT version to use for annotating; Default is gpt-3.5-turbo')
-        self.parser.add_argument('--seed', default=2023,
+        self.parser.add_argument('--seed', default=None,
                                  help='Random seed; Default is None;')
         self.parser.add_argument('--use_tensorboard', type=parse_bool, default=True,
                                  help='Using tensorboard; Default is True')
