@@ -1,0 +1,498 @@
+{
+    "config": {
+        "gpt_model_version": "gpt-3.5-turbo",
+        "task": "machine_translation",
+        "source_lang": "en",
+        "target_lang": "et",
+        "prompt": [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. You are fluent in Estonian and English."
+            },
+            {
+                "role": "system",
+                "content": "You will generate paraphrases of given sentences and their translations into Estonian."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence should be neutral expression."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence will be complete, natural and fluent."
+            },
+            {
+                "role": "system",
+                "content": "Each output sentence should have different expressions as much as possible."
+            },
+            {
+                "role": "system",
+                "content": "You will not generate the same sentence as the input sentence."
+            },
+            {
+                "role": "system",
+                "content": "You must not generate any biased, offensive, or inappropriate paraphrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'Sure! here's the output' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'I don't know' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will just generate the output paraphrases following the output example."
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nEnglish 1: Two men pose while having a photograph taken."
+            },
+            {
+                "role": "assistant",
+                "content": "[Output Sentence]\nEstonian 1: Kaks meest poseerivad pildistamise ajal.\nEnglish 2: Two guys post for a picture being taken.\nEstonian 2: Kaks kutti poseerivad pildi tegemise ajal."
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nEnglish 1: A man taking a swing at a ball on the court."
+            }
+        ]
+    },
+    "data": [
+        {
+            "idx": 0,
+            "source_text": "Two young, White males are outside near many bushes.",
+            "split": "train",
+            "target_gold": "Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.",
+            "target_silver": "Kaks noort, valget meest on paljude põõsaste lähedal."
+        },
+        {
+            "idx": 1,
+            "source_text": "Two Caucasian young men are outside close to numerous shrubs.",
+            "split": "train",
+            "target_gold": "Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.",
+            "target_silver": "Kaks kaukaasia noormeest on väljas paljude põõsaste lähedal."
+        },
+        {
+            "idx": 2,
+            "source_text": "Several men in hard hats are operating a giant pulley system.",
+            "split": "train",
+            "target_gold": "Mehrere Männer mit Schutzhelmen bedienen ein Antriebsradsystem.",
+            "target_silver": "Mitu meest kandikutes tegelevad hiiglasliku polti süsteemi juhtimisega."
+        },
+        {
+            "idx": 3,
+            "source_text": "Multiple individuals wearing hard hats are involved in operating a massive pulley system.",
+            "split": "train",
+            "target_gold": "Mehrere Männer mit Schutzhelmen bedienen ein Antriebsradsystem.",
+            "target_silver": "Mitmed kõvakübarates mehed osalevad hiiglasliku polti süsteemi käitamises."
+        },
+        {
+            "idx": 4,
+            "source_text": "A little girl climbing into a wooden playhouse.",
+            "split": "train",
+            "target_gold": "Ein kleines Mädchen klettert in ein Spielhaus aus Holz.",
+            "target_silver": "Väike tüdruk ronib puidust mängumajja."
+        },
+        {
+            "idx": 5,
+            "source_text": "A young girl is getting into a wooden playhouse.",
+            "split": "train",
+            "target_gold": "Ein kleines Mädchen klettert in ein Spielhaus aus Holz.",
+            "target_silver": "Noor tüdruk ronib puidust mängumajja."
+        },
+        {
+            "idx": 6,
+            "source_text": "A man in a blue shirt is standing on a ladder cleaning a window.",
+            "split": "train",
+            "target_gold": "Ein Mann in einem blauen Hemd steht auf einer Leiter und putzt ein Fenster.",
+            "target_silver": "Mees sinises särgis seisab redelil ja puhastab akent."
+        },
+        {
+            "idx": 7,
+            "source_text": "A guy wearing a blue shirt is on a ladder, cleaning a window.",
+            "split": "train",
+            "target_gold": "Ein Mann in einem blauen Hemd steht auf einer Leiter und putzt ein Fenster.",
+            "target_silver": "Mees, kellel on seljas sinine särk, seisab redelil ja puhastab akent."
+        },
+        {
+            "idx": 8,
+            "source_text": "Two men are at the stove preparing food.",
+            "split": "train",
+            "target_gold": "Zwei Männer stehen am Herd und bereiten Essen zu.",
+            "target_silver": "Kaks meest on pliidil toitu valmistamas."
+        },
+        {
+            "idx": 9,
+            "source_text": "Two men are cooking food on the stove.",
+            "split": "train",
+            "target_gold": "Zwei Männer stehen am Herd und bereiten Essen zu.",
+            "target_silver": "Kaks meest valmistavad toitu pliidil."
+        },
+        {
+            "idx": 10,
+            "source_text": "A man in green holds a guitar while the other man observes his shirt.",
+            "split": "train",
+            "target_gold": "Ein Mann in grün hält eine Gitarre, während der andere Mann sein Hemd ansieht.",
+            "target_silver": "Üks mees rohelises hoiab kitarri, samal ajal kui teine mees vaatab tema särki."
+        },
+        {
+            "idx": 11,
+            "source_text": "One man in green is holding a guitar while the other man gazes at his shirt.",
+            "split": "train",
+            "target_gold": "Ein Mann in grün hält eine Gitarre, während der andere Mann sein Hemd ansieht.",
+            "target_silver": "Üks mees rohelises hoiab kitarri, samal ajal kui teine mees jõllitab tema särki."
+        },
+        {
+            "idx": 12,
+            "source_text": "A man is smiling at a stuffed lion",
+            "split": "train",
+            "target_gold": "Ein Mann lächelt einen ausgestopften Löwen an.",
+            "target_silver": "Mees naeratab täidetud lõvile."
+        },
+        {
+            "idx": 13,
+            "source_text": "A guy is grinning at a stuffed lion.",
+            "split": "train",
+            "target_gold": "Ein Mann lächelt einen ausgestopften Löwen an.",
+            "target_silver": "Üks tüüp naeratab täidetud lõvile."
+        },
+        {
+            "idx": 14,
+            "source_text": "A trendy girl talking on her cellphone while gliding slowly down the street.",
+            "split": "train",
+            "target_gold": "Ein schickes Mädchen spricht mit dem Handy während sie langsam die Straße entlangschwebt.",
+            "target_silver": "Stiilne tüdruk räägib oma mobiiltelefoniga, samal ajal aeglaselt tänaval liikudes."
+        },
+        {
+            "idx": 15,
+            "source_text": "A fashionable girl chatting on her mobile phone as she gracefully glides down the street.",
+            "split": "train",
+            "target_gold": "Ein schickes Mädchen spricht mit dem Handy während sie langsam die Straße entlangschwebt.",
+            "target_silver": "Moodne tüdruk vestleb oma mobiiltelefoniga, samal ajal elegantselt tänaval liikudes."
+        },
+        {
+            "idx": 16,
+            "source_text": "A woman with a large purse is walking by a gate.",
+            "split": "train",
+            "target_gold": "Eine Frau mit einer großen Geldbörse geht an einem Tor vorbei.",
+            "target_silver": "Naine suure käekotiga kõnnib värava juurest mööda."
+        },
+        {
+            "idx": 17,
+            "source_text": "A lady carrying a big bag walks past a gate.",
+            "split": "train",
+            "target_gold": "Eine Frau mit einer großen Geldbörse geht an einem Tor vorbei.",
+            "target_silver": "Üks naine kõnnib mööda väravast suure kotiga."
+        },
+        {
+            "idx": 18,
+            "source_text": "Boys dancing on poles in the middle of the night.",
+            "split": "train",
+            "target_gold": "Jungen tanzen mitten in der Nacht auf Pfosten.",
+            "target_silver": "Poisid tantsivad postide peal keset ööd."
+        },
+        {
+            "idx": 19,
+            "source_text": "Boys are dancing on top of poles in the middle of the night.",
+            "split": "train",
+            "target_gold": "Jungen tanzen mitten in der Nacht auf Pfosten.",
+            "target_silver": "Poisid tantsivad postide otsas keset ööd."
+        },
+        {
+            "idx": 20,
+            "source_text": "A ballet class of five girls jumping in sequence.",
+            "split": "train",
+            "target_gold": "Eine Ballettklasse mit fünf Mädchen, die nacheinander springen.",
+            "target_silver": "Viie tüdruku hüpped järjest balletitunnis."
+        },
+        {
+            "idx": 21,
+            "source_text": "Five girls in a ballet class jumping in a sequence.",
+            "split": "train",
+            "target_gold": "Eine Ballettklasse mit fünf Mädchen, die nacheinander springen.",
+            "target_silver": "Viis tüdrukut balletitunnis hüppavad järjest."
+        },
+        {
+            "idx": 22,
+            "source_text": "Four guys three wearing hats one not are jumping at the top of a staircase.",
+            "split": "train",
+            "target_gold": "Vier Typen, von denen drei Hüte tragen und einer nicht, springen oben in einem Treppenhaus.",
+            "target_silver": "Nelja kutt, neist kolm kannavad mütsi ja üks mitte, hüppavad trepi ülaosas."
+        },
+        {
+            "idx": 23,
+            "source_text": "Four men, three with hats and one without, are leaping at the top of a staircase.",
+            "split": "train",
+            "target_gold": "Vier Typen, von denen drei Hüte tragen und einer nicht, springen oben in einem Treppenhaus.",
+            "target_silver": "Neli meest, neist kolm kannavad mütsi ja üks mitte, hüppavad trepi ülaosas."
+        },
+        {
+            "idx": 24,
+            "source_text": "A black dog and a spotted dog are fighting",
+            "split": "train",
+            "target_gold": "Ein schwarzer Hund und ein gefleckter Hund kämpfen.",
+            "target_silver": "Must koer ja täpiline koer võitlevad."
+        },
+        {
+            "idx": 25,
+            "source_text": "There is a fight between a black dog and a spotted dog.",
+            "split": "train",
+            "target_gold": "Ein schwarzer Hund und ein gefleckter Hund kämpfen.",
+            "target_silver": "Musta koera ja täpilise koera vahel toimub võitlus."
+        },
+        {
+            "idx": 26,
+            "source_text": "A man in a neon green and orange uniform is driving on a green tractor.",
+            "split": "train",
+            "target_gold": "Ein Mann in einer neongrünen und orangefarbenen Uniform fährt auf einem grünen Traktor.",
+            "target_silver": "Mees neoonrohelises ja apelsinioranžis vormis juhib rohelist traktorit."
+        },
+        {
+            "idx": 27,
+            "source_text": "A guy in a bright green and orange outfit is operating a green tractor.",
+            "split": "train",
+            "target_gold": "Ein Mann in einer neongrünen und orangefarbenen Uniform fährt auf einem grünen Traktor.",
+            "target_silver": "Üks mees heledas rohelises ja apelsinioranžis riietuses juhib rohelist traktorit."
+        },
+        {
+            "idx": 28,
+            "source_text": "Several women wait outside in a city.",
+            "split": "train",
+            "target_gold": "Mehrere Frauen warten in einer Stadt im Freien.",
+            "target_silver": "Mitu naist ootavad väljas linnas."
+        },
+        {
+            "idx": 29,
+            "source_text": "A few ladies are waiting outside in the city.",
+            "split": "train",
+            "target_gold": "Mehrere Frauen warten in einer Stadt im Freien.",
+            "target_silver": "Mõned daamid ootavad väljas linnas."
+        },
+        {
+            "idx": 30,
+            "source_text": "A lady in a black top with glasses is sprinkling powdered sugar on a bundt cake.",
+            "split": "train",
+            "target_gold": "Eine Frau mit schwarzem Oberteil und Brille streut Puderzucker auf einem Gugelhupf.",
+            "target_silver": "Naine mustas pluusis ja prillidega puistab tuhksuhkrut bundtkoogile."
+        },
+        {
+            "idx": 31,
+            "source_text": "A woman wearing a black blouse and glasses is coating a bundt cake with powdered sugar.",
+            "split": "train",
+            "target_gold": "Eine Frau mit schwarzem Oberteil und Brille streut Puderzucker auf einem Gugelhupf.",
+            "target_silver": "Naine mustas pluusis ja prillidega katab bundtkoogi tuhksuhkruga."
+        },
+        {
+            "idx": 32,
+            "source_text": "A little girl is sitting in front of a large painted rainbow.",
+            "split": "train",
+            "target_gold": "Ein kleines Mädchen sitzt vor einem großen gemalten Regenbogen.",
+            "target_silver": "Väike tüdruk istub suure värvitud vikerkaare ees."
+        },
+        {
+            "idx": 33,
+            "source_text": "A small girl is seated in front of a big painted rainbow.",
+            "split": "train",
+            "target_gold": "Ein kleines Mädchen sitzt vor einem großen gemalten Regenbogen.",
+            "target_silver": "Väike tüdruk istub suure värvitud vikerkaare ees."
+        },
+        {
+            "idx": 34,
+            "source_text": "A man lays on the bench to which a white dog is also tied.",
+            "split": "train",
+            "target_gold": "Ein Mann liegt auf der Bank, an die auch ein weißer Hund angebunden ist.",
+            "target_silver": "Mees lamab pingil, mille külge on seotud ka valge koer."
+        },
+        {
+            "idx": 35,
+            "source_text": "A guy is lying on the bench with a white dog tied to it.",
+            "split": "train",
+            "target_gold": "Ein Mann liegt auf der Bank, an die auch ein weißer Hund angebunden ist.",
+            "target_silver": "Üks mees lamab pingil, mille külge on kinnitatud valge koer."
+        },
+        {
+            "idx": 36,
+            "source_text": "Five people are sitting in a circle with instruments.",
+            "split": "train",
+            "target_gold": "Fünf Personen sitzen mit Instrumenten im Kreis.",
+            "target_silver": "Viis inimest istub ringis instrumentidega."
+        },
+        {
+            "idx": 37,
+            "source_text": "Five individuals sit in a circular formation with musical instruments.",
+            "split": "train",
+            "target_gold": "Fünf Personen sitzen mit Instrumenten im Kreis.",
+            "target_silver": "Viis inimest istuvad ringis muusikainstrumentidega."
+        },
+        {
+            "idx": 38,
+            "source_text": "A bunch of elderly women play their clarinets together as they read off sheet music.",
+            "split": "train",
+            "target_gold": "Eine Gruppe älterer Frauen spielt zusammen Klarinette von Notenblättern.",
+            "target_silver": "Kobar eakaid naisi mängib koos klarnetit, lugedes noote."
+        },
+        {
+            "idx": 39,
+            "source_text": "A group of senior ladies perform on their clarinets while reading sheet music.",
+            "split": "train",
+            "target_gold": "Eine Gruppe älterer Frauen spielt zusammen Klarinette von Notenblättern.",
+            "target_silver": "Sensoorsete naiste rühm esitab oma klarnetitega, lugedes noote."
+        },
+        {
+            "idx": 40,
+            "source_text": "A large structure has broken and is laying in a roadway.",
+            "split": "train",
+            "target_gold": "Ein großes Bauwerk ist kaputt gegangen und liegt auf einer Fahrbahn.",
+            "target_silver": "Suur ehitis on katki läinud ja lamab teel."
+        },
+        {
+            "idx": 41,
+            "source_text": "There is a big structure that has shattered and is lying in the middle of the road.",
+            "split": "train",
+            "target_gold": "Ein großes Bauwerk ist kaputt gegangen und liegt auf einer Fahrbahn.",
+            "target_silver": "On suur ehitis, mis on purunenud ja lamab tee keskel."
+        },
+        {
+            "idx": 42,
+            "source_text": "A large crowd of people stand outside in front of the entrance to a Metro station.",
+            "split": "train",
+            "target_gold": "Eine große Menschenmenge steht außen vor dem Eingang einer Metrostation.",
+            "target_silver": "Suur rahvahulk seisab väljas Metroojaama sissepääsu ees."
+        },
+        {
+            "idx": 43,
+            "source_text": "There is a massive gathering of individuals standing outside the entrance to a Metro station.",
+            "split": "train",
+            "target_gold": "Eine große Menschenmenge steht außen vor dem Eingang einer Metrostation.",
+            "target_silver": "On suur rahvahulk, kes seisavad väljas Metroojaama sissepääsu ees."
+        },
+        {
+            "idx": 44,
+            "source_text": "A man getting a tattoo on his back.",
+            "split": "train",
+            "target_gold": "Ein Mann, der ein Tattoo auf seinem Rücken erhält.",
+            "target_silver": "Mees saab tindi seljale."
+        },
+        {
+            "idx": 45,
+            "source_text": "A guy is getting ink on his back.",
+            "split": "train",
+            "target_gold": "Ein Mann, der ein Tattoo auf seinem Rücken erhält.",
+            "target_silver": "Üks mees saab tindi seljal."
+        },
+        {
+            "idx": 46,
+            "source_text": "Two children sit on a small seesaw in the sand.",
+            "split": "train",
+            "target_gold": "Zwei Kinder sitzen auf einer kleinen Wippe im Sand.",
+            "target_silver": "Kaks last istuvad liival väiksel kõrgendikul."
+        },
+        {
+            "idx": 47,
+            "source_text": "Two kids are seated on a small teeter-totter in the sand.",
+            "split": "train",
+            "target_gold": "Zwei Kinder sitzen auf einer kleinen Wippe im Sand.",
+            "target_silver": "Kaks last istuvad liival väiksel vankril."
+        },
+        {
+            "idx": 48,
+            "source_text": "A man wearing a reflective vest and a hard hat holds a flag in the road",
+            "split": "train",
+            "target_gold": "Ein Mann, der eine reflektierende Weste und einen Schutzhelm trägt, hält eine Flagge in die Straße.",
+            "target_silver": "Mees, kes kannab helkurvesti ja turvamütsi, hoiab teel lippu."
+        },
+        {
+            "idx": 49,
+            "source_text": "A guy in a reflective vest and hard hat holds a flag on the road.",
+            "split": "train",
+            "target_gold": "Ein Mann, der eine reflektierende Weste und einen Schutzhelm trägt, hält eine Flagge in die Straße.",
+            "target_silver": "Mees, kes kannab helkurvesti ja turvamütsi, hoiab teel lippu."
+        },
+        {
+            "idx": 50,
+            "source_text": "A person dressed in a blue coat is standing in on a busy sidewalk, studying painting of a street scene.",
+            "split": "train",
+            "target_gold": "Eine Person in einem blauen Mantel steht auf einem belebten Gehweg und betrachtet ein Gemälde einer Straßenszene.",
+            "target_silver": "Sinises mantlis inimene seisab rahvarohkel kõnniteel ja uurib tänavavaatega maali."
+        },
+        {
+            "idx": 51,
+            "source_text": "Someone in a blue jacket stands on a crowded sidewalk, examining a painting of a street scene.",
+            "split": "train",
+            "target_gold": "Eine Person in einem blauen Mantel steht auf einem belebten Gehweg und betrachtet ein Gemälde einer Straßenszene.",
+            "target_silver": "Keegi sinises jakis seisab rahvarohkes kõnniteel ja uurib tänavavaatega maali."
+        },
+        {
+            "idx": 52,
+            "source_text": "A man in green pants walking down the road.",
+            "split": "train",
+            "target_gold": "Ein Mann in grünen Hosen läuft die Straße entlang.",
+            "target_silver": "Mees rohelistes pükstes kõnnib mööda teed."
+        },
+        {
+            "idx": 53,
+            "source_text": "A guy wearing green pants strolling along the road.",
+            "split": "train",
+            "target_gold": "Ein Mann in grünen Hosen läuft die Straße entlang.",
+            "target_silver": "Mees, kes kannab rohelisi pükse, jalutab mööda teed."
+        },
+        {
+            "idx": 54,
+            "source_text": "The small child climbs on a red ropes on a playground.",
+            "split": "train",
+            "target_gold": "Das kleine Kind klettert an roten Seilen auf einem Spielplatz.",
+            "target_silver": "Väike laps ronib punastele köitele mänguväljakul."
+        },
+        {
+            "idx": 55,
+            "source_text": "The little kid is climbing on red ropes at the playground.",
+            "split": "train",
+            "target_gold": "Das kleine Kind klettert an roten Seilen auf einem Spielplatz.",
+            "target_silver": "Väike laps ronib mänguväljaku punastele köitele."
+        },
+        {
+            "idx": 56,
+            "source_text": "You know i am looking like Justin Bieber.",
+            "split": "train",
+            "target_gold": "Du weißt, dass ich aussehe wie Justin Bieber.",
+            "target_silver": "Sa tead, et ma näen välja nagu Justin Bieber."
+        },
+        {
+            "idx": 57,
+            "source_text": "You are aware that I resemble Justin Bieber.",
+            "split": "train",
+            "target_gold": "Du weißt, dass ich aussehe wie Justin Bieber.",
+            "target_silver": "Sa teadvustad, et ma meenutan Justin Bieberit."
+        },
+        {
+            "idx": 58,
+            "source_text": "A young man in a black and yellow jacket is gazing at something and smiling.",
+            "split": "train",
+            "target_gold": "Ein junger Mann in einer schwarz-gelben Jacke blickt etwas an und lächelt.",
+            "target_silver": "Noor mees mustakollases jakis vaatab midagi ja naeratab."
+        },
+        {
+            "idx": 59,
+            "source_text": "A young guy in a jacket that is black and yellow is looking at something and smiling.",
+            "split": "train",
+            "target_gold": "Ein junger Mann in einer schwarz-gelben Jacke blickt etwas an und lächelt.",
+            "target_silver": "Noor kutt mustakollases jakis vaatab midagi ja naeratab."
+        },
+        {
+            "idx": 60,
+            "source_text": "A man standing at a urinal with a coffee cup.",
+            "split": "train",
+            "target_gold": "Ein Mann, der mit einer Tasse Kaffee an einem Urinal steht.",
+            "target_silver": "Mees seisab uriinikohvilt kruusiga."
+        },
+        {
+            "idx": 61,
+            "source_text": "A man is standing at a urinal, holding a coffee cup.",
+            "split": "train",
+            "target_gold": "Ein Mann, der mit einer Tasse Kaffee an einem Urinal steht.",
+            "target_silver": "Mees seisab urineerimise juures, hoides kohvitassi."
+        }
+    ]
+}

@@ -11,7 +11,9 @@ class ArgParser():
         self.proj_name = 'Captioning_GPT'
 
         # Task arguments
-        task_list = ['captioning', 'annotating', 'text_style_transfer', 'annotating_tst', 'style_classification']
+        task_list = ['captioning', 'annotating',
+                     'text_style_transfer', 'annotating_tst', 'style_classification',
+                     'machine_translation', 'annotating_mt']
         self.parser.add_argument('--task', type=str, choices=task_list, default='captioning',
                                  help='Task to do; Must be given.')
         job_list = ['preprocessing', 'training', 'resume_training', 'testing', 'eval_similarity', 'inference', # For captioning/TST/classification
@@ -20,7 +22,8 @@ class ArgParser():
                                  help='Job to do; Must be given.')
         dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017',
                         'uit_viic', 'aide', 'new_lv', 'new_et',
-                        'gyafc_en', 'xformal_fr', 'xformal_pt', 'xformal_it']
+                        'gyafc_en', 'xformal_fr', 'xformal_pt', 'xformal_it',
+                        'multi30k']
         self.parser.add_argument('--task_dataset', type=str, choices=dataset_list, default='flickr8k',
                                  help='Dataset for the task; Must be given.')
         self.parser.add_argument('--description', type=str, default='default',
@@ -33,7 +36,7 @@ class ArgParser():
                                 'original_fr', 'translated_fr', 'gpt_fr', # French dataset XFormal
                                 'original_pt', 'translated_pt', 'gpt_pt', # Portuguese dataset XFormal
                                 'original_it', 'translated_it', 'gpt_it', # Italian dataset XFormal
-                                ]
+                                'original_de', 'translated_de', 'gpt_de',] # German dataset Multi30k
         self.parser.add_argument('--annotation_mode', type=str, choices=annotation_mode_list, default='original_en',
                                  help='Annotation mode; Default is "original"')
 

@@ -64,6 +64,8 @@ def try_call_gpt(args: argparse.Namespace, config: dict, data: list) -> None:
             return call_gpt_captioning(args, config, data)
         elif config['task'] == 'text_style_transfer':
             return call_gpt_text_style_transfer(args, config, data)
+        elif config['task'] == 'machine_translation':
+            return call_gpt_translation(args, config, data)
     except KeyboardInterrupt as k:
         raise k
     except Exception as e:
@@ -199,6 +201,73 @@ Informal 1: {src_informal}"})
         return_list[idx]["target_informal"] = informal_1
         return_list[idx+1]["target_formal"] = formal_2
         return_list[idx+1]["target_informal"] = informal_2
+
+        if tqdm_bar.n + args.num_processes <= tqdm_bar.total:
+            tqdm_bar.update(args.num_processes)
+
+    return return_list
+
+def call_gpt_translation(args: argparse.Namespace, config: dict, data: list) -> list:
+    return_list = []
+
+    for idx in range(0, len(data)*2, 2): # double the idx -> we will generate two paraphrases for each data
+        return_list.append(data[idx//2].copy())
+        return_list.append(data[idx//2].copy())
+
+        return_list[idx]['idx'] = return_list[idx]['idx'] * 2
+        return_list[idx+1]['idx'] = return_list[idx+1]['idx'] * 2 + 1
+
+        src_en = data[idx//2]["source_text"]
+
+        # Remove last user input from prompt and add new user input
+        config['prompt'].pop()
+        config['prompt'].append({"role": "user", "content": f"[Input Sentence]\n\
+English 1: {src_en}\n"})
+
+        error_counter = 0
+        while True:
+            try:
+                # Get gpt paraphrases
+                gpt_response = openai.ChatCompletion.create(
+                    model=config['gpt_model_version'],
+                    messages=config['prompt'],
+                )
+
+                # Break down the response into sentences
+                gpt_sentences = gpt_response['choices'][0]['message']['content'].split("\n")
+                if len(gpt_sentences) != 4: # if gpt_response is not correctly generated, print error message and try again
+                    raise ValueError("Error: output is not correctly generated")
+                gpt_sentences = gpt_sentences[1:] # remove first line [Output Sentence]
+
+                # Remove the ~: part
+                for i in range(len(gpt_sentences)):
+                    # Remove multiple spaces
+                    gpt_sentences[i] = " ".join(gpt_sentences[i].split())
+                    # Remove the ~: part
+                    gpt_sentences[i] = gpt_sentences[i][gpt_sentences[i].find(":") + 2:]
+                # Remove empty strings
+                gpt_sentences = list(filter(None, gpt_sentences))
+
+                english_1 = src_en
+                target_1 = gpt_sentences[0]
+                english_2 = gpt_sentences[1]
+                target_2 = gpt_sentences[2]
+
+                break # if gpt_response is correctly generated, break the while loop
+            except Exception as e:
+                tqdm.write(str(e))
+                error_counter += 1
+                if error_counter > args.error_patience:
+                    tqdm.write(f"Error: Too many errors. Skip this data.")
+                    break
+                continue
+
+        print(english_1, target_1, english_2, target_2)
+
+        return_list[idx]["source_text"] = english_1
+        return_list[idx]["target_silver"] = target_1
+        return_list[idx+1]["source_text"] = english_2
+        return_list[idx+1]["target_silver"] = target_2
 
         if tqdm_bar.n + args.num_processes <= tqdm_bar.total:
             tqdm_bar.update(args.num_processes)

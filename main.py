@@ -92,6 +92,18 @@ def main(args: argparse.Namespace) -> None:
                 from task.style_classification.test import testing as job
             elif args.job == 'inference':
                 from task.style_classification.inference import inference as job
+        elif args.task == 'machine_translation':
+            if args.job == 'preprocessing':
+                from task.machine_translation.preprocessing import preprocessing as job
+            elif args.job in ['training', 'resume_training']:
+                from task.machine_translation.train import training as job
+            elif args.job == 'testing':
+                from task.machine_translation.test import testing as job
+        elif args.task == 'annotating_mt':
+            if args.job == 'gpt_annotating':
+                from task.annotating_mt.gpt_annotating import gpt_annotating_multiprocess as job
+            elif args.job == 'translation_annotating':
+                from task.annotating_mt.translation_annotating import translation_annotating as job
         else:
             raise ValueError(f'Invalid task: {args.task}')
 

@@ -1,0 +1,281 @@
+{
+    "config": {
+        "gpt_model_version": "gpt-3.5-turbo",
+        "task": "machine_translation",
+        "source_lang": "en",
+        "target_lang": "et",
+        "prompt": [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. You are fluent in Estonian and English."
+            },
+            {
+                "role": "system",
+                "content": "You will generate paraphrases of given sentences and their translations into Estonian."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence should be neutral expression."
+            },
+            {
+                "role": "system",
+                "content": "Output sentence will be complete, natural and fluent."
+            },
+            {
+                "role": "system",
+                "content": "Each output sentence should have different expressions as much as possible."
+            },
+            {
+                "role": "system",
+                "content": "You will not generate the same sentence as the input sentence."
+            },
+            {
+                "role": "system",
+                "content": "You must not generate any biased, offensive, or inappropriate paraphrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'Sure! here's the output' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will not say 'I don't know' or any similar phrases."
+            },
+            {
+                "role": "system",
+                "content": "You will just generate the output paraphrases following the output example."
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nEnglish 1: Two men pose while having a photograph taken."
+            },
+            {
+                "role": "assistant",
+                "content": "[Output Sentence]\nEstonian 1: Kaks meest poseerivad pildistamise ajal.\nEnglish 2: Two guys post for a picture being taken.\nEstonian 2: Kaks kutti poseerivad pildi tegemise ajal."
+            },
+            {
+                "role": "user",
+                "content": "[Input Sentence]\nEnglish 1: A man taking a swing at a ball on the court."
+            }
+        ]
+    },
+    "data": [
+        {
+            "idx": 0,
+            "source_text": "Two young, White males are outside near many bushes.",
+            "split": "train",
+            "target_gold": "Zwei junge weiße Männer sind im Freien in der Nähe vieler Büsche.",
+            "target_silver": null
+        },
+        {
+            "idx": 1,
+            "source_text": "Several men in hard hats are operating a giant pulley system.",
+            "split": "train",
+            "target_gold": "Mehrere Männer mit Schutzhelmen bedienen ein Antriebsradsystem.",
+            "target_silver": null
+        },
+        {
+            "idx": 2,
+            "source_text": "A little girl climbing into a wooden playhouse.",
+            "split": "train",
+            "target_gold": "Ein kleines Mädchen klettert in ein Spielhaus aus Holz.",
+            "target_silver": null
+        },
+        {
+            "idx": 3,
+            "source_text": "A man in a blue shirt is standing on a ladder cleaning a window.",
+            "split": "train",
+            "target_gold": "Ein Mann in einem blauen Hemd steht auf einer Leiter und putzt ein Fenster.",
+            "target_silver": null
+        },
+        {
+            "idx": 4,
+            "source_text": "Two men are at the stove preparing food.",
+            "split": "train",
+            "target_gold": "Zwei Männer stehen am Herd und bereiten Essen zu.",
+            "target_silver": null
+        },
+        {
+            "idx": 5,
+            "source_text": "A man in green holds a guitar while the other man observes his shirt.",
+            "split": "train",
+            "target_gold": "Ein Mann in grün hält eine Gitarre, während der andere Mann sein Hemd ansieht.",
+            "target_silver": null
+        },
+        {
+            "idx": 6,
+            "source_text": "A man is smiling at a stuffed lion",
+            "split": "train",
+            "target_gold": "Ein Mann lächelt einen ausgestopften Löwen an.",
+            "target_silver": null
+        },
+        {
+            "idx": 7,
+            "source_text": "A trendy girl talking on her cellphone while gliding slowly down the street.",
+            "split": "train",
+            "target_gold": "Ein schickes Mädchen spricht mit dem Handy während sie langsam die Straße entlangschwebt.",
+            "target_silver": null
+        },
+        {
+            "idx": 8,
+            "source_text": "A woman with a large purse is walking by a gate.",
+            "split": "train",
+            "target_gold": "Eine Frau mit einer großen Geldbörse geht an einem Tor vorbei.",
+            "target_silver": null
+        },
+        {
+            "idx": 9,
+            "source_text": "Boys dancing on poles in the middle of the night.",
+            "split": "train",
+            "target_gold": "Jungen tanzen mitten in der Nacht auf Pfosten.",
+            "target_silver": null
+        },
+        {
+            "idx": 10,
+            "source_text": "A ballet class of five girls jumping in sequence.",
+            "split": "train",
+            "target_gold": "Eine Ballettklasse mit fünf Mädchen, die nacheinander springen.",
+            "target_silver": null
+        },
+        {
+            "idx": 11,
+            "source_text": "Four guys three wearing hats one not are jumping at the top of a staircase.",
+            "split": "train",
+            "target_gold": "Vier Typen, von denen drei Hüte tragen und einer nicht, springen oben in einem Treppenhaus.",
+            "target_silver": null
+        },
+        {
+            "idx": 12,
+            "source_text": "A black dog and a spotted dog are fighting",
+            "split": "train",
+            "target_gold": "Ein schwarzer Hund und ein gefleckter Hund kämpfen.",
+            "target_silver": null
+        },
+        {
+            "idx": 13,
+            "source_text": "A man in a neon green and orange uniform is driving on a green tractor.",
+            "split": "train",
+            "target_gold": "Ein Mann in einer neongrünen und orangefarbenen Uniform fährt auf einem grünen Traktor.",
+            "target_silver": null
+        },
+        {
+            "idx": 14,
+            "source_text": "Several women wait outside in a city.",
+            "split": "train",
+            "target_gold": "Mehrere Frauen warten in einer Stadt im Freien.",
+            "target_silver": null
+        },
+        {
+            "idx": 15,
+            "source_text": "A lady in a black top with glasses is sprinkling powdered sugar on a bundt cake.",
+            "split": "train",
+            "target_gold": "Eine Frau mit schwarzem Oberteil und Brille streut Puderzucker auf einem Gugelhupf.",
+            "target_silver": null
+        },
+        {
+            "idx": 16,
+            "source_text": "A little girl is sitting in front of a large painted rainbow.",
+            "split": "train",
+            "target_gold": "Ein kleines Mädchen sitzt vor einem großen gemalten Regenbogen.",
+            "target_silver": null
+        },
+        {
+            "idx": 17,
+            "source_text": "A man lays on the bench to which a white dog is also tied.",
+            "split": "train",
+            "target_gold": "Ein Mann liegt auf der Bank, an die auch ein weißer Hund angebunden ist.",
+            "target_silver": null
+        },
+        {
+            "idx": 18,
+            "source_text": "Five people are sitting in a circle with instruments.",
+            "split": "train",
+            "target_gold": "Fünf Personen sitzen mit Instrumenten im Kreis.",
+            "target_silver": null
+        },
+        {
+            "idx": 19,
+            "source_text": "A bunch of elderly women play their clarinets together as they read off sheet music.",
+            "split": "train",
+            "target_gold": "Eine Gruppe älterer Frauen spielt zusammen Klarinette von Notenblättern.",
+            "target_silver": null
+        },
+        {
+            "idx": 20,
+            "source_text": "A large structure has broken and is laying in a roadway.",
+            "split": "train",
+            "target_gold": "Ein großes Bauwerk ist kaputt gegangen und liegt auf einer Fahrbahn.",
+            "target_silver": null
+        },
+        {
+            "idx": 21,
+            "source_text": "A large crowd of people stand outside in front of the entrance to a Metro station.",
+            "split": "train",
+            "target_gold": "Eine große Menschenmenge steht außen vor dem Eingang einer Metrostation.",
+            "target_silver": null
+        },
+        {
+            "idx": 22,
+            "source_text": "A man getting a tattoo on his back.",
+            "split": "train",
+            "target_gold": "Ein Mann, der ein Tattoo auf seinem Rücken erhält.",
+            "target_silver": null
+        },
+        {
+            "idx": 23,
+            "source_text": "Two children sit on a small seesaw in the sand.",
+            "split": "train",
+            "target_gold": "Zwei Kinder sitzen auf einer kleinen Wippe im Sand.",
+            "target_silver": null
+        },
+        {
+            "idx": 24,
+            "source_text": "A man wearing a reflective vest and a hard hat holds a flag in the road",
+            "split": "train",
+            "target_gold": "Ein Mann, der eine reflektierende Weste und einen Schutzhelm trägt, hält eine Flagge in die Straße.",
+            "target_silver": null
+        },
+        {
+            "idx": 25,
+            "source_text": "A person dressed in a blue coat is standing in on a busy sidewalk, studying painting of a street scene.",
+            "split": "train",
+            "target_gold": "Eine Person in einem blauen Mantel steht auf einem belebten Gehweg und betrachtet ein Gemälde einer Straßenszene.",
+            "target_silver": null
+        },
+        {
+            "idx": 26,
+            "source_text": "A man in green pants walking down the road.",
+            "split": "train",
+            "target_gold": "Ein Mann in grünen Hosen läuft die Straße entlang.",
+            "target_silver": null
+        },
+        {
+            "idx": 27,
+            "source_text": "The small child climbs on a red ropes on a playground.",
+            "split": "train",
+            "target_gold": "Das kleine Kind klettert an roten Seilen auf einem Spielplatz.",
+            "target_silver": null
+        },
+        {
+            "idx": 28,
+            "source_text": "You know i am looking like Justin Bieber.",
+            "split": "train",
+            "target_gold": "Du weißt, dass ich aussehe wie Justin Bieber.",
+            "target_silver": null
+        },
+        {
+            "idx": 29,
+            "source_text": "A young man in a black and yellow jacket is gazing at something and smiling.",
+            "split": "train",
+            "target_gold": "Ein junger Mann in einer schwarz-gelben Jacke blickt etwas an und lächelt.",
+            "target_silver": null
+        },
+        {
+            "idx": 30,
+            "source_text": "A man standing at a urinal with a coffee cup.",
+            "split": "train",
+            "target_gold": "Ein Mann, der mit einer Tasse Kaffee an einem Urinal steht.",
+            "target_silver": null
+        }
+    ]
+}

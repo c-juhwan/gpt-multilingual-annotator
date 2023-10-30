@@ -12,7 +12,7 @@ Please prepare a json file, following the format of `original/example_empty.json
 
 #### Configuration
 
-- `task`: The task name. Currently, this annotator supports `image_captioning` and `text_style_transfer`.
+- `task`: The task name. Currently, this annotator supports `image_captioning`, `text_style_transfer` and `machine_translation`.
 - `prompt`: The prompt for the annotator. You have to modify this field regarding your target language.
 - `source_lang`: Source language, i.e. `en`. Currently, this annotator only supports English as the source language.
 - `target_lang`: Target language, e.g. `vie`.
@@ -31,6 +31,7 @@ Please prepare a json file, following the format of `original/example_empty.json
 ```bash
 python annotator.py --input=./original/example_vietnamese.json --output=./result/vie_annotated_example.json
 python annotator.py --input=./original/example_tst_french.json --output=./result/fr_tst_annotated_example.json
+python annotator.py --input=./original/example_mt_estonian_test.json --output=./result/et_mt_annotated_example.json
 ```
 
 #### Arguments
