@@ -47,6 +47,15 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'gpt_de' and args.gpt_model_version == 'gpt-4': # Multi30K GPT (English -> German)
         dataset_dict['train'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_DE.pkl'), 'train')
         dataset_dict['valid'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_DE.pkl'), 'valid')
+    elif args.annotation_mode == 'translated_lv':
+        dataset_dict['train'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_LV.pkl'), 'train')
+        dataset_dict['valid'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED_LV.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_lv' and args.gpt_model_version == 'gpt-4':
+        dataset_dict['train'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_LV.pkl'), 'train')
+        dataset_dict['valid'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED_LV.pkl'), 'valid')
+    elif args.annotation_mode == 'translated_et':
+        dataset_dict['train'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_ET.pkl'), 'train')
+        dataset_dict['valid'] = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED_ET.pkl'), 'valid')
     else:
         raise ValueError(f'Invalid annotation mode: {args.annotation_mode}')
 

@@ -45,6 +45,10 @@ def testing(args: argparse.Namespace) -> None:
     write_log(logger, "Loading dataset...")
     if args.annotation_mode in ['original_de', 'translated_de', 'gpt_de']:
         dataset_test = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_DE.pkl'), 'test')
+    if args.annotation_mode in ['translated_lv', 'gpt_lv']:
+        dataset_test = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED_LV.pkl'), 'test')
+    if args.annotation_mode in ['translated_et', 'gpt_et']:
+        dataset_test = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED_ET.pkl'), 'test')
     dataloader_test = DataLoader(dataset_test, batch_size=args.test_batch_size, num_workers=args.num_workers,
                                  shuffle=False, pin_memory=True, drop_last=False, collate_fn=collate_fn)
     tokenizer = dataset_test.tokenizer
