@@ -37,6 +37,7 @@ def preprocessing(args: argparse.Namespace) -> None:
     pl_tokenizer = AutoTokenizer.from_pretrained('sdadas/polish-bart-base')
     lv_tokenizer = AutoTokenizer.from_pretrained('joelito/legal-latvian-roberta-base')
     et_tokenizer = AutoTokenizer.from_pretrained('tartuNLP/EstBERT')
+    fi_tokenizer = AutoTokenizer.from_pretrained('TurkuNLP/bert-base-finnish-uncased-v1')
 
 
     # Define data_dict
@@ -194,6 +195,32 @@ def preprocessing(args: argparse.Namespace) -> None:
             'caption_numbers': [],
             'input_ids': [],
             'tokenizer': et_tokenizer,
+        },
+    }
+    data_dict_fi = {
+        'train': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': fi_tokenizer,
+        },
+        'valid': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': fi_tokenizer,
+        },
+        'test': {
+            'image_names': [],
+            'captions': [],
+            'all_captions': [],
+            'caption_numbers': [],
+            'input_ids': [],
+            'tokenizer': fi_tokenizer,
         },
     }
 
@@ -364,6 +391,11 @@ def preprocessing(args: argparse.Namespace) -> None:
         # Actual dataset construction will be constructed in annotation step
         for split in data_dict.keys():
             os.rename(os.path.join(preprocessed_path, f'{split}_ORIGINAL_EN.pkl'), os.path.join(preprocessed_path, f'{split}_COCO_EN.pkl'))
+    if args.task_dataset == 'new_fi': # Process the Finnish captions for the new_fi dataset
+        # Change name for english processed data_dict
+        # Actual dataset construction will be constructed in annotation step
+        for split in data_dict.keys():
+            os.rename(os.path.join(preprocessed_path, f'{split}_ORIGINAL_EN.pkl'), os.path.join(preprocessed_path, f'{split}_COCO_EN.pkl'))
 
     # Resize the images
     for split in data_dict.keys():
@@ -375,7 +407,7 @@ def preprocessing(args: argparse.Namespace) -> None:
             original_image_path = os.path.join(args.data_path, 'flickr8k', 'Images')
         elif args.task_dataset == 'flickr30k':
             original_image_path = os.path.join(args.data_path, 'flickr30k', 'flickr30k_images')
-        elif args.task_dataset in ['coco2014', 'uit_viic', 'new_lv', 'new_et']:
+        elif args.task_dataset in ['coco2014', 'uit_viic', 'new_lv', 'new_et', 'new_fi']:
             if split == 'train':
                 original_image_path = os.path.join(args.data_path, 'coco_2014', 'train2014')
             elif split == 'valid':
@@ -395,11 +427,11 @@ def preprocessing(args: argparse.Namespace) -> None:
 
         # Resize the images
         for image_name in tqdm(data_dict[split]['image_names'], desc=f'Resizing {split} images...'):
-            if args.task_dataset not in ['uit_viic', 'new_lv', 'new_et']:
+            if args.task_dataset not in ['uit_viic', 'new_lv', 'new_et', 'new_fi']:
                 image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
                 image = image.resize((args.image_resize_size, args.image_resize_size), Image.ANTIALIAS)
                 image.save(os.path.join(resized_image_path, image_name), image.format)
-            elif args.task_dataset in ['uit_viic', 'new_lv', 'new_et']: # for uit_viic, we will only save the resized images for the train/valid/test split
+            elif args.task_dataset in ['uit_viic', 'new_lv', 'new_et', 'new_fi']: # for uit_viic, we will only save the resized images for the train/valid/test split
                 # if image is included in the train/valid/test split, save the image
                 if image_name in data_dict[split]['image_names']:
                     if "train" in image_name:
@@ -411,7 +443,7 @@ def preprocessing(args: argparse.Namespace) -> None:
                     image.save(os.path.join(resized_image_path, image_name), image.format)
                 else:
                     continue # if not, skip the image
-            elif args.task_dataset in ['aide', 'new_lv', 'new_et']:
+            elif args.task_dataset in ['aide', 'new_lv', 'new_et', 'new_fi']:
                 # if image is included in the train/valid/test split, save the image
                 if image_name in data_dict[split]['image_names']:
                     image = Image.open(os.path.join(original_image_path, image_name)).convert('RGB') # convert to RGB if the image is grayscale
@@ -437,9 +469,11 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
     elif args.task_dataset == 'aide':
         dataset_path = os.path.join(args.data_path, 'AIDe')
     elif args.task_dataset == 'new_lv':
-        dataset_path = os.path.join('/home/juhwan/Workspace/image-captioning-gpt-annotator/task/captioning/new_lv_data')
+        dataset_path = os.path.join(f'/home/{os.getlogin()}/Workspace/image-captioning-gpt-annotator/task/captioning/new_lv_data')
     elif args.task_dataset == 'new_et':
-        dataset_path = os.path.join('/home/juhwan/Workspace/image-captioning-gpt-annotator/task/captioning/new_et_data')
+        dataset_path = os.path.join(f'/home/{os.getlogin()}/Workspace/image-captioning-gpt-annotator/task/captioning/new_et_data')
+    elif args.task_dataset == 'new_fi':
+        dataset_path = os.path.join(f'/home/{os.getlogin()}/Workspace/image-captioning-gpt-annotator/task/captioning/new_fi_data')
 
     # Specify the path to the annotations
     if args.task_dataset == 'flickr8k':
@@ -490,6 +524,14 @@ def get_dataset_path(args: argparse.Namespace) -> tuple: # (str, str/dict)
             'train_eng': os.path.join(dataset_path, 'estonian_train2017_EN.json'),
             'valid_eng': os.path.join(dataset_path, 'estonian_val2017_EN.json'),
             'test_eng': os.path.join(dataset_path, 'estonian_test2017_EN.json'),
+            'image_train': os.path.join(args.data_path, 'coco_2014', 'train2014'), # for image path, we use coco2014 image folder
+            'image_valid': os.path.join(args.data_path, 'coco_2014', 'val2014')
+        }
+    elif args.task_dataset == 'new_fi':
+        annotation_path = {
+            'train_eng': os.path.join(dataset_path, 'finnish_train2017_EN.json'),
+            'valid_eng': os.path.join(dataset_path, 'finnish_val2017_EN.json'),
+            'test_eng': os.path.join(dataset_path, 'finnish_test2017_EN.json'),
             'image_train': os.path.join(args.data_path, 'coco_2014', 'train2014'), # for image path, we use coco2014 image folder
             'image_valid': os.path.join(args.data_path, 'coco_2014', 'val2014')
         }
@@ -842,6 +884,76 @@ def load_caption_data(args: argparse.Namespace) -> pd.DataFrame:
         print(caption_df)
         return caption_df
     elif args.task_dataset == 'new_et':
+        # Actual dataset construction will be conducted in annotation process
+        with open(annotation_path['train_eng'], 'r') as f:
+            train_eng_json = json.load(f)
+            train_eng_df = pd.DataFrame(train_eng_json['annotations'])
+        with open(annotation_path['valid_eng'], 'r') as f:
+            valid_eng_json = json.load(f)
+            valid_eng_df = pd.DataFrame(valid_eng_json['annotations'])
+        with open(annotation_path['test_eng'], 'r') as f:
+            test_eng_json = json.load(f)
+            test_eng_df = pd.DataFrame(test_eng_json['annotations'])
+
+        # Create empty dataframe to store the captions
+        caption_df = pd.DataFrame(columns=['image_name', 'caption_number', 'caption_text', 'caption_text_et', 'split'])
+
+        for i in tqdm(range(len(train_eng_df)), total=len(train_eng_df), desc='Loading COCO train captions'):
+            image_id = train_eng_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_eng = train_eng_df.iloc[i]['caption'] # Str
+            # If there is previous caption with same image name, caption_number + 1
+            if len(caption_df[caption_df['image_name'] == image_name]) > 0:
+                caption_number = caption_df[caption_df['image_name'] == image_name]['caption_number'].max() + 1
+            else:
+                caption_number = 1 # Start from 1
+            caption_df = caption_df.append({'image_name': image_name, 'caption_number': caption_number,
+                                            'caption_text': caption_eng, 'caption_text_et': None, 'split': 0}, ignore_index=True)
+
+        # get the captions for the valid set
+        for i in tqdm(range(len(valid_eng_df)), total=len(valid_eng_df), desc='Loading COCO valid captions'):
+            image_id = valid_eng_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_eng = valid_eng_df.iloc[i]['caption'] # Str
+            # If there is previous caption with same image name, caption_number + 1
+            if len(caption_df[caption_df['image_name'] == image_name]) > 0:
+                caption_number = caption_df[caption_df['image_name'] == image_name]['caption_number'].max() + 1
+            else:
+                caption_number = 1 # Start from 1
+            caption_df = caption_df.append({'image_name': image_name, 'caption_number': caption_number,
+                                            'caption_text': caption_eng, 'caption_text_et': None, 'split': 1}, ignore_index=True)
+
+        # get the captions for the test set
+        for i in tqdm(range(len(test_eng_df)), total=len(test_eng_df), desc='Loading COCO test captions'):
+            image_id = test_eng_df.iloc[i]['image_id']
+            image_name = f'COCO_train2014_{image_id:012d}.jpg' # COCO image name format
+            # Check if the image exists in the image folder
+            if not os.path.exists(os.path.join(annotation_path['image_train'], image_name)):
+                image_name = f'COCO_val2014_{image_id:012d}.jpg' # Go to val2014 folder
+                if not os.path.exists(os.path.join(annotation_path['image_valid'], image_name)):
+                    raise FileNotFoundError(f'{image_name} does not exist in the image folder.')
+            caption_eng = test_eng_df.iloc[i]['caption'] # Str
+            # If there is previous caption with same image name, caption_number + 1
+            if len(caption_df[caption_df['image_name'] == image_name]) > 0:
+                caption_number = caption_df[caption_df['image_name'] == image_name]['caption_number'].max() + 1
+            else:
+                caption_number = 1 # Start from 1
+            caption_df = caption_df.append({'image_name': image_name, 'caption_number': caption_number,
+                                            'caption_text': caption_eng, 'caption_text_et': None, 'split': 2}, ignore_index=True)
+
+        print(caption_df)
+        return caption_df
+    elif args.task_dataset == 'new_fi':
         # Actual dataset construction will be conducted in annotation process
         with open(annotation_path['train_eng'], 'r') as f:
             train_eng_json = json.load(f)

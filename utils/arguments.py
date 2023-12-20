@@ -21,7 +21,7 @@ class ArgParser():
         self.parser.add_argument('--job', type=str, choices=job_list, default='training',
                                  help='Job to do; Must be given.')
         dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017',
-                        'uit_viic', 'aide', 'new_lv', 'new_et',
+                        'uit_viic', 'aide', 'new_lv', 'new_et', 'new_fi',
                         'gyafc_en', 'xformal_fr', 'xformal_pt', 'xformal_it',
                         'multi30k']
         self.parser.add_argument('--task_dataset', type=str, choices=dataset_list, default='flickr8k',
@@ -30,9 +30,11 @@ class ArgParser():
                                  help='Description of the experiment; Default is "default"')
         annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', # Korean dataset AIHub
                                 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en', 'hrqvae_en', 'budget_en', # Main experiment
-                                'coco_en', 'original_vie', 'translated_vie', 'gpt_vie', # Vietnamese dataset UIT-ViIC
-                                'original_pl', 'translated_pl', 'gpt_pl', # Polish dataset AIDe
-                                'translated_lv', 'gpt_lv', 'translated_et', 'gpt_et', # Dataset construction: Latvian, Estonian
+                                'coco_en', 'original_vie', 'translated_vie', 'gpt_vie', 'hrqtrans_vie', # Vietnamese dataset UIT-ViIC
+                                'original_pl', 'translated_pl', 'gpt_pl', 'hrqtrans_pl', # Polish dataset AIDe
+                                'translated_lv', 'gpt_lv', 'hrqtrans_lv', # Dataset construction: Latvian
+                                'translated_et', 'gpt_et', 'hrqtrans_et', # Dataset construction: Estonian
+                                'translated_fi', 'gpt_fi', 'hrqtrans_fi', # Dataset construction: Finnish
                                 'original_fr', 'translated_fr', 'gpt_fr', # French dataset XFormal
                                 'original_pt', 'translated_pt', 'gpt_pt', # Portuguese dataset XFormal
                                 'original_it', 'translated_it', 'gpt_it', # Italian dataset XFormal
@@ -141,7 +143,7 @@ class ArgParser():
         # Other arguments - Device, Seed, Logging, etc.
         self.parser.add_argument('--device', type=str, default='cuda:0',
                                  help='Device to use for training; Default is cuda')
-        self.parser.add_argument('--gpt_model_version', type=str, choices=['gpt-3.5-turbo', 'gpt-4'], default='gpt-3.5-turbo',
+        self.parser.add_argument('--gpt_model_version', type=str, default='gpt-3.5-turbo',
                                  help='GPT version to use for annotating; Default is gpt-3.5-turbo')
         self.parser.add_argument('--seed', default=None,
                                  help='Random seed; Default is None;')

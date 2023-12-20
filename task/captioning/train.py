@@ -53,10 +53,10 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'gpt_ko' and args.gpt_model_version == 'gpt-3.5-turbo':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT35_KO.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
-    elif args.annotation_mode == 'gpt_en' and args.gpt_model_version == 'gpt-4':
+    elif args.annotation_mode == 'gpt_en' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_EN.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_EN.pkl'), 'valid') # Valid set is same as original
-    elif args.annotation_mode == 'gpt_ko' and args.gpt_model_version == 'gpt-4':
+    elif args.annotation_mode == 'gpt_ko' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_KO.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_AIHUB_KO.pkl'), 'valid')
     elif args.annotation_mode == 'backtrans_en':
@@ -86,7 +86,10 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'translated_vie':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_VIE.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_VIE.pkl'), 'valid')
-    elif args.annotation_mode == 'gpt_vie' and args.gpt_model_version == 'gpt-4':
+    elif args.annotation_mode == 'hrqtrans_vie':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_HRQTRANS_VIE.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_VIE.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_vie' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_VIE.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_VIE.pkl'), 'valid')
     elif args.annotation_mode == 'original_pl':
@@ -95,23 +98,41 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'translated_pl':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_PL.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
-    elif args.annotation_mode == 'gpt_pl' and args.gpt_model_version == 'gpt-4':
+    elif args.annotation_mode == 'hrqtrans_pl':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_HRQTRANS_PL.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_pl' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_PL.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
     elif args.annotation_mode == 'translated_lv':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_LV.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_LV.pkl'), 'valid')
-    elif args.annotation_mode == 'gpt_lv' and args.gpt_model_version == 'gpt-4':
+    elif args.annotation_mode == 'hrqtrans_lv':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_HRQTRANS_LV.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_LV.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_lv' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_LV.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_LV.pkl'), 'valid')
     elif args.annotation_mode == 'translated_et':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_ET.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_ET.pkl'), 'valid')
-    elif args.annotation_mode == 'gpt_et' and args.gpt_model_version == 'gpt-4':
+    elif args.annotation_mode == 'hrqtrans_et':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_HRQTRANS_ET.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_ET.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_et' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_ET.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_ET.pkl'), 'valid')
+    elif args.annotation_mode == 'translated_fi':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_FI.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_FI.pkl'), 'valid')
+    elif args.annotation_mode == 'hrqtrans_fi':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_HRQTRANS_FI.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_FI.pkl'), 'valid')
+    elif args.annotation_mode == 'gpt_fi' and 'gpt-4' in args.gpt_model_version:
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_FI.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_FI.pkl'), 'valid')
 
-    dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
+    dataloader_dict['train'] = DataLoader(dataset_dict['train'][:5000], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
     dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=False, pin_memory=True, drop_last=True, collate_fn=collate_fn)

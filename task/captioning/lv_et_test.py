@@ -47,6 +47,8 @@ def testing(args: argparse.Namespace) -> None:
         dataset_test = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED2_LV.pkl'), 'test')
     elif args.task_dataset == 'new_et':
         dataset_test = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED2_ET.pkl'), 'test')
+    elif args.task_dataset == 'new_fi':
+        dataset_test = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED2_FI.pkl'), 'test')
     dataloader_test = DataLoader(dataset_test, batch_size=args.test_batch_size, num_workers=args.num_workers,
                                  shuffle=False, pin_memory=True, drop_last=False, collate_fn=collate_fn)
     tokenizer = dataset_test.tokenizer

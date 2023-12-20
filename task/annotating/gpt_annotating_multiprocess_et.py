@@ -160,7 +160,7 @@ def gpt_annotating_multiprocess_et(args: argparse.Namespace) -> None:
     if args.gpt_model_version == 'gpt-3.5-turbo':
         save_name_en = 'train_GPT35_EN.pkl'
         save_name_et = 'train_GPT35_ET.pkl'
-    elif args.gpt_model_version == 'gpt-4':
+    elif 'gpt-4' in args.gpt_model_version:
         save_name_en = 'train_GPT4_EN.pkl'
         save_name_et = 'train_GPT4_ET.pkl'
 

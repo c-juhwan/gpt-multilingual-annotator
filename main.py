@@ -34,6 +34,8 @@ def main(args: argparse.Namespace) -> None:
                     from task.captioning.lv_et_test import testing as job
                 elif args.task_dataset == 'new_et':
                     from task.captioning.lv_et_test import testing as job
+                elif args.task_dataset == 'new_fi':
+                    from task.captioning.lv_et_test import testing as job
             elif args.job == 'eval_similarity':
                 from task.captioning.eval_similarity import eval_similarity as job
             else:
@@ -50,6 +52,8 @@ def main(args: argparse.Namespace) -> None:
                     from task.annotating.gpt_annotating_multiprocess_lv import gpt_annotating_multiprocess_lv as job
                 elif args.task_dataset == 'new_et':
                     from task.annotating.gpt_annotating_multiprocess_et import gpt_annotating_multiprocess_et as job
+                elif args.task_dataset == 'new_fi':
+                    from task.annotating.gpt_annotating_multiprocess_fi import gpt_annotating_multiprocess_fi as job
             elif args.job == 'backtrans_annotating':
                 from task.annotating.backtrans_annotating_easynmt import backtrans_annotating as job
             elif args.job == 'eda_annotating':
@@ -66,9 +70,11 @@ def main(args: argparse.Namespace) -> None:
                 elif args.task_dataset == 'aide':
                     from task.annotating.translation_annotating_pl import translation_annotating_pl as job
                 elif args.task_dataset == 'new_lv':
-                    from task.annotating.translation_annotating_lv_et import translation_annotating_lv as job
+                    from task.annotating.translation_annotating_new import translation_annotating_lv as job
                 elif args.task_dataset == 'new_et':
-                    from task.annotating.translation_annotating_lv_et import translation_annotating_et as job
+                    from task.annotating.translation_annotating_new import translation_annotating_et as job
+                elif args.task_dataset == 'new_fi':
+                    from task.annotating.translation_annotating_new import translation_annotating_fi as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         elif args.task == 'text_style_transfer':
