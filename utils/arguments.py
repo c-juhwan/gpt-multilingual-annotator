@@ -94,8 +94,8 @@ class ArgParser():
                                  help="Scheduler to use for classification; If None, no scheduler is used; Default is CosineAnnealingLR")
 
         # Training arguments 1
-        self.parser.add_argument('--num_epochs', type=int, default=10,
-                                 help='Training epochs; Default is 10')
+        self.parser.add_argument('--num_epochs', type=int, default=5,
+                                 help='Training epochs; Default is 5')
         self.parser.add_argument('--learning_rate', type=float, default=5e-5,
                                  help='Learning rate of optimizer; Default is 5e-5')
         # Training arguments 2
