@@ -11,6 +11,8 @@ from PIL import Image
 import pandas as pd
 from tqdm.auto import tqdm
 from nlgeval import NLGEval
+from bert_score import BERTScorer
+from BARTScore.bart_score import BARTScorer
 # Pytorch Modules
 import torch
 torch.set_num_threads(2)
@@ -44,6 +46,7 @@ def testing(args: argparse.Namespace) -> None:
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
     dataset_test = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_VIE.pkl'), 'test')
+    bart_src_lang, bart_tgt_lang = 'vi_VN', 'vi_VN'
     dataloader_test = DataLoader(dataset_test, batch_size=args.test_batch_size, num_workers=args.num_workers,
                                  shuffle=False, pin_memory=True, drop_last=False, collate_fn=collate_fn)
     tokenizer = dataset_test.tokenizer
@@ -147,12 +150,26 @@ def testing(args: argparse.Namespace) -> None:
     # Test - nlg-eval
     write_log(logger, "TEST - Calculating NLG-eval metrics...")
     Eval = NLGEval(metrics_to_omit=['CIDEr', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
+    BERT_Eval = BERTScorer(device=args.device, model_type='bert-base-multilingual-cased')
+    BART_Eval = BARTScorer(device=args.device, checkpoint='facebook/mbart-large-50', source_lang=bart_src_lang, target_lang=bart_tgt_lang)
 
     # I don't know why but we need this
     _strip = lambda x: x.strip()
     ref_list2 = [list(map(_strip, refs)) for refs in zip(*ref_list)]
     metrics_dict = Eval.compute_metrics(ref_list2, hyp_list)
-    print(metrics_dict)
+    bert_score_P, bert_score_R, bert_score_F1, bart_score_total = 0, 0, 0, 0
+
+    for each_ref, each_hyp in tqdm(zip(ref_list2[0], hyp_list), total=len(ref_list2[0]), desc=f'TEST - Calculating BERTScore&BARTScore...'):
+        P, R, F1 = BERT_Eval.score([each_ref], [each_hyp])
+        bert_score_P += P.item()
+        bert_score_R += R.item()
+        bert_score_F1 += F1.item()
+        bart_score = BART_Eval.multi_ref_score([each_ref], [each_hyp], agg='max')
+        bart_score_total += bart_score[0].item()
+    bert_score_P /= len(ref_list2[0])
+    bert_score_R /= len(ref_list2[0])
+    bert_score_F1 /= len(ref_list2[0])
+    bart_score_total /= len(ref_list2[0])
 
     # Final - End of testing
     write_log(logger, f"TEST - Acc: {test_acc_seq:.4f}")
@@ -163,6 +180,10 @@ def testing(args: argparse.Namespace) -> None:
     write_log(logger, f"TEST - Bleu_avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4:.4f}")
     write_log(logger, f"TEST - Rouge_L: {metrics_dict['ROUGE_L']:.4f}")
     write_log(logger, f"TEST - Meteor: {metrics_dict['METEOR']:.4f}")
+    write_log(logger, f"TEST - BERTScore_Precision: {bert_score_P:.4f}")
+    write_log(logger, f"TEST - BERTScore_Recall: {bert_score_R:.4f}")
+    write_log(logger, f"TEST - BERTScore_F1: {bert_score_F1:.4f}")
+    write_log(logger, f"TEST - BARTScore: {bart_score_total:.4f}")
 
     if args.use_tensorboard:
         writer.add_scalar('TEST/Acc', test_acc_seq, global_step=0)
@@ -173,6 +194,10 @@ def testing(args: argparse.Namespace) -> None:
         writer.add_scalar('TEST/Bleu_avg', (metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4, global_step=0)
         writer.add_scalar('TEST/Rouge_L', metrics_dict['ROUGE_L'], global_step=0)
         writer.add_scalar('TEST/Meteor', metrics_dict['METEOR'], global_step=0)
+        writer.add_scalar('TEST/BERTScore_Precision', bert_score_P, global_step=0)
+        writer.add_scalar('TEST/BERTScore_Recall', bert_score_R, global_step=0)
+        writer.add_scalar('TEST/BERTScore_F1', bert_score_F1, global_step=0)
+        writer.add_scalar('TEST/BARTScore', bart_score_total, global_step=0)
 
         writer.close()
     if args.use_wandb:
@@ -188,7 +213,11 @@ def testing(args: argparse.Namespace) -> None:
             'Bleu_4': [metrics_dict['Bleu_4']],
             'Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
             'Rouge_L': [metrics_dict['ROUGE_L']],
-            'Meteor': [metrics_dict['METEOR']]
+            'Meteor': [metrics_dict['METEOR']],
+            'BERTScore_Precision': [bert_score_P],
+            'BERTScore_Recall': [bert_score_R],
+            'BERTScore_F1': [bert_score_F1],
+            'BARTScore': [bart_score_total],
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
         wandb.log({"TEST_Result": wandb_table})

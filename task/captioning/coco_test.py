@@ -15,6 +15,8 @@ import pandas as pd
 from tqdm.auto import tqdm
 from easynmt import EasyNMT
 from nlgeval import NLGEval
+from bert_score import BERTScorer
+from BARTScore.bart_score import BARTScorer
 # Pytorch Modules
 import torch
 torch.set_num_threads(2)
@@ -208,6 +210,9 @@ def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: 
 
 def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_dataset: Dataset, logger, writer) -> None:
     Eval = NLGEval(metrics_to_omit=['CIDEr', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
+    BERT_Eval = BERTScorer(device=args.device, model_type='bert-base-multilingual-cased')
+    BART_Eval = BARTScorer(device=args.device, checkpoint='facebook/mbart-large-50', source_lang='ko_KR', target_lang='ko_KR')
+
     valid_dataset = valid_dataset.data_list
 
     # Get valid_df['image_id'] and valid_df['caption']
@@ -234,7 +239,19 @@ def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_d
     ref_list2 = [list(map(replace_lambda, refs)) for refs in zip(*ref_list)]
 
     metrics_dict = Eval.compute_metrics(ref_list2, hyp_list)
-    print(metrics_dict)
+    bert_score_P, bert_score_R, bert_score_F1, bart_score_total = 0, 0, 0, 0
+
+    for each_ref, each_hyp in tqdm(zip(ref_list2[0], hyp_list), total=len(ref_list2[0]), desc=f'TEST - Calculating BERTScore&BARTScore...'):
+        P, R, F1 = BERT_Eval.score([each_ref], [each_hyp])
+        bert_score_P += P.item()
+        bert_score_R += R.item()
+        bert_score_F1 += F1.item()
+        bart_score = BART_Eval.multi_ref_score([each_ref], [each_hyp], agg='max')
+        bart_score_total += bart_score[0].item()
+    bert_score_P /= len(ref_list2[0])
+    bert_score_R /= len(ref_list2[0])
+    bert_score_F1 /= len(ref_list2[0])
+    bart_score_total /= len(ref_list2[0])
 
     write_log(logger, f"TEST - Bleu_1: {metrics_dict['Bleu_1']:.4f}")
     write_log(logger, f"TEST - Bleu_2: {metrics_dict['Bleu_2']:.4f}")
@@ -243,6 +260,10 @@ def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_d
     write_log(logger, f"TEST - Bleu_avg: {(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4:.4f}")
     write_log(logger, f"TEST - Rouge_L: {metrics_dict['ROUGE_L']:.4f}")
     write_log(logger, f"TEST - Meteor: {metrics_dict['METEOR']:.4f}")
+    write_log(logger, f"TEST - BERTScore_Precision: {bert_score_P:.4f}")
+    write_log(logger, f"TEST - BERTScore_Recall: {bert_score_R:.4f}")
+    write_log(logger, f"TEST - BERTScore_F1: {bert_score_F1:.4f}")
+    write_log(logger, f"TEST - BARTScore: {bart_score_total:.4f}")
 
     if args.use_tensorboard:
         writer.add_scalar('TEST/KoVal_Bleu_1', metrics_dict['Bleu_1'], global_step=0)
@@ -252,6 +273,10 @@ def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_d
         writer.add_scalar('TEST/KoVal_Bleu_avg', (metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4, global_step=0)
         writer.add_scalar('TEST/KoVal_Rouge_L', metrics_dict['ROUGE_L'], global_step=0)
         writer.add_scalar('TEST/KoVal_Meteor', metrics_dict['METEOR'], global_step=0)
+        writer.add_scalar('TEST/KoVal_BERTScore_Precision', bert_score_P, global_step=0)
+        writer.add_scalar('TEST/KoVal_BERTScore_Recall', bert_score_R, global_step=0)
+        writer.add_scalar('TEST/KoVal_BERTScore_F1', bert_score_F1, global_step=0)
+        writer.add_scalar('TEST/KoVal_BARTScore', bart_score_total, global_step=0)
 
     if args.use_wandb:
         import wandb
@@ -266,7 +291,11 @@ def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_d
             'Bleu_4': [metrics_dict['Bleu_4']],
             'Bleu_avg': [(metrics_dict['Bleu_1'] + metrics_dict['Bleu_2'] + metrics_dict['Bleu_3'] + metrics_dict['Bleu_4']) / 4],
             'Rouge_L': [metrics_dict['ROUGE_L']],
-            'Meteor': [metrics_dict['METEOR']]
+            'Meteor': [metrics_dict['METEOR']],
+            'BERTScore_Precision': [bert_score_P],
+            'BERTScore_Recall': [bert_score_R],
+            'BERTScore_F1': [bert_score_F1],
+            'BARTScore': [bart_score_total],
         })
         wandb_table = wandb.Table(dataframe=wandb_df)
         wandb.log({"TEST_Result": wandb_table})

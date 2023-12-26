@@ -47,12 +47,12 @@ class ArgParser():
                                  help='Path to the raw dataset before preprocessing.')
         self.parser.add_argument('--preprocess_path', type=str, default=f'/HDD/{self.user_name}/preprocessed',
                                  help='Path to the preprocessed dataset.')
-        self.parser.add_argument('--model_path', type=str, default=f'/HDD/{self.user_name}/model_final/{self.proj_name}',
+        self.parser.add_argument('--model_path', type=str, default=f'/nas_homes/{self.user_name}/model_final/{self.proj_name}',
                                  help='Path to the model after training.')
-        self.parser.add_argument('--checkpoint_path', type=str, default=f'/HDD/{self.user_name}/model_checkpoint/{self.proj_name}')
-        self.parser.add_argument('--result_path', type=str, default=f'/HDD/{self.user_name}/results/{self.proj_name}',
+        self.parser.add_argument('--checkpoint_path', type=str, default=f'/nas_homes/{self.user_name}/model_checkpoint/{self.proj_name}')
+        self.parser.add_argument('--result_path', type=str, default=f'/nas_homes/{self.user_name}/results/{self.proj_name}',
                                  help='Path to the result after testing.')
-        self.parser.add_argument('--log_path', type=str, default=f'/HDD/{self.user_name}/tensorboard_log/{self.proj_name}',
+        self.parser.add_argument('--log_path', type=str, default=f'/nas_homes/{self.user_name}/tensorboard_log/{self.proj_name}',
                                  help='Path to the tensorboard log file.')
 
         # Model - Basic arguments
@@ -101,8 +101,8 @@ class ArgParser():
         # Training arguments 2
         self.parser.add_argument('--num_workers', type=int, default=2,
                                  help='Num CPU Workers; Default is 2')
-        self.parser.add_argument('--batch_size', type=int, default=32,
-                                 help='Batch size; Default is 32')
+        self.parser.add_argument('--batch_size', type=int, default=16,
+                                 help='Batch size; Default is 16')
         self.parser.add_argument('--weight_decay', type=float, default=1e-5,
                                  help='Weight decay; Default is 5e-4; If 0, no weight decay')
         self.parser.add_argument('--clip_grad_norm', type=int, default=5,

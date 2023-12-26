@@ -59,7 +59,7 @@ def training(args: argparse.Namespace) -> None:
     else:
         raise ValueError(f'Invalid annotation mode: {args.annotation_mode}')
 
-    dataloader_dict['train'] = DataLoader(dataset_dict['train'], batch_size=args.batch_size, num_workers=args.num_workers,
+    dataloader_dict['train'] = DataLoader(dataset_dict['train'][:6000], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=True, pin_memory=True, drop_last=True, collate_fn=collate_fn)
     dataloader_dict['valid'] = DataLoader(dataset_dict['valid'], batch_size=args.batch_size, num_workers=args.num_workers,
                                           shuffle=False, pin_memory=True, drop_last=True, collate_fn=collate_fn)

@@ -40,9 +40,14 @@ def translation_annotating(args: argparse.Namespace) -> None:
         out_lang_code = 'ET'
         trans2_tokenizer = MBart50TokenizerFast.from_pretrained("facebook/mbart-large-50-many-to-many-mmt", src_lang="en_XX", tgt_lang="et_EE")
         trans2_model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-many-to-many-mmt").to(args.device)
+    if args.annotation_mode == 'translated_fi': # Finnish
+        lang_code = 'fi_FI'
+        trans_lang_code = trans_tokenizer.lang_code_to_id["fin_Latn"]
+        out_lang_code = 'FI'
+        trans2_tokenizer = MBart50TokenizerFast.from_pretrained("facebook/mbart-large-50-many-to-many-mmt", src_lang="en_XX", tgt_lang="fi_FI")
+        trans2_model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-many-to-many-mmt").to(args.device)
 
     tokenizer = AutoTokenizer.from_pretrained('facebook/mbart-large-50', src_lang=lang_code, tgt_lang=lang_code)
-
 
     # Define data_dict
     loaded_data = {}

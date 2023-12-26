@@ -24,3 +24,5 @@ sacremoses==0.0.53
 wandb==0.14.2
 git+https://github.com/Maluuba/nlg-eval.git@master
 sentence-transformers==2.2.2
+bert-score==0.3.13
+# https://github.com/neulab/BARTScore # You need to manually clone this repo
