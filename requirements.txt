@@ -12,8 +12,8 @@ tokenizers==0.13.2
 #--find-links https://download.pytorch.org/whl/cu116
 #torch==1.13.0+cu116
 torch-tb-profiler==0.4.1
-torchtext==0.14.0
-torchvision==0.14.0
+torchtext==0.14.1
+torchvision==0.14.1
 tqdm
 transformers==4.27.4
 pycocotools==2.0.6

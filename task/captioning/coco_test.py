@@ -209,7 +209,7 @@ def translate_to_eng(args: argparse.Namespace, valid_df: pd.DataFrame, test_df: 
                                             f'captions_test2014_{args.annotation_mode}_{args.decoding_strategy}_results.json'), orient='records')
 
 def evaluate_kor_valid(args: argparse.Namespace, valid_df: pd.DataFrame, valid_dataset: Dataset, logger, writer) -> None:
-    Eval = NLGEval(metrics_to_omit=['CIDEr', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
+    Eval = NLGEval(metrics_to_omit=['CIDEr', 'SPICE', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
     BERT_Eval = BERTScorer(device=args.device, model_type='bert-base-multilingual-cased')
     BART_Eval = BARTScorer(device=args.device, checkpoint='facebook/mbart-large-50', source_lang='ko_KR', target_lang='ko_KR')
 

@@ -126,7 +126,7 @@ def testing(args: argparse.Namespace) -> None:
 
     # Test - nlg-eval
     write_log(logger, "TEST - Calculating NLG-eval metrics...")
-    Eval = NLGEval(metrics_to_omit=['CIDEr', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
+    Eval = NLGEval(metrics_to_omit=['CIDEr', 'SPICE', 'SkipThoughtCS', 'EmbeddingAverageCosineSimilairty', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
     BERT_Eval = BERTScorer(device=args.device, model_type='bert-base-multilingual-cased')
     BART_Eval = BARTScorer(device=args.device, checkpoint='facebook/mbart-large-50', source_lang=bart_src_lang, target_lang=bart_tgt_lang)
 
