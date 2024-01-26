@@ -45,16 +45,16 @@ def testing(args: argparse.Namespace) -> None:
 
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
-    if args.annotation_mode in ['original_de', 'translated_de', 'gpt_de']:
+    if args.annotation_mode in ['original_de', 'translated_de', 'gpt_de', 'googletrans_de']:
         dataset_test = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_DE.pkl'), 'test')
         bart_src_lang, bart_tgt_lang = 'en_XX', 'de_DE'
-    elif args.annotation_mode in ['translated_lv', 'gpt_lv']:
+    elif args.annotation_mode in ['translated_lv', 'gpt_lv', 'googletrans_lv']:
         dataset_test = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED_LV.pkl'), 'test')
         bart_src_lang, bart_tgt_lang = 'en_XX', 'lv_LV'
-    elif args.annotation_mode in ['translated_et', 'gpt_et']:
+    elif args.annotation_mode in ['translated_et', 'gpt_et', 'googletrans_et']:
         dataset_test = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED_ET.pkl'), 'test')
         bart_src_lang, bart_tgt_lang = 'en_XX', 'et_EE'
-    elif args.annotation_mode in ['translated_fi', 'gpt_fi']:
+    elif args.annotation_mode in ['translated_fi', 'gpt_fi', 'googletrans_fi']:
         dataset_test = MTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_TRANSLATED_FI.pkl'), 'test')
         bart_src_lang, bart_tgt_lang = 'en_XX', 'fi_FI'
     dataloader_test = DataLoader(dataset_test, batch_size=args.test_batch_size, num_workers=args.num_workers,

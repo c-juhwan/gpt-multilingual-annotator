@@ -45,13 +45,13 @@ def testing(args: argparse.Namespace) -> None:
 
     # Load dataset and define dataloader
     write_log(logger, "Loading dataset...")
-    if args.annotation_mode in ['original_fr', 'translated_fr', 'gpt_fr']:
+    if args.annotation_mode in ['original_fr', 'translated_fr', 'gpt_fr', 'googletrans_fr']:
         dataset_test = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_FR.pkl'), 'test')
         bart_src_lang, bart_tgt_lang = 'fr_XX', 'fr_XX'
-    elif args.annotation_mode in ['original_pt', 'translated_pt', 'gpt_pt']:
+    elif args.annotation_mode in ['original_pt', 'translated_pt', 'gpt_pt', 'googletrans_pt']:
         dataset_test = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_PT.pkl'), 'test')
         bart_src_lang, bart_tgt_lang = 'pt_XX', 'pt_XX'
-    elif args.annotation_mode in ['original_it', 'translated_it', 'gpt_it']:
+    elif args.annotation_mode in ['original_it', 'translated_it', 'gpt_it', 'googletrans_it']:
         dataset_test = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'test_ORIGINAL_IT.pkl'), 'test')
         bart_src_lang, bart_tgt_lang = 'it_IT', 'it_IT'
     dataloader_test = DataLoader(dataset_test, batch_size=args.test_batch_size, num_workers=args.num_workers,

@@ -17,7 +17,7 @@ class ArgParser():
         self.parser.add_argument('--task', type=str, choices=task_list, default='captioning',
                                  help='Task to do; Must be given.')
         job_list = ['preprocessing', 'training', 'resume_training', 'testing', 'eval_similarity', 'inference', # For captioning/TST/classification
-                    'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating', 'onlyone_annotating', 'budget_annotating', 'translation_annotating'] # For annotating
+                    'gpt_annotating', 'backtrans_annotating', 'eda_annotating', 'synonym_annotating', 'onlyone_annotating', 'budget_annotating', 'translation_annotating', 'googletrans_annotating'] # For annotating
         self.parser.add_argument('--job', type=str, choices=job_list, default='training',
                                  help='Job to do; Must be given.')
         dataset_list = ['flickr8k', 'flickr30k', 'coco2014', 'coco2017',
@@ -30,29 +30,29 @@ class ArgParser():
                                  help='Description of the experiment; Default is "default"')
         annotation_mode_list = ['original_en', 'aihub_ko', 'gpt_en', 'gpt_ko', # Korean dataset AIHub
                                 'backtrans_en', 'eda_en', 'synonym_en', 'onlyone_en', 'hrqvae_en', 'budget_en', # Main experiment
-                                'coco_en', 'original_vie', 'translated_vie', 'gpt_vie', 'hrqtrans_vie', # Vietnamese dataset UIT-ViIC
-                                'original_pl', 'translated_pl', 'gpt_pl', 'hrqtrans_pl', # Polish dataset AIDe
-                                'translated_lv', 'gpt_lv', 'hrqtrans_lv', # Dataset construction: Latvian
-                                'translated_et', 'gpt_et', 'hrqtrans_et', # Dataset construction: Estonian
-                                'translated_fi', 'gpt_fi', 'hrqtrans_fi', # Dataset construction: Finnish
-                                'original_fr', 'translated_fr', 'gpt_fr', # French dataset XFormal
-                                'original_pt', 'translated_pt', 'gpt_pt', # Portuguese dataset XFormal
-                                'original_it', 'translated_it', 'gpt_it', # Italian dataset XFormal
-                                'original_de', 'translated_de', 'gpt_de',] # German dataset Multi30k
+                                'coco_en', 'original_vie', 'translated_vie', 'gpt_vie', 'hrqtrans_vie', 'googletrans_vie', # Vietnamese dataset UIT-ViIC
+                                'original_pl', 'translated_pl', 'gpt_pl', 'hrqtrans_pl', 'googletrans_pl', # Polish dataset AIDe
+                                'translated_lv', 'gpt_lv', 'hrqtrans_lv', 'googletrans_lv', # Dataset construction: Latvian
+                                'translated_et', 'gpt_et', 'hrqtrans_et', 'googletrans_et', # Dataset construction: Estonian
+                                'translated_fi', 'gpt_fi', 'hrqtrans_fi', 'googletrans_fi', # Dataset construction: Finnish
+                                'original_fr', 'translated_fr', 'gpt_fr', 'googletrans_fr', # French dataset XFormal
+                                'original_pt', 'translated_pt', 'gpt_pt', 'googletrans_pt', # Portuguese dataset XFormal
+                                'original_it', 'translated_it', 'gpt_it', 'googletrans_it', # Italian dataset XFormal
+                                'original_de', 'translated_de', 'gpt_de', 'googletrans_de',] # German dataset Multi30k
         self.parser.add_argument('--annotation_mode', type=str, choices=annotation_mode_list, default='original_en',
                                  help='Annotation mode; Default is "original"')
 
         # Path arguments
-        self.parser.add_argument('--data_path', type=str, default='/HDD/dataset',
+        self.parser.add_argument('--data_path', type=str, default='/mnt/sda1/dataset',
                                  help='Path to the raw dataset before preprocessing.')
-        self.parser.add_argument('--preprocess_path', type=str, default=f'/HDD/{self.user_name}/preprocessed',
+        self.parser.add_argument('--preprocess_path', type=str, default=f'/mnt/sda1/{self.user_name}/preprocessed',
                                  help='Path to the preprocessed dataset.')
-        self.parser.add_argument('--model_path', type=str, default=f'/nas_homes/{self.user_name}/model_final/{self.proj_name}',
+        self.parser.add_argument('--model_path', type=str, default=f'/mnt/sda1/{self.user_name}/model_final/{self.proj_name}',
                                  help='Path to the model after training.')
-        self.parser.add_argument('--checkpoint_path', type=str, default=f'/nas_homes/{self.user_name}/model_checkpoint/{self.proj_name}')
-        self.parser.add_argument('--result_path', type=str, default=f'/nas_homes/{self.user_name}/results/{self.proj_name}',
+        self.parser.add_argument('--checkpoint_path', type=str, default=f'/mnt/sda1/{self.user_name}/model_checkpoint/{self.proj_name}')
+        self.parser.add_argument('--result_path', type=str, default=f'/mnt/sda1/{self.user_name}/results/{self.proj_name}',
                                  help='Path to the result after testing.')
-        self.parser.add_argument('--log_path', type=str, default=f'/nas_homes/{self.user_name}/tensorboard_log/{self.proj_name}',
+        self.parser.add_argument('--log_path', type=str, default=f'/mnt/sda1/{self.user_name}/tensorboard_log/{self.proj_name}',
                                  help='Path to the tensorboard log file.')
 
         # Model - Basic arguments
@@ -147,8 +147,8 @@ class ArgParser():
                                  help='GPT version to use for annotating; Default is gpt-3.5-turbo')
         self.parser.add_argument('--seed', default=None,
                                  help='Random seed; Default is None;')
-        self.parser.add_argument('--use_tensorboard', type=parse_bool, default=True,
-                                 help='Using tensorboard; Default is True')
+        self.parser.add_argument('--use_tensorboard', type=parse_bool, default=False,
+                                 help='Using tensorboard; Default is False')
         self.parser.add_argument('--use_wandb', type=parse_bool, default=True,
                                  help='Using wandb; Default is True')
         self.parser.add_argument('--log_freq', default=500, type=int,

@@ -75,6 +75,8 @@ def main(args: argparse.Namespace) -> None:
                     from task.annotating.translation_annotating_new import translation_annotating_et as job
                 elif args.task_dataset == 'new_fi':
                     from task.annotating.translation_annotating_new import translation_annotating_fi as job
+            elif args.job == 'googletrans_annotating':
+                from task.annotating.googletrans_annotating import googletrans_annotating as job
             else:
                 raise ValueError(f'Invalid job: {args.job}')
         elif args.task == 'text_style_transfer':
@@ -89,6 +91,8 @@ def main(args: argparse.Namespace) -> None:
                 from task.annotating_tst.gpt_annotating import gpt_annotating_multiprocess as job
             elif args.job == 'translation_annotating':
                 from task.annotating_tst.translation_annotating import translation_annotating as job
+            elif args.job == 'googletrans_annotating':
+                from task.annotating_tst.googletrans_annotating import googletrans_annotating as job
         elif args.task == 'style_classification':
             if args.job == 'preprocessing':
                 from task.style_classification.preprocessing import preprocessing as job
@@ -110,6 +114,8 @@ def main(args: argparse.Namespace) -> None:
                 from task.annotating_mt.gpt_annotating import gpt_annotating_multiprocess as job
             elif args.job == 'translation_annotating':
                 from task.annotating_mt.translation_annotating import translation_annotating as job
+            elif args.job == 'googletrans_annotating':
+                from task.annotating_mt.googletrans_annotating import googletrans_annotating as job
         else:
             raise ValueError(f'Invalid task: {args.task}')
 

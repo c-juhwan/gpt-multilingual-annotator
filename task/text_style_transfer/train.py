@@ -47,6 +47,9 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'gpt_fr' and args.gpt_model_version == 'gpt-4': # GPT Annotated (French)
         dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_FR.pkl'), 'train')
         dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_FR.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_fr':
+        dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_FR.pkl'), 'train')
+        dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_FR.pkl'), 'valid')
     elif args.annotation_mode == 'original_pt': # XFormal Original (Brazilian Portuguese)
         dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_ORIGINAL_PT.pkl'), 'train')
         dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PT.pkl'), 'valid')
@@ -56,6 +59,9 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'gpt_pt' and args.gpt_model_version == 'gpt-4': # GPT Annotated (Brazilian Portuguese)
         dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_PT.pkl'), 'train')
         dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PT.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_pt':
+        dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_PT.pkl'), 'train')
+        dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PT.pkl'), 'valid')
     elif args.annotation_mode == 'original_it': # XFormal Original (Italian)
         dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_ORIGINAL_IT.pkl'), 'train')
         dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_IT.pkl'), 'valid')
@@ -64,6 +70,9 @@ def training(args: argparse.Namespace) -> None:
         dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_IT.pkl'), 'valid')
     elif args.annotation_mode == 'gpt_it' and args.gpt_model_version == 'gpt-4': # GPT Annotated (Italian)
         dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_IT.pkl'), 'train')
+        dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_IT.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_it':
+        dataset_dict['train'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_IT.pkl'), 'train')
         dataset_dict['valid'] = TSTDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_IT.pkl'), 'valid')
     else:
         raise ValueError(f'Invalid annotation mode: {args.annotation_mode}')

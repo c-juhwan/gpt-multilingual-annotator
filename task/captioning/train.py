@@ -92,6 +92,9 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'gpt_vie' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_VIE.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_VIE.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_vie':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_VIE.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_VIE.pkl'), 'valid')
     elif args.annotation_mode == 'original_pl':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_ORIGINAL_PL.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
@@ -104,6 +107,9 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'gpt_pl' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_PL.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_pl':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_PL.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_ORIGINAL_PL.pkl'), 'valid')
     elif args.annotation_mode == 'translated_lv':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_LV.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_LV.pkl'), 'valid')
@@ -112,6 +118,9 @@ def training(args: argparse.Namespace) -> None:
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_LV.pkl'), 'valid')
     elif args.annotation_mode == 'gpt_lv' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_LV.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_LV.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_lv':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_LV.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_LV.pkl'), 'valid')
     elif args.annotation_mode == 'translated_et':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_ET.pkl'), 'train')
@@ -122,6 +131,9 @@ def training(args: argparse.Namespace) -> None:
     elif args.annotation_mode == 'gpt_et' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_ET.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_ET.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_et':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_ET.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_ET.pkl'), 'valid')
     elif args.annotation_mode == 'translated_fi':
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_TRANSLATED_FI.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_FI.pkl'), 'valid')
@@ -130,6 +142,9 @@ def training(args: argparse.Namespace) -> None:
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_FI.pkl'), 'valid')
     elif args.annotation_mode == 'gpt_fi' and 'gpt-4' in args.gpt_model_version:
         dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GPT4_FI.pkl'), 'train')
+        dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_FI.pkl'), 'valid')
+    elif args.annotation_mode == 'googletrans_fi':
+        dataset_dict['train'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'train_GOOGLETRANS_FI.pkl'), 'train')
         dataset_dict['valid'] = CaptioningDataset(args, os.path.join(args.preprocess_path, args.task, args.task_dataset, 'valid_TRANSLATED2_FI.pkl'), 'valid')
 
     dataloader_dict['train'] = DataLoader(dataset_dict['train'][:5000], batch_size=args.batch_size, num_workers=args.num_workers,

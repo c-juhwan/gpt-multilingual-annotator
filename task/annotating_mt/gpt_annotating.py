@@ -51,7 +51,7 @@ tqdm_bar = tqdm(total=3000, desc='Progress', position=0)
 
 def gpt_annotating_multiprocess(args: argparse.Namespace) -> None:
     # Load dataset
-    if args.annotation_mode in ['original_de', 'translated_de', 'gpt_de']:
+    if args.annotation_mode in ['original_de', 'translated_de', 'gpt_de', 'googletrans_de']:
         lang_code = 'de_DE'
         out_lang_code = 'DE'
     tokenizer = AutoTokenizer.from_pretrained('facebook/mbart-large-50', src_lang=lang_code, tgt_lang=lang_code)

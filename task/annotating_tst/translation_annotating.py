@@ -78,11 +78,11 @@ def translation_annotating(args: argparse.Namespace) -> None:
         all_references.append(target_formal)
 
         # Tokenize translated text
-        tokenized = tokenizer(informal_text, text_target=formal_text, padding='max_length', truncation=True,
+        tokenized = tokenizer(target_informal, text_target=target_formal, padding='max_length', truncation=True,
                               max_length=args.max_seq_len, return_tensors='pt')
 
         # Append the data to the data_dict
-        save_data['informal_text'].append(informal_text)
+        save_data['informal_text'].append(target_informal)
         save_data['formal_text'].append(target_formal)
         save_data['all_references'].append(all_references)
         save_data['text_number'].append(text_number)

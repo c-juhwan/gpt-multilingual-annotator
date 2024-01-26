@@ -10,7 +10,7 @@ tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
 tokenizers==0.13.2
 #--find-links https://download.pytorch.org/whl/cu116
-#torch==1.13.0+cu116
+#torch==1.13.1+cu116
 torch-tb-profiler==0.4.1
 torchtext==0.14.1
 torchvision==0.14.1
@@ -26,3 +26,4 @@ git+https://github.com/Maluuba/nlg-eval.git@master
 sentence-transformers==2.2.2
 bert-score==0.3.13
 # https://github.com/neulab/BARTScore # You need to manually clone this repo
+google-cloud-translate==3.14.0
