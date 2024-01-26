@@ -1,10 +1,10 @@
-# GPT Annotator
+# [EACL 2024 Findings] GPTs are (Multilingual) Annotators for Sequence Generation Tasks
 
-## Requirements
+## Annotation Software - Requirements
 
 - openai == 0.27.2
 
-## Usage
+## Annotation Software - Usage
 
 ### Prepare the data
 
@@ -35,6 +35,7 @@ python annotator.py --input=./original/example_mt_estonian_test.json --output=./
 ```
 
 #### Arguments
+
 - `input`: The input json file.
 - `output`: The output json file.
 - `random_selection`: If not 0, it will be used as a random seed value and the annotator will randomly select one of the source captions as the annotation candidate. Default=0.

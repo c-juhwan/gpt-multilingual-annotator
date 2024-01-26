@@ -219,14 +219,14 @@ poetry.toml
 .ruff_cache/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,python
-/wandb
-/task/annotating/hrqvae_data
-/task/annotating/hrqvae_model
-/task/text_style_transfer/GYAFC_Corpus/
-/task/text_style_transfer/XFORMAL/
-/task/style_classification/XFORMAL/
-/task/captioning/AIDe_ANNOTATED_DESCRIPTIONS/
-/task/captioning/UIT-ViIC/
-/task/captioning/new_lv_data/
-/task/captioning/new_et_data/
-/task/captioning/new_fi_data/
+/experiment/wandb
+/experiment/task/annotating/hrqvae_data
+/experiment/task/annotating/hrqvae_model
+/experiment/task/text_style_transfer/GYAFC_Corpus/
+/experiment/task/text_style_transfer/XFORMAL/
+/experiment/task/style_classification/XFORMAL/
+/experiment/task/captioning/AIDe_ANNOTATED_DESCRIPTIONS/
+/experiment/task/captioning/UIT-ViIC/
+/experiment/task/captioning/new_lv_data/
+/experiment/task/captioning/new_et_data/
+/experiment/task/captioning/new_fi_data/
