@@ -1,4 +1,4 @@
-# [EACL 2024 Findings] GPTs are (Multilingual) Annotators for Sequence Generation Tasks
+# [EACL 2024 Findings] GPTs are Multilingual Annotators for Sequence Generation Tasks
 
 ## Annotation Software - Requirements
 
